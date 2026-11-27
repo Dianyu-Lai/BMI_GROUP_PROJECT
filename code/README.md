@@ -2,7 +2,10 @@
 
 | Directory | Contents |
 | --- | --- |
-| [`rvne/`](rvne/README.md) | Original RVNE, batched RVNE, SCAW, and their synthetic benchmarks. |
-| [`baselines/`](baselines/README.md) | Shannon entropy, KL and Jensen–Shannon divergence, BLOSUM62 sum-of-pairs, adjusted entropy, and their synthetic benchmarks. |
+| [`data_generation/`](data_generation/README.md) | Synthetic MSA generators, A–D datasets, truth labels and manifests. |
+| [`benchmarks/`](benchmarks/README.md) | Scoring comparisons, parameter tuning, held-out evaluation, ablations, metrics and plots. |
+| [`rvne/`](rvne/README.md) | Original RVNE, batched RVNE, SCAW, and [real-protein alignment with MAFFT and ClustalW](rvne/docs/real_data_alignment.md). |
+| [`baselines/`](baselines/README.md) | Earlier Shannon, KL, Jensen–Shannon, BLOSUM62 and adjusted-entropy scoring implementations. |
+| [`output/`](output/benchmark_analysis.md) | Analysis of the recorded benchmark results, including tables and figures. |
 
-Run each project's README commands from its own directory. Both projects use the `msa_conservation` package name, so set `PYTHONPATH` to the current project's `src` directory before running its commands.
+Both scoring packages use the `msa_conservation` name. Follow the workflow README to select one scoring package on `PYTHONPATH`.

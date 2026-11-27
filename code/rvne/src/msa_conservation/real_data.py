@@ -13,6 +13,7 @@ import subprocess
 from tempfile import TemporaryDirectory
 from textwrap import wrap
 from time import perf_counter
+from typing import Iterable
 
 from . import rvne_cli
 from .msa import AMINO_ACIDS, GAPS, Alignment, read_fasta, read_fasta_records
@@ -28,7 +29,7 @@ MAFFT_MODES = {
 EXECUTABLES = {"mafft": ("mafft",), "clustalw": ("clustalw2", "clustalw")}
 VERSION_PATTERNS = {
     "mafft": re.compile(r"\bv(\d+\.\d+(?:\.\d+)?)\b", re.IGNORECASE),
-    "clustalw": re.compile(r"\bCLUSTAL\s*W(?:\s*\(\s*version)?\s+(\d+\.\d+(?:\.\d+)?)\b", re.IGNORECASE),
+    "clustalw": re.compile(r"\bCLUSTAL(?:\s*W)?\s+\(?(?:version\s+)?(\d+\.\d+(?:\.\d+)?)\b", re.IGNORECASE),
 }
 
 
@@ -50,9 +51,9 @@ def read_proteins(data: bytes) -> dict[str, str]:
     return proteins
 
 
-def write_fasta(path: Path, ids, sequences) -> None:
+def write_fasta(path: Path, ids: Iterable[str], sequences: Iterable[str]) -> None:
     with path.open("w", encoding="utf-8", newline="\n") as handle:
-        for name, sequence in zip(ids, sequences):
+        for name, sequence in zip(ids, sequences, strict=True):
             handle.write(f">{name}\n")
             handle.write("\n".join(wrap(sequence, 80)) + "\n")
 
@@ -61,7 +62,7 @@ def resolve_executable(aligner: str, override: str | None) -> Path:
     for name in (override,) if override else EXECUTABLES[aligner]:
         executable = shutil.which(name)
         if executable:
-            return Path(executable).resolve()
+            return Path(executable).absolute()
     raise ValueError(f"{aligner}: executable not found ({override or ' / '.join(EXECUTABLES[aligner])}). "
                      f"Install it on PATH or pass --{aligner}-exe")
 
@@ -84,7 +85,7 @@ def run_aligner(aligner: str, executable: Path, work: Path, proteins: dict[str, 
                     f"-OUTFILE={output.name}", "-OUTORDER=INPUT"]
 
     start = perf_counter()
-    result = subprocess.run(command, cwd=work, capture_output=True, timeout=args.timeout)
+    result = subprocess.run(command, cwd=work, stdin=subprocess.DEVNULL, capture_output=True, timeout=args.timeout)
     elapsed = perf_counter() - start
     stderr = result.stderr.decode("utf-8", errors="replace")
     stdout_is_alignment = aligner == "mafft" and not mafft_batch
@@ -113,7 +114,7 @@ def run_aligner(aligner: str, executable: Path, work: Path, proteins: dict[str, 
     version = VERSION_PATTERNS[aligner].search(log)
     if version is None and aligner == "mafft":
         try:
-            probe = subprocess.run([str(executable), "--version"], cwd=work, capture_output=True,
+            probe = subprocess.run([str(executable), "--version"], cwd=work, stdin=subprocess.DEVNULL, capture_output=True,
                                    timeout=min(args.timeout, 10))
         except (OSError, subprocess.TimeoutExpired):
             pass
@@ -137,7 +138,7 @@ def reference_scores(alignment: Alignment, reference_id: str, score_path: Path) 
                 if residue not in GAPS]
 
 
-def write_comparison(path: Path, reference: str, profiles: dict[str, list]) -> dict:
+def write_comparison(path: Path, reference: str, profiles: dict[str, list[tuple[str, str, str]]]) -> dict:
     header = ["reference_position", "reference_residue"]
     for aligner in profiles:
         header.extend(f"{aligner}_{column}" for column in ("column", "nongap_coverage", "score"))
@@ -174,6 +175,12 @@ def run_comparison(args: argparse.Namespace) -> None:
         work = Path(temporary)
         results = work / "results"
         results.mkdir()
+        score_options = ["--method", args.method, "--max-gap", str(args.max_gap),
+                         "--settings-output", str(results / "scoring_settings.json")]
+        if args.settings:
+            frozen_settings = work / "settings.json"
+            frozen_settings.write_bytes(args.settings.read_bytes())
+            score_options.extend(("--settings", str(frozen_settings)))
         details = {}
         profiles = {}
         for aligner, executable in executables.items():
@@ -182,13 +189,10 @@ def run_comparison(args: argparse.Namespace) -> None:
             scores = results / f"{aligner}.scores.tsv"
             write_fasta(fasta, alignment.ids, alignment.sequences)
             (results / f"{aligner}.log").write_text(log, encoding="utf-8")
-            score_options = ["--input", str(fasta), "--output", str(scores), "--method", args.method,
-                             "--max-gap", str(args.max_gap), "--settings-output", str(results / "scoring_settings.json")]
-            if args.settings:
-                score_options.extend(("--settings", str(args.settings)))
+            site_options = [*score_options, "--input", str(fasta), "--output", str(scores)]
             if args.method == "scaw-rvne":
-                score_options.extend(("--segments-output", str(results / f"{aligner}.segments.tsv")))
-            rvne_cli.main(score_options)
+                site_options.extend(("--segments-output", str(results / f"{aligner}.segments.tsv")))
+            rvne_cli.main(site_options)
             profiles[aligner] = reference_scores(alignment, reference_id, scores)
             details[aligner]["scored_reference_positions"] = sum(bool(site[2]) for site in profiles[aligner])
 

@@ -29,10 +29,10 @@ SCAW-RVNE fits segments of constant mean to \(D_i\). Dynamic programming minimiz
 For \(N\) sequences, \(L\) sites and \(K=20\) residues, profiles cost \(O(NL+LK)\) and single-configuration scoring costs \(O(LK^3)\). Background caching and batching reduce constant factors. Partitioning costs \(O(LW)\), with \(W=L\) by default or a user-selected maximum segment length. Adaptive scoring costs \(O(LH)\) for \(H\) candidate radii.
 
 \section{Installation and scoring}
-The recorded run used Python 3.13.5 and NumPy 2.5.2. Run from \texttt{code/rvne} in the BMI3 repository. These commands use PowerShell. In a POSIX shell use \texttt{export PYTHONPATH=src} in place of the second line.
+The recorded run used Python 3.13.5 and NumPy 2.5.2. Run from \texttt{code/rvne} in the BMI3 repository. These commands use PowerShell. In a POSIX shell use \texttt{export PYTHONPATH=..:src} in place of the second line.
 \begin{verbatim}
 python -m pip install -r requirements.txt
-$env:PYTHONPATH = "src"
+$env:PYTHONPATH = "..;src"
 python -m unittest discover -s tests
 python -m msa_conservation.cli score --help
 \end{verbatim}

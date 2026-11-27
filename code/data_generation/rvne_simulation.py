@@ -15,6 +15,7 @@ SCENARIOS = ("conserved", "variable", "blocks", "motifs", "gradual",
 SUPPLEMENTAL_SCENARIOS = ("conserved-variable-blocks", "single-motif", "three-rate-blocks")
 CHEMICAL_CLASSES = ("AVLIM", "FWY", "STNQ", "KR", "DE", "C", "G", "H", "P")
 MUTATIONS = ("mixed", "conservative", "radical")
+D_RATES = (0.06, 0.32, 1.0)
 
 
 @dataclass(frozen=True)
@@ -24,12 +25,14 @@ class Simulation:
     truth: np.ndarray
     conserved: np.ndarray
     boundaries: tuple[int, ...]
+    gap_probabilities: np.ndarray | None = None
 
 
 def simulate(
     *, size: int = 50, length: int = 240, divergence: float = 0.7,
     scenario: str = "blocks", variable_fraction: float = 0.4,
     gaps: float | None = None, redundancy: float | None = None,
+    gap_by_rate: tuple[float, float, float] | None = None, gap_seed: int | None = None,
     mutation: str = "mixed", motif_length: int = 5, seed: int = 1,
 ) -> Simulation:
     """Sample from one ancestor with independent mutation masks and optional short indels."""
@@ -45,6 +48,13 @@ def simulate(
     redundancy = (0.7 if scenario == "redundant" else 0.0) if redundancy is None else redundancy
     if not (0 <= gaps < 1 and 0 <= redundancy < 1):
         raise ValueError("gap and redundancy fractions must be in [0, 1)")
+    if gap_by_rate is not None and (
+        scenario != "three-rate-blocks" or gaps or len(gap_by_rate) != len(D_RATES)
+        or not all(0 <= probability < 1 for probability in gap_by_rate)
+    ):
+        raise ValueError("rate-specific gaps require three probabilities in [0, 1) and the three-rate scenario without global gaps")
+    if gap_seed is not None and gap_by_rate is None:
+        raise ValueError("gap_seed requires gap_by_rate")
     effective_divergence = divergence * (2.5 if scenario == "divergent" else 1)
     boundaries = ()
     if scenario in ("conserved", "variable"):
@@ -111,11 +121,17 @@ def simulate(
                 stop = min(length, start + min(target - missing, int(rng.integers(2, 7))))
                 missing += int(np.count_nonzero(row[start:stop] != "-"))
                 row[start:stop] = "-"
+    gap_probabilities = None
+    if gap_by_rate is not None:
+        probability_by_rate = dict(zip(D_RATES, gap_by_rate))
+        gap_probabilities = np.array([probability_by_rate[rate] for rate in rates])
+        gap_rng = rng if gap_seed is None else np.random.default_rng(gap_seed)
+        chars[gap_rng.random(chars.shape) < gap_probabilities] = "-"
     if unique < size:
         chars = np.concatenate((chars, chars[rng.integers(unique, size=size - unique)]))
     alignment = Alignment(tuple(f"seq{i+1}" for i in range(size)),
                           tuple("".join(row) for row in chars))
-    return Simulation(alignment, rates, truth, rates <= .18, boundaries)
+    return Simulation(alignment, rates, truth, rates <= .18, boundaries, gap_probabilities)
 
 
 def write_simulation(simulation: Simulation, fasta_path: Path, truth_path: Path) -> None:
@@ -125,12 +141,21 @@ def write_simulation(simulation: Simulation, fasta_path: Path, truth_path: Path)
             handle.write(f">{name}\n{seq}\n")
     with truth_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
-        writer.writerow(("position", "rate", "conservation", "conserved", "boundary_before"))
+        fields = ("position", "rate", "conservation", "conserved", "boundary_before")
+        gap_probabilities = simulation.gap_probabilities
+        if gap_probabilities is not None:
+            fields += ("gap_probability", "observed_gap_fraction")
+            gap_fractions = [column.count("-") / simulation.alignment.size
+                             for column in zip(*simulation.alignment.sequences)]
+        writer.writerow(fields)
         boundaries = set(simulation.boundaries)
         for i, (rate, target, conserved) in enumerate(zip(
             simulation.rates, simulation.truth, simulation.conserved
         )):
-            writer.writerow((i + 1, rate, target, int(conserved), int(i in boundaries)))
+            row = (i + 1, rate, target, int(conserved), int(i in boundaries))
+            if gap_probabilities is not None:
+                row += (gap_probabilities[i], gap_fractions[i])
+            writer.writerow(row)
 
 
 def main() -> int:

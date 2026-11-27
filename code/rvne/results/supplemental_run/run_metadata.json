@@ -1,0 +1,12 @@
+{
+  "manifests": [
+    "data/synthetic/patterns_abc/manifest.tsv",
+    "data/synthetic/patterns_d/manifest.tsv"
+  ],
+  "parameters": "results/reference_run/parameters.json",
+  "parameters_sha256": "9509efdbd0fc3a52656f3a8f1065b8b001cdf1cca4e5bcebef28387ac71d1387",
+  "family_count": 48,
+  "method_count": 15,
+  "python": "3.13.5",
+  "numpy": "2.5.2"
+}

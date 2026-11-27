@@ -11,25 +11,25 @@ BMI3 Algorithms ICA Group 1 project on position-specific conservation scoring fo
 | `src/msa_conservation/scoring/physicochemical.py` | Standardized AAindex1 descriptors and probability tilting for BLOSUM62. |
 | `src/msa_conservation/scoring/fusion.py` | Combinations of entropy and substitution scores for benchmarking. |
 | `src/msa_conservation/scoring/context.py` | Fixed-window and context-adaptive scoring variants for ablation. |
-| `benchmarks/synthetic.py` | Rate-driven alignments and frequency-matched within-class and cross-class substitutions. |
-| `benchmarks/metrics.py` | Sensitivity, specificity, and correlation with known conservation patterns. |
-| `benchmarks/run_benchmark.py` | Baseline comparisons, ablations, and runtime and scaling measurements. |
+| `../data_generation/synthetic.py` | Rate-driven alignments and frequency-matched within-class and cross-class substitutions. |
+| `../benchmarks/metrics.py` | Sensitivity, specificity, and correlation with known conservation patterns. |
+| `../benchmarks/run_rvne_baseline_benchmark.py` | Baseline comparisons, ablations, and runtime and scaling measurements. |
 | `data/reference/` | Reference inputs such as BLOSUM62 and selected AAindex properties. |
 | `data/real/` | Optional validation alignments from globular protein families. |
-| `data/synthetic/` | Generated alignments and their ground-truth labels. |
+| `../data_generation/datasets/` | Generated alignments and their ground-truth labels. |
 | `results/` | Generated benchmark tables and figures. |
 | `tests/` | Future tests and fixtures for alignment parsing, scoring, and benchmark inputs. |
 | `docs/` | Method, benchmark design, and complexity notes. |
 
 ## Run the baseline scores
 
-From the repository root in PowerShell, using Python 3.10 or newer:
+Run from `code/rvne` in PowerShell with Python 3.10 or newer.
 
 ```powershell
-$env:PYTHONPATH = "src"
+$env:PYTHONPATH = "..;src"
 python -m msa_conservation.cli path\to\alignment.fasta
 python -m msa_conservation.cli path\to\alignment.fasta --weights henikoff
-python -m benchmarks.run_benchmark --size 64 --length 300 --divergence 0.8 --seed 1
+python -m benchmarks.run_rvne_baseline_benchmark --size 64 --length 300 --divergence 0.8 --seed 1
 python -m unittest discover -s tests
 ```
 
@@ -58,8 +58,8 @@ The `constraint` suite uses pairs of columns with the same ancestral residue and
 At a fixed tilt strength and positive fusion coefficient, substitution and fusion scores give the same ordering within each matched pair. Both members have equal entropy and equal unlike-pair probability. AUROC also compares sites across different pairs, where the two scores can order sites differently.
 
 ```powershell
-python -m benchmarks.run_benchmark --suite constraint --size 64 --length 300 --divergence 0.8 --seed 1
-python -m benchmarks.run_benchmark --suite rate --size 64 --length 300 --divergence 0.8 --seed 1 --aaindex-eta 0.5
+python -m benchmarks.run_rvne_baseline_benchmark --suite constraint --size 64 --length 300 --divergence 0.8 --seed 1
+python -m benchmarks.run_rvne_baseline_benchmark --suite rate --size 64 --length 300 --divergence 0.8 --seed 1 --aaindex-eta 0.5
 ```
 
 The exploratory sweep used sizes 16 and 64, lengths 90 and 300, divergences 0.3 and 0.8, and calibration seeds 1, 11, 21, 31 and 41. Each test seed was its calibration seed plus 1. At `eta=0.5`, the mean constraint AUROC was 0.842 for BLOSUM62 and 0.905 for calibrated BLOSUM62. Mean matched-pair accuracy rose from 0.908 to 0.953. Shannon entropy retained the highest mean Spearman correlation in the rate suite (0.892). The strength was held fixed within each sweep, and these results describe the controlled generator.

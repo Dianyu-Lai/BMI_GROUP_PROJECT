@@ -5,6 +5,7 @@ import csv
 import json
 import platform
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import asdict, dataclass, replace
 from itertools import product
 from pathlib import Path
@@ -14,6 +15,7 @@ import tracemalloc
 
 import numpy as np
 
+from data_generation.rvne_simulation import SCENARIOS, Simulation, simulate
 from msa_conservation.scoring.rvne import (
     DEFAULT_PARAMETERS, RVNEParameters, SiteProfiles, paper_parameter_grid,
     score_reference, site_profiles,
@@ -22,7 +24,6 @@ from msa_conservation.scoring.rvne_optimized import score_grid, score_optimized
 from msa_conservation.scoring.scaw import ContextParameters, contextual_scores
 from .metrics import select_threshold
 from .rvne_evaluation import boundary_metrics, comparator_profiles, correlations, region_iou, site_metrics
-from .rvne_simulation import SCENARIOS, Simulation, simulate
 
 
 CONTEXT = ContextParameters()
@@ -202,7 +203,9 @@ def calibration_thresholds(validation: list[Family], params: RVNEParameters,
 
 
 def evaluation_rows(inputs: list[Family], params: RVNEParameters,
-                    context: ContextParameters, thresholds: dict[str, float]) -> list[dict]:
+                    context: ContextParameters, thresholds: dict[str, float], *,
+                    diagnostics: Callable[[Family, np.ndarray, float, dict], dict[str, float]] | None = None,
+                    ) -> list[dict]:
     """Summarize each independent test family before group aggregation."""
     rows = []
     for family in inputs:
@@ -232,6 +235,8 @@ def evaluation_rows(inputs: list[Family], params: RVNEParameters,
                 if truth.boundaries:
                     precision, recall, f1 = boundary_metrics(predicted, truth.boundaries)
                     row.update(boundary_precision=precision, boundary_recall=recall, boundary_f1=f1)
+            if diagnostics is not None:
+                row.update(diagnostics(family, scores, thresholds[name], row))
             rows.append(row)
     return rows
 
@@ -241,14 +246,14 @@ METRICS = ("scored_fraction", "spearman", "pearson", "auroc", "auprc", "sensitiv
            "median_window", "singleton_fraction")
 
 
-def summarize(rows: list[dict]) -> list[dict]:
+def summarize(rows: list[dict], metrics: tuple[str, ...] = METRICS) -> list[dict]:
     grouped = defaultdict(list)
     for row in rows:
         grouped[row["method"], "all"].append(row)
         grouped[row["method"], row["scenario"]].append(row)
     summary = []
     for (method, scenario), group in sorted(grouped.items()):
-        for metric in METRICS:
+        for metric in metrics:
             values = [row[metric] for row in group if np.isfinite(row.get(metric, np.nan))]
             if values:
                 summary.append(dict(method=method, scenario=scenario, metric=metric, n=len(values),

@@ -5,25 +5,32 @@ import csv
 import sys
 from time import perf_counter
 
+from data_generation.synthetic import SyntheticAlignment, generate_alignment, generate_constraint_alignment
 from msa_conservation.scoring.fusion import score_alignment
 from msa_conservation.scoring.physicochemical import calibrated_blosum62
 from msa_conservation.scoring.substitution import Blosum62, load_blosum62
 
 from .metrics import matched_pair_accuracy, roc_auc, select_threshold, sensitivity_specificity, spearman
-from .synthetic import SyntheticAlignment, generate_alignment, generate_constraint_alignment
 
 
 METHODS = ("entropy_variability", "substitution_variability", "integrated_variability")
+REFERENCE_METHODS = ("kl_variability", "jsd_variability", "blosum62_sop_variability", "adjusted_entropy_variability")
 
 
 def _score_columns(
     dataset: SyntheticAlignment,
     gamma: float,
     matrix: Blosum62 | None = None,
-    methods: tuple[str, ...] = METHODS,
+    *,
+    include_references: bool = False,
 ) -> tuple[list[float], ...]:
+    methods = METHODS[1:] if matrix is not None else METHODS
+    if include_references:
+        methods += REFERENCE_METHODS
     columns = tuple([] for _ in methods)
-    for site in score_alignment(dataset.alignment, gamma=gamma, matrix=matrix):
+    for site in score_alignment(
+        dataset.alignment, gamma=gamma, matrix=matrix, reference_baselines=include_references
+    ):
         for column, method in zip(columns, methods):
             value = getattr(site, method)
             if value is None:
@@ -33,11 +40,11 @@ def _score_columns(
 
 
 def _benchmark_scores(
-    dataset: SyntheticAlignment, gamma: float, matrix: Blosum62 | None
+    dataset: SyntheticAlignment, gamma: float, matrix: Blosum62 | None, *, include_references: bool
 ) -> tuple[list[float], ...]:
-    scores = _score_columns(dataset, gamma)
+    scores = _score_columns(dataset, gamma, include_references=include_references)
     if matrix is not None:
-        scores += _score_columns(dataset, gamma, matrix, METHODS[1:])
+        scores += _score_columns(dataset, gamma, matrix)
     return scores
 
 
@@ -49,6 +56,9 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=1, help="calibration seed (test uses seed + 1)")
     parser.add_argument("--gamma", type=float, default=1.0)
     parser.add_argument("--suite", choices=("rate", "constraint"), default="rate")
+    parser.add_argument(
+        "--reference-baselines", action="store_true", help="compare KL, JSD, BLOSUM62 SOP and adjusted entropy"
+    )
     parser.add_argument(
         "--aaindex-eta", type=float,
         help="include AAindex-calibrated scores (default: 0.5 for constraint, off for rate)",
@@ -66,9 +76,9 @@ def main() -> int:
         test = generator(**parameters, seed=args.seed + 1)
         load_blosum62()
         matrix = calibrated_blosum62(eta) if eta is not None else None
-        calibration_scores = _benchmark_scores(calibration, args.gamma, matrix)
+        calibration_scores = _benchmark_scores(calibration, args.gamma, matrix, include_references=args.reference_baselines)
         start = perf_counter()
-        test_scores = _benchmark_scores(test, args.gamma, matrix)
+        test_scores = _benchmark_scores(test, args.gamma, matrix, include_references=args.reference_baselines)
         elapsed = perf_counter() - start
     except (OSError, ValueError) as exc:
         parser.exit(2, f"error: {exc}\n")
@@ -79,6 +89,8 @@ def main() -> int:
         header += ("matched_pair_accuracy",)
     writer.writerow(header)
     methods = METHODS
+    if args.reference_baselines:
+        methods += REFERENCE_METHODS
     if matrix is not None:
         methods += ("aaindex_substitution_variability", "aaindex_integrated_variability")
     truth = test.variable_sites if constraint else test.site_rates

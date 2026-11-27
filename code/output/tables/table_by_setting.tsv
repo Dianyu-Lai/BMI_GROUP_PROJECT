@@ -1,0 +1,1261 @@
+pattern	method	metric	setting	level	n	mean	sd
+A	E0	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E0	false_boundaries	divergence	0.35	0		
+A	E0	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E1	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E1	false_boundaries	divergence	0.35	0		
+A	E1	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E7	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E7	false_boundaries	divergence	0.35	0		
+A	E7	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E2	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E2	false_boundaries	divergence	0.35	0		
+A	E2	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E3	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E3	false_boundaries	divergence	0.35	0		
+A	E3	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E4	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E4	false_boundaries	divergence	0.35	0		
+A	E4	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E5	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E5	false_boundaries	divergence	0.35	4	0.75	1.5
+A	E5	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E6	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E6	false_boundaries	divergence	0.35	4	0.75	1.5
+A	E6	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E8	variable_fpr	divergence	0.35	4	0.0	0.0
+A	E8	false_boundaries	divergence	0.35	4	2.5	1.2909944487358056
+A	E8	scored_fraction	divergence	0.35	4	1.0	0.0
+A	Shannon	variable_fpr	divergence	0.35	4	0.0	0.0
+A	Shannon	false_boundaries	divergence	0.35	0		
+A	Shannon	scored_fraction	divergence	0.35	4	1.0	0.0
+A	JSD	variable_fpr	divergence	0.35	4	0.0	0.0
+A	JSD	false_boundaries	divergence	0.35	0		
+A	JSD	scored_fraction	divergence	0.35	4	1.0	0.0
+A	BLOSUM62	variable_fpr	divergence	0.35	4	0.0	0.0
+A	BLOSUM62	false_boundaries	divergence	0.35	0		
+A	BLOSUM62	scored_fraction	divergence	0.35	4	1.0	0.0
+A	KL	variable_fpr	divergence	0.35	4	0.001041666666666663	0.002083333333333326
+A	KL	false_boundaries	divergence	0.35	0		
+A	KL	scored_fraction	divergence	0.35	4	1.0	0.0
+A	ClustalW consensus	variable_fpr	divergence	0.35	4	0.534375	0.03287444549595729
+A	ClustalW consensus	false_boundaries	divergence	0.35	0		
+A	ClustalW consensus	scored_fraction	divergence	0.35	4	1.0	0.0
+A	AL2CO variance	variable_fpr	divergence	0.35	4	0.0	0.0
+A	AL2CO variance	false_boundaries	divergence	0.35	0		
+A	AL2CO variance	scored_fraction	divergence	0.35	4	1.0	0.0
+A	E0	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E0	false_boundaries	divergence	0.7	0		
+A	E0	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E1	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E1	false_boundaries	divergence	0.7	0		
+A	E1	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E7	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E7	false_boundaries	divergence	0.7	0		
+A	E7	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E2	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E2	false_boundaries	divergence	0.7	0		
+A	E2	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E3	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E3	false_boundaries	divergence	0.7	0		
+A	E3	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E4	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E4	false_boundaries	divergence	0.7	0		
+A	E4	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E5	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E5	false_boundaries	divergence	0.7	4	0.25	0.5
+A	E5	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E6	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E6	false_boundaries	divergence	0.7	4	0.25	0.5
+A	E6	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E8	variable_fpr	divergence	0.7	4	0.0	0.0
+A	E8	false_boundaries	divergence	0.7	4	1.0	1.1547005383792515
+A	E8	scored_fraction	divergence	0.7	4	1.0	0.0
+A	Shannon	variable_fpr	divergence	0.7	4	0.0	0.0
+A	Shannon	false_boundaries	divergence	0.7	0		
+A	Shannon	scored_fraction	divergence	0.7	4	1.0	0.0
+A	JSD	variable_fpr	divergence	0.7	4	0.0	0.0
+A	JSD	false_boundaries	divergence	0.7	0		
+A	JSD	scored_fraction	divergence	0.7	4	1.0	0.0
+A	BLOSUM62	variable_fpr	divergence	0.7	4	0.0	0.0
+A	BLOSUM62	false_boundaries	divergence	0.7	0		
+A	BLOSUM62	scored_fraction	divergence	0.7	4	1.0	0.0
+A	KL	variable_fpr	divergence	0.7	4	0.005208333333333315	0.0039892796156513945
+A	KL	false_boundaries	divergence	0.7	0		
+A	KL	scored_fraction	divergence	0.7	4	1.0	0.0
+A	ClustalW consensus	variable_fpr	divergence	0.7	4	0.8020833333333333	0.007978559231302838
+A	ClustalW consensus	false_boundaries	divergence	0.7	0		
+A	ClustalW consensus	scored_fraction	divergence	0.7	4	1.0	0.0
+A	AL2CO variance	variable_fpr	divergence	0.7	4	0.0	0.0
+A	AL2CO variance	false_boundaries	divergence	0.7	0		
+A	AL2CO variance	scored_fraction	divergence	0.7	4	1.0	0.0
+A	E0	variable_fpr	divergence	1.4	4	0.01458333333333331	0.013819269959814168
+A	E0	false_boundaries	divergence	1.4	0		
+A	E0	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E1	variable_fpr	divergence	1.4	4	0.01458333333333331	0.013819269959814168
+A	E1	false_boundaries	divergence	1.4	0		
+A	E1	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E7	variable_fpr	divergence	1.4	4	0.004166666666666652	0.0034020690871988464
+A	E7	false_boundaries	divergence	1.4	0		
+A	E7	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E2	variable_fpr	divergence	1.4	4	0.0	0.0
+A	E2	false_boundaries	divergence	1.4	0		
+A	E2	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E3	variable_fpr	divergence	1.4	4	0.0	0.0
+A	E3	false_boundaries	divergence	1.4	0		
+A	E3	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E4	variable_fpr	divergence	1.4	4	0.015625	0.013766824723332648
+A	E4	false_boundaries	divergence	1.4	0		
+A	E4	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E5	variable_fpr	divergence	1.4	4	0.0	0.0
+A	E5	false_boundaries	divergence	1.4	4	1.0	1.1547005383792515
+A	E5	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E6	variable_fpr	divergence	1.4	4	0.015625	0.013766824723332648
+A	E6	false_boundaries	divergence	1.4	4	1.0	1.1547005383792515
+A	E6	scored_fraction	divergence	1.4	4	1.0	0.0
+A	E8	variable_fpr	divergence	1.4	4	0.0	0.0
+A	E8	false_boundaries	divergence	1.4	4	0.5	1.0
+A	E8	scored_fraction	divergence	1.4	4	1.0	0.0
+A	Shannon	variable_fpr	divergence	1.4	4	0.004166666666666652	0.0034020690871988464
+A	Shannon	false_boundaries	divergence	1.4	0		
+A	Shannon	scored_fraction	divergence	1.4	4	1.0	0.0
+A	JSD	variable_fpr	divergence	1.4	4	0.005208333333333315	0.0039892796156513945
+A	JSD	false_boundaries	divergence	1.4	0		
+A	JSD	scored_fraction	divergence	1.4	4	1.0	0.0
+A	BLOSUM62	variable_fpr	divergence	1.4	4	0.0	0.0
+A	BLOSUM62	false_boundaries	divergence	1.4	0		
+A	BLOSUM62	scored_fraction	divergence	1.4	4	1.0	0.0
+A	KL	variable_fpr	divergence	1.4	4	0.03541666666666665	0.020553678592984376
+A	KL	false_boundaries	divergence	1.4	0		
+A	KL	scored_fraction	divergence	1.4	4	1.0	0.0
+A	ClustalW consensus	variable_fpr	divergence	1.4	4	0.9510416666666667	0.011474105306846066
+A	ClustalW consensus	false_boundaries	divergence	1.4	0		
+A	ClustalW consensus	scored_fraction	divergence	1.4	4	1.0	0.0
+A	AL2CO variance	variable_fpr	divergence	1.4	4	0.01145833333333332	0.014583333333333339
+A	AL2CO variance	false_boundaries	divergence	1.4	0		
+A	AL2CO variance	scored_fraction	divergence	1.4	4	1.0	0.0
+B	E0	spearman	variable_fraction	0.25	4	0.7500090740586288	6.953381834384334e-07
+B	E0	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E0	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E0	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E0	variable_specificity	variable_fraction	0.25	4	0.9958333333333333	0.002777777777777768
+B	E0	variable_site_iou	variable_fraction	0.25	4	0.9877049180327868	0.008196721311475419
+B	E0	boundary_f1	variable_fraction	0.25	0		
+B	E1	spearman	variable_fraction	0.25	4	0.7500090740586288	6.953381834384334e-07
+B	E1	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E1	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E1	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E1	variable_specificity	variable_fraction	0.25	4	0.9958333333333333	0.002777777777777768
+B	E1	variable_site_iou	variable_fraction	0.25	4	0.9877049180327868	0.008196721311475419
+B	E1	boundary_f1	variable_fraction	0.25	0		
+B	E7	spearman	variable_fraction	0.25	4	0.7503272704402982	0.00014150644037330643
+B	E7	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E7	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E7	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E7	variable_specificity	variable_fraction	0.25	4	0.9986111111111111	0.002777777777777768
+B	E7	variable_site_iou	variable_fraction	0.25	4	0.9959016393442623	0.008196721311475419
+B	E7	boundary_f1	variable_fraction	0.25	0		
+B	E2	spearman	variable_fraction	0.25	4	0.7499717879778045	6.944504726863475e-05
+B	E2	auroc	variable_fraction	0.25	4	0.9999768518518518	4.6296296296322044e-05
+B	E2	auprc	variable_fraction	0.25	4	0.9999923265807243	1.5346838551255626e-05
+B	E2	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E2	variable_specificity	variable_fraction	0.25	4	0.9875	0.006990587440065536
+B	E2	variable_site_iou	variable_fraction	0.25	4	0.9641476070861978	0.019275062499707087
+B	E2	boundary_f1	variable_fraction	0.25	0		
+B	E3	spearman	variable_fraction	0.25	4	0.7500065105014389	0.0
+B	E3	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E3	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E3	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E3	variable_specificity	variable_fraction	0.25	4	0.9902777777777778	0.002777777777777768
+B	E3	variable_site_iou	variable_fraction	0.25	4	0.9717080909571656	0.007932310946589083
+B	E3	boundary_f1	variable_fraction	0.25	0		
+B	E4	spearman	variable_fraction	0.25	4	0.7500066325749967	1.5583539012912994e-07
+B	E4	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E4	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E4	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E4	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+B	E4	variable_site_iou	variable_fraction	0.25	4	1.0	0.0
+B	E4	boundary_f1	variable_fraction	0.25	0		
+B	E5	spearman	variable_fraction	0.25	4	0.8	0.0
+B	E5	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E5	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E5	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E5	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+B	E5	variable_site_iou	variable_fraction	0.25	4	1.0	0.0
+B	E5	boundary_f1	variable_fraction	0.25	4	1.0	0.0
+B	E6	spearman	variable_fraction	0.25	4	0.750006958104784	3.081089140173554e-07
+B	E6	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E6	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E6	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E6	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+B	E6	variable_site_iou	variable_fraction	0.25	4	1.0	0.0
+B	E6	boundary_f1	variable_fraction	0.25	4	1.0	0.0
+B	E8	spearman	variable_fraction	0.25	4	0.750006836031094	2.97166631208788e-07
+B	E8	auroc	variable_fraction	0.25	4	1.0	0.0
+B	E8	auprc	variable_fraction	0.25	4	1.0	0.0
+B	E8	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	E8	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+B	E8	variable_site_iou	variable_fraction	0.25	4	1.0	0.0
+B	E8	boundary_f1	variable_fraction	0.25	4	1.0	0.0
+B	Shannon	spearman	variable_fraction	0.25	4	0.750327881461191	0.00014119832405952627
+B	Shannon	auroc	variable_fraction	0.25	4	1.0	0.0
+B	Shannon	auprc	variable_fraction	0.25	4	1.0	0.0
+B	Shannon	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	Shannon	variable_specificity	variable_fraction	0.25	4	0.9986111111111111	0.002777777777777768
+B	Shannon	variable_site_iou	variable_fraction	0.25	4	0.9959016393442623	0.008196721311475419
+B	Shannon	boundary_f1	variable_fraction	0.25	0		
+B	JSD	spearman	variable_fraction	0.25	4	0.7500091961335906	7.806000735530143e-07
+B	JSD	auroc	variable_fraction	0.25	4	1.0	0.0
+B	JSD	auprc	variable_fraction	0.25	4	1.0	0.0
+B	JSD	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	JSD	variable_specificity	variable_fraction	0.25	4	0.9972222222222222	0.00320750149549791
+B	JSD	variable_site_iou	variable_fraction	0.25	4	0.9918032786885246	0.00946475851130535
+B	JSD	boundary_f1	variable_fraction	0.25	0		
+B	BLOSUM62	spearman	variable_fraction	0.25	4	0.7503236848537645	0.00014104842406474944
+B	BLOSUM62	auroc	variable_fraction	0.25	4	1.0	0.0
+B	BLOSUM62	auprc	variable_fraction	0.25	4	1.0	0.0
+B	BLOSUM62	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	BLOSUM62	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+B	BLOSUM62	variable_site_iou	variable_fraction	0.25	4	1.0	0.0
+B	BLOSUM62	boundary_f1	variable_fraction	0.25	0		
+B	KL	spearman	variable_fraction	0.25	4	0.749349465630022	0.0005709197323014935
+B	KL	auroc	variable_fraction	0.25	4	0.9995601851851853	0.0003808321814584125
+B	KL	auprc	variable_fraction	0.25	4	0.9998520248295625	0.00012875546344724514
+B	KL	variable_recall	variable_fraction	0.25	4	0.9875	0.008333333333333361
+B	KL	variable_specificity	variable_fraction	0.25	4	0.9958333333333333	0.00833333333333336
+B	KL	variable_site_iou	variable_fraction	0.25	4	0.9757936507936508	0.027343544725320967
+B	KL	boundary_f1	variable_fraction	0.25	0		
+B	ClustalW consensus	spearman	variable_fraction	0.25	4	0.2626741641625941	0.007884540908425833
+B	ClustalW consensus	auroc	variable_fraction	0.25	4	0.6152777777777778	0.005782405554072615
+B	ClustalW consensus	auprc	variable_fraction	0.25	4	0.8076388888888889	0.002891202777036285
+B	ClustalW consensus	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	ClustalW consensus	variable_specificity	variable_fraction	0.25	4	0.23055555555555554	0.011564811108145176
+B	ClustalW consensus	variable_site_iou	variable_fraction	0.25	4	0.30229193809622606	0.0031704644522794444
+B	ClustalW consensus	boundary_f1	variable_fraction	0.25	0		
+B	AL2CO variance	spearman	variable_fraction	0.25	4	0.7500097658164544	6.905607659904329e-07
+B	AL2CO variance	auroc	variable_fraction	0.25	4	1.0	0.0
+B	AL2CO variance	auprc	variable_fraction	0.25	4	1.0	0.0
+B	AL2CO variance	variable_recall	variable_fraction	0.25	4	1.0	0.0
+B	AL2CO variance	variable_specificity	variable_fraction	0.25	4	0.9986111111111111	0.002777777777777768
+B	AL2CO variance	variable_site_iou	variable_fraction	0.25	4	0.9959016393442623	0.008196721311475419
+B	AL2CO variance	boundary_f1	variable_fraction	0.25	0		
+B	E0	spearman	variable_fraction	0.4	4	0.8485072063484356	6.064629181250506e-05
+B	E0	auroc	variable_fraction	0.4	4	0.9999819155092593	3.6168981481454754e-05
+B	E0	auprc	variable_fraction	0.4	4	0.9999880268199234	2.3946360153237478e-05
+B	E0	variable_recall	variable_fraction	0.4	4	0.9973958333333334	0.005208333333333316
+B	E0	variable_specificity	variable_fraction	0.4	4	0.9982638888888888	0.00347222222222221
+B	E0	variable_site_iou	variable_fraction	0.4	4	0.9948453608247423	0.010309278350515483
+B	E0	boundary_f1	variable_fraction	0.4	0		
+B	E1	spearman	variable_fraction	0.4	4	0.8485072063484356	6.064629181250506e-05
+B	E1	auroc	variable_fraction	0.4	4	0.9999819155092593	3.6168981481454754e-05
+B	E1	auprc	variable_fraction	0.4	4	0.9999880268199234	2.3946360153237478e-05
+B	E1	variable_recall	variable_fraction	0.4	4	0.9973958333333334	0.005208333333333316
+B	E1	variable_specificity	variable_fraction	0.4	4	0.9982638888888888	0.00347222222222221
+B	E1	variable_site_iou	variable_fraction	0.4	4	0.9948453608247423	0.010309278350515483
+B	E1	boundary_f1	variable_fraction	0.4	0		
+B	E7	spearman	variable_fraction	0.4	4	0.8487333243461905	0.0001344237978595036
+B	E7	auroc	variable_fraction	0.4	4	1.0	0.0
+B	E7	auprc	variable_fraction	0.4	4	1.0	0.0
+B	E7	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E7	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	E7	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	E7	boundary_f1	variable_fraction	0.4	0		
+B	E2	spearman	variable_fraction	0.4	4	0.8484741679090896	0.0001226706126271626
+B	E2	auroc	variable_fraction	0.4	4	0.9999638310185185	7.233796296296502e-05
+B	E2	auprc	variable_fraction	0.4	4	0.9999759704927629	4.805901447429983e-05
+B	E2	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E2	variable_specificity	variable_fraction	0.4	4	0.9809027777777778	0.006648799359419049
+B	E2	variable_site_iou	variable_fraction	0.4	4	0.9722201607915893	0.009387616585917103
+B	E2	boundary_f1	variable_fraction	0.4	0		
+B	E3	spearman	variable_fraction	0.4	4	0.8485048125505009	6.13813298043775e-05
+B	E3	auroc	variable_fraction	0.4	4	0.9999819155092593	3.6168981481454754e-05
+B	E3	auprc	variable_fraction	0.4	4	0.9999880268199234	2.3946360153237478e-05
+B	E3	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E3	variable_specificity	variable_fraction	0.4	4	0.9861111111111112	0.0
+B	E3	variable_site_iou	variable_fraction	0.4	4	0.9795918367346939	0.0
+B	E3	boundary_f1	variable_fraction	0.4	0		
+B	E4	spearman	variable_fraction	0.4	4	0.8485356873626796	1.5035564602017234e-07
+B	E4	auroc	variable_fraction	0.4	4	1.0	0.0
+B	E4	auprc	variable_fraction	0.4	4	1.0	0.0
+B	E4	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E4	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	E4	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	E4	boundary_f1	variable_fraction	0.4	0		
+B	E5	spearman	variable_fraction	0.4	4	0.9035079029052512	0.0
+B	E5	auroc	variable_fraction	0.4	4	1.0	0.0
+B	E5	auprc	variable_fraction	0.4	4	1.0	0.0
+B	E5	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E5	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	E5	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	E5	boundary_f1	variable_fraction	0.4	4	1.0	0.0
+B	E6	spearman	variable_fraction	0.4	4	0.8485360096206604	1.7630784720674943e-07
+B	E6	auroc	variable_fraction	0.4	4	1.0	0.0
+B	E6	auprc	variable_fraction	0.4	4	1.0	0.0
+B	E6	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E6	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	E6	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	E6	boundary_f1	variable_fraction	0.4	4	1.0	0.0
+B	E8	spearman	variable_fraction	0.4	4	0.8485356873626795	1.5035564602017234e-07
+B	E8	auroc	variable_fraction	0.4	4	1.0	0.0
+B	E8	auprc	variable_fraction	0.4	4	1.0	0.0
+B	E8	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	E8	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	E8	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	E8	boundary_f1	variable_fraction	0.4	4	1.0	0.0
+B	Shannon	spearman	variable_fraction	0.4	4	0.8487341075224976	0.00013443016868322128
+B	Shannon	auroc	variable_fraction	0.4	4	1.0	0.0
+B	Shannon	auprc	variable_fraction	0.4	4	1.0	0.0
+B	Shannon	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	Shannon	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	Shannon	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	Shannon	boundary_f1	variable_fraction	0.4	0		
+B	JSD	spearman	variable_fraction	0.4	4	0.8485382654397743	1.5259603981055558e-06
+B	JSD	auroc	variable_fraction	0.4	4	1.0	0.0
+B	JSD	auprc	variable_fraction	0.4	4	1.0	0.0
+B	JSD	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	JSD	variable_specificity	variable_fraction	0.4	4	0.9982638888888888	0.00347222222222221
+B	JSD	variable_site_iou	variable_fraction	0.4	4	0.9974226804123711	0.005154639175257714
+B	JSD	boundary_f1	variable_fraction	0.4	0		
+B	BLOSUM62	spearman	variable_fraction	0.4	4	0.8487319883184118	0.00013433944850903032
+B	BLOSUM62	auroc	variable_fraction	0.4	4	1.0	0.0
+B	BLOSUM62	auprc	variable_fraction	0.4	4	1.0	0.0
+B	BLOSUM62	variable_recall	variable_fraction	0.4	4	0.9947916666666667	0.00601406530405858
+B	BLOSUM62	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	BLOSUM62	variable_site_iou	variable_fraction	0.4	4	0.9947916666666667	0.00601406530405858
+B	BLOSUM62	boundary_f1	variable_fraction	0.4	0		
+B	KL	spearman	variable_fraction	0.4	4	0.8467888907200365	0.0009083493352951072
+B	KL	auroc	variable_fraction	0.4	4	0.9989691840277778	0.0005360661187166395
+B	KL	auprc	variable_fraction	0.4	4	0.9992925354280523	0.00037449731143404387
+B	KL	variable_recall	variable_fraction	0.4	4	0.984375	0.0060140653040586444
+B	KL	variable_specificity	variable_fraction	0.4	4	0.9913194444444444	0.00347222222222221
+B	KL	variable_site_iou	variable_fraction	0.4	4	0.9717546812539449	0.009687812429911883
+B	KL	boundary_f1	variable_fraction	0.4	0		
+B	ClustalW consensus	spearman	variable_fraction	0.4	4	0.31340173316882325	0.021453556488246536
+B	ClustalW consensus	auroc	variable_fraction	0.4	4	0.6076388888888888	0.012991865926298411
+B	ClustalW consensus	auprc	variable_fraction	0.4	4	0.6861111111111111	0.010393492741038691
+B	ClustalW consensus	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	ClustalW consensus	variable_specificity	variable_fraction	0.4	4	0.2152777777777778	0.025983731852596816
+B	ClustalW consensus	variable_site_iou	variable_fraction	0.4	4	0.45944136533243934	0.008284238753257685
+B	ClustalW consensus	boundary_f1	variable_fraction	0.4	0		
+B	AL2CO variance	spearman	variable_fraction	0.4	4	0.8485381733633637	9.329410165519234e-07
+B	AL2CO variance	auroc	variable_fraction	0.4	4	1.0	0.0
+B	AL2CO variance	auprc	variable_fraction	0.4	4	1.0	0.0
+B	AL2CO variance	variable_recall	variable_fraction	0.4	4	1.0	0.0
+B	AL2CO variance	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+B	AL2CO variance	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+B	AL2CO variance	boundary_f1	variable_fraction	0.4	0		
+B	E0	spearman	variable_fraction	0.6	4	0.8485360096207504	3.1449182105981836e-07
+B	E0	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E0	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E0	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E0	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E0	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E0	boundary_f1	variable_fraction	0.6	0		
+B	E1	spearman	variable_fraction	0.6	4	0.8485360096207504	3.1449182105981836e-07
+B	E1	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E1	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E1	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E1	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E1	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E1	boundary_f1	variable_fraction	0.6	0		
+B	E7	spearman	variable_fraction	0.6	4	0.8485663498817178	1.5792645223060084e-05
+B	E7	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E7	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E7	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E7	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E7	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E7	boundary_f1	variable_fraction	0.6	0		
+B	E2	spearman	variable_fraction	0.6	4	0.8484741218855988	0.00012276265960869948
+B	E2	auroc	variable_fraction	0.6	4	0.9999638310185185	7.233796296296502e-05
+B	E2	auprc	variable_fraction	0.6	4	0.9999468537414966	0.00010629251700677855
+B	E2	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E2	variable_specificity	variable_fraction	0.6	4	0.9739583333333333	0.00601406530405858
+B	E2	variable_site_iou	variable_fraction	0.6	4	0.9829466032988539	0.003873750757772142
+B	E2	boundary_f1	variable_fraction	0.6	0		
+B	E3	spearman	variable_fraction	0.6	4	0.8485048125505009	6.13813298043775e-05
+B	E3	auroc	variable_fraction	0.6	4	0.9999819155092593	3.6168981481454754e-05
+B	E3	auprc	variable_fraction	0.6	4	0.9999731529209622	5.3694158075601184e-05
+B	E3	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E3	variable_specificity	variable_fraction	0.6	4	0.984375	0.0060140653040586444
+B	E3	variable_site_iou	variable_fraction	0.6	4	0.9897024090694378	0.003927181802706973
+B	E3	boundary_f1	variable_fraction	0.6	0		
+B	E4	spearman	variable_fraction	0.6	4	0.8485355492522147	9.207362322571909e-08
+B	E4	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E4	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E4	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E4	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E4	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E4	boundary_f1	variable_fraction	0.6	0		
+B	E5	spearman	variable_fraction	0.6	4	0.9682458365518541	0.0
+B	E5	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E5	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E5	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E5	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E5	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E5	boundary_f1	variable_fraction	0.6	4	1.0	0.0
+B	E6	spearman	variable_fraction	0.6	4	0.8485358715100458	1.5035574392144913e-07
+B	E6	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E6	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E6	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E6	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E6	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E6	boundary_f1	variable_fraction	0.6	4	1.0	0.0
+B	E8	spearman	variable_fraction	0.6	4	0.8485355032154032	0.0
+B	E8	auroc	variable_fraction	0.6	4	1.0	0.0
+B	E8	auprc	variable_fraction	0.6	4	1.0	0.0
+B	E8	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	E8	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	E8	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	E8	boundary_f1	variable_fraction	0.6	4	1.0	0.0
+B	Shannon	spearman	variable_fraction	0.6	4	0.848566580096501	1.5925866582239247e-05
+B	Shannon	auroc	variable_fraction	0.6	4	1.0	0.0
+B	Shannon	auprc	variable_fraction	0.6	4	1.0	0.0
+B	Shannon	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	Shannon	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	Shannon	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	Shannon	boundary_f1	variable_fraction	0.6	0		
+B	JSD	spearman	variable_fraction	0.6	4	0.8485360096207504	3.1449182105981836e-07
+B	JSD	auroc	variable_fraction	0.6	4	1.0	0.0
+B	JSD	auprc	variable_fraction	0.6	4	1.0	0.0
+B	JSD	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	JSD	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	JSD	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	JSD	boundary_f1	variable_fraction	0.6	0		
+B	BLOSUM62	spearman	variable_fraction	0.6	4	0.8485650146857968	1.611491281958671e-05
+B	BLOSUM62	auroc	variable_fraction	0.6	4	1.0	0.0
+B	BLOSUM62	auprc	variable_fraction	0.6	4	1.0	0.0
+B	BLOSUM62	variable_recall	variable_fraction	0.6	4	0.9947916666666667	0.00347222222222221
+B	BLOSUM62	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	BLOSUM62	variable_site_iou	variable_fraction	0.6	4	0.9947916666666667	0.00347222222222221
+B	BLOSUM62	boundary_f1	variable_fraction	0.6	0		
+B	KL	spearman	variable_fraction	0.6	4	0.8477687426518541	0.0006973393398300915
+B	KL	auroc	variable_fraction	0.6	4	0.9995478877314815	0.00041080066158858373
+B	KL	auprc	variable_fraction	0.6	4	0.9993170449288761	0.0006205937956201157
+B	KL	variable_recall	variable_fraction	0.6	4	0.9913194444444444	0.008738234300081906
+B	KL	variable_specificity	variable_fraction	0.6	4	0.9947916666666667	0.006014065304058581
+B	KL	variable_site_iou	variable_fraction	0.6	4	0.9879190613026819	0.011771115821970771
+B	KL	boundary_f1	variable_fraction	0.6	0		
+B	ClustalW consensus	spearman	variable_fraction	0.6	4	0.3808416915861629	0.025396586556652962
+B	ClustalW consensus	auroc	variable_fraction	0.6	4	0.6106770833333334	0.013697685623315551
+B	ClustalW consensus	auprc	variable_fraction	0.6	4	0.5328125	0.016437222747978673
+B	ClustalW consensus	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	ClustalW consensus	variable_specificity	variable_fraction	0.6	4	0.22135416666666669	0.027395371246631085
+B	ClustalW consensus	variable_site_iou	variable_fraction	0.6	4	0.6583577133471255	0.007984994996300728
+B	ClustalW consensus	boundary_f1	variable_fraction	0.6	0		
+B	AL2CO variance	spearman	variable_fraction	0.6	4	0.8485361937683265	3.144920257591878e-07
+B	AL2CO variance	auroc	variable_fraction	0.6	4	1.0	0.0
+B	AL2CO variance	auprc	variable_fraction	0.6	4	1.0	0.0
+B	AL2CO variance	variable_recall	variable_fraction	0.6	4	1.0	0.0
+B	AL2CO variance	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+B	AL2CO variance	variable_site_iou	variable_fraction	0.6	4	1.0	0.0
+B	AL2CO variance	boundary_f1	variable_fraction	0.6	0		
+C	E0	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	E0	auroc	motif_length	3	4	1.0	0.0
+C	E0	auprc	motif_length	3	4	1.0	0.0
+C	E0	sensitivity	motif_length	3	4	1.0	0.0
+C	E0	specificity	motif_length	3	4	1.0	0.0
+C	E0	boundary_f1	motif_length	3	0		
+C	E1	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	E1	auroc	motif_length	3	4	1.0	0.0
+C	E1	auprc	motif_length	3	4	1.0	0.0
+C	E1	sensitivity	motif_length	3	4	1.0	0.0
+C	E1	specificity	motif_length	3	4	1.0	0.0
+C	E1	boundary_f1	motif_length	3	0		
+C	E7	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	E7	auroc	motif_length	3	4	1.0	0.0
+C	E7	auprc	motif_length	3	4	1.0	0.0
+C	E7	sensitivity	motif_length	3	4	1.0	0.0
+C	E7	specificity	motif_length	3	4	1.0	0.0
+C	E7	boundary_f1	motif_length	3	0		
+C	E2	spearman	motif_length	3	4	0.1767386512827755	0.00359066335227217
+C	E2	auroc	motif_length	3	4	0.9592123769338958	0.009329464951773286
+C	E2	auprc	motif_length	3	4	0.17064729252229252	0.037592861156616836
+C	E2	sensitivity	motif_length	3	4	0.0	0.0
+C	E2	specificity	motif_length	3	4	1.0	0.0
+C	E2	boundary_f1	motif_length	3	0		
+C	E3	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	E3	auroc	motif_length	3	4	1.0	0.0
+C	E3	auprc	motif_length	3	4	1.0	0.0
+C	E3	sensitivity	motif_length	3	4	0.0	0.0
+C	E3	specificity	motif_length	3	4	1.0	0.0
+C	E3	boundary_f1	motif_length	3	0		
+C	E4	spearman	motif_length	3	4	0.1924367662063733	3.409868875598181e-08
+C	E4	auroc	motif_length	3	4	1.0	0.0
+C	E4	auprc	motif_length	3	4	1.0	0.0
+C	E4	sensitivity	motif_length	3	4	1.0	0.0
+C	E4	specificity	motif_length	3	4	1.0	0.0
+C	E4	boundary_f1	motif_length	3	0		
+C	E5	spearman	motif_length	3	4	0.22084809004879524	0.0
+C	E5	auroc	motif_length	3	4	1.0	0.0
+C	E5	auprc	motif_length	3	4	1.0	0.0
+C	E5	sensitivity	motif_length	3	4	1.0	0.0
+C	E5	specificity	motif_length	3	4	1.0	0.0
+C	E5	boundary_f1	motif_length	3	4	1.0	0.0
+C	E6	spearman	motif_length	3	4	0.19243682884969854	4.176222137552976e-08
+C	E6	auroc	motif_length	3	4	1.0	0.0
+C	E6	auprc	motif_length	3	4	1.0	0.0
+C	E6	sensitivity	motif_length	3	4	1.0	0.0
+C	E6	specificity	motif_length	3	4	1.0	0.0
+C	E6	boundary_f1	motif_length	3	4	1.0	0.0
+C	E8	spearman	motif_length	3	4	0.1924369436959466	3.998436208303935e-08
+C	E8	auroc	motif_length	3	4	1.0	0.0
+C	E8	auprc	motif_length	3	4	1.0	0.0
+C	E8	sensitivity	motif_length	3	4	1.0	0.0
+C	E8	specificity	motif_length	3	4	1.0	0.0
+C	E8	boundary_f1	motif_length	3	4	1.0	0.0
+C	Shannon	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	Shannon	auroc	motif_length	3	4	1.0	0.0
+C	Shannon	auprc	motif_length	3	4	1.0	0.0
+C	Shannon	sensitivity	motif_length	3	4	1.0	0.0
+C	Shannon	specificity	motif_length	3	4	1.0	0.0
+C	Shannon	boundary_f1	motif_length	3	0		
+C	JSD	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	JSD	auroc	motif_length	3	4	1.0	0.0
+C	JSD	auprc	motif_length	3	4	1.0	0.0
+C	JSD	sensitivity	motif_length	3	4	1.0	0.0
+C	JSD	specificity	motif_length	3	4	1.0	0.0
+C	JSD	boundary_f1	motif_length	3	0		
+C	BLOSUM62	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	BLOSUM62	auroc	motif_length	3	4	1.0	0.0
+C	BLOSUM62	auprc	motif_length	3	4	1.0	0.0
+C	BLOSUM62	sensitivity	motif_length	3	4	1.0	0.0
+C	BLOSUM62	specificity	motif_length	3	4	1.0	0.0
+C	BLOSUM62	boundary_f1	motif_length	3	0		
+C	KL	spearman	motif_length	3	4	0.1924367244441859	0.0
+C	KL	auroc	motif_length	3	4	1.0	0.0
+C	KL	auprc	motif_length	3	4	1.0	0.0
+C	KL	sensitivity	motif_length	3	4	1.0	0.0
+C	KL	specificity	motif_length	3	4	0.9905063291139241	0.002109704641350185
+C	KL	boundary_f1	motif_length	3	0		
+C	ClustalW consensus	spearman	motif_length	3	2	0.6948509084837937	0.16959447850347184
+C	ClustalW consensus	auroc	motif_length	3	4	0.625	0.15957118462605635
+C	ClustalW consensus	auprc	motif_length	3	4	0.25937499999999997	0.3151530896364613
+C	ClustalW consensus	sensitivity	motif_length	3	4	0.25	0.31914236925211265
+C	ClustalW consensus	specificity	motif_length	3	4	1.0	0.0
+C	ClustalW consensus	boundary_f1	motif_length	3	0		
+C	AL2CO variance	spearman	motif_length	3	4	0.19243673488473106	2.0881090287416807e-08
+C	AL2CO variance	auroc	motif_length	3	4	1.0	0.0
+C	AL2CO variance	auprc	motif_length	3	4	1.0	0.0
+C	AL2CO variance	sensitivity	motif_length	3	4	1.0	0.0
+C	AL2CO variance	specificity	motif_length	3	4	1.0	0.0
+C	AL2CO variance	boundary_f1	motif_length	3	0		
+C	E0	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	E0	auroc	motif_length	5	4	1.0	0.0
+C	E0	auprc	motif_length	5	4	1.0	0.0
+C	E0	sensitivity	motif_length	5	4	1.0	0.0
+C	E0	specificity	motif_length	5	4	1.0	0.0
+C	E0	boundary_f1	motif_length	5	0		
+C	E1	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	E1	auroc	motif_length	5	4	1.0	0.0
+C	E1	auprc	motif_length	5	4	1.0	0.0
+C	E1	sensitivity	motif_length	5	4	1.0	0.0
+C	E1	specificity	motif_length	5	4	1.0	0.0
+C	E1	boundary_f1	motif_length	5	0		
+C	E7	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	E7	auroc	motif_length	5	4	1.0	0.0
+C	E7	auprc	motif_length	5	4	1.0	0.0
+C	E7	sensitivity	motif_length	5	4	1.0	0.0
+C	E7	specificity	motif_length	5	4	1.0	0.0
+C	E7	boundary_f1	motif_length	5	0		
+C	E2	spearman	motif_length	5	4	0.2388574120365257	0.006173042485885601
+C	E2	auroc	motif_length	5	4	0.9827659574468085	0.012476626706491632
+C	E2	auprc	motif_length	5	4	0.5265972915972916	0.31883695447227683
+C	E2	sensitivity	motif_length	5	4	0.0	0.0
+C	E2	specificity	motif_length	5	4	1.0	0.0
+C	E2	boundary_f1	motif_length	5	0		
+C	E3	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	E3	auroc	motif_length	5	4	1.0	0.0
+C	E3	auprc	motif_length	5	4	1.0	0.0
+C	E3	sensitivity	motif_length	5	4	0.0	0.0
+C	E3	specificity	motif_length	5	4	1.0	0.0
+C	E3	boundary_f1	motif_length	5	0		
+C	E4	spearman	motif_length	5	4	0.24738431452063514	5.1401186983424195e-08
+C	E4	auroc	motif_length	5	4	1.0	0.0
+C	E4	auprc	motif_length	5	4	1.0	0.0
+C	E4	sensitivity	motif_length	5	4	1.0	0.0
+C	E4	specificity	motif_length	5	4	1.0	0.0
+C	E4	boundary_f1	motif_length	5	0		
+C	E5	spearman	motif_length	5	4	0.2790610404736888	0.007450240846686357
+C	E5	auroc	motif_length	5	4	1.0	0.0
+C	E5	auprc	motif_length	5	4	1.0	0.0
+C	E5	sensitivity	motif_length	5	4	1.0	0.0
+C	E5	specificity	motif_length	5	4	1.0	0.0
+C	E5	boundary_f1	motif_length	5	4	0.95	0.09999999999999998
+C	E6	spearman	motif_length	5	4	0.24738434136403037	5.140119001526922e-08
+C	E6	auroc	motif_length	5	4	1.0	0.0
+C	E6	auprc	motif_length	5	4	1.0	0.0
+C	E6	sensitivity	motif_length	5	4	1.0	0.0
+C	E6	specificity	motif_length	5	4	1.0	0.0
+C	E6	boundary_f1	motif_length	5	4	0.95	0.09999999999999998
+C	E8	spearman	motif_length	5	4	0.2473854016851275	4.38356516232023e-08
+C	E8	auroc	motif_length	5	4	1.0	0.0
+C	E8	auprc	motif_length	5	4	1.0	0.0
+C	E8	sensitivity	motif_length	5	4	1.0	0.0
+C	E8	specificity	motif_length	5	4	1.0	0.0
+C	E8	boundary_f1	motif_length	5	4	1.0	0.0
+C	Shannon	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	Shannon	auroc	motif_length	5	4	1.0	0.0
+C	Shannon	auprc	motif_length	5	4	1.0	0.0
+C	Shannon	sensitivity	motif_length	5	4	1.0	0.0
+C	Shannon	specificity	motif_length	5	4	1.0	0.0
+C	Shannon	boundary_f1	motif_length	5	0		
+C	JSD	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	JSD	auroc	motif_length	5	4	1.0	0.0
+C	JSD	auprc	motif_length	5	4	1.0	0.0
+C	JSD	sensitivity	motif_length	5	4	1.0	0.0
+C	JSD	specificity	motif_length	5	4	1.0	0.0
+C	JSD	boundary_f1	motif_length	5	0		
+C	BLOSUM62	spearman	motif_length	5	4	0.24738427425554665	0.0
+C	BLOSUM62	auroc	motif_length	5	4	1.0	0.0
+C	BLOSUM62	auprc	motif_length	5	4	1.0	0.0
+C	BLOSUM62	sensitivity	motif_length	5	4	1.0	0.0
+C	BLOSUM62	specificity	motif_length	5	4	0.9957446808510637	0.003474453535862669
+C	BLOSUM62	boundary_f1	motif_length	5	0		
+C	KL	spearman	motif_length	5	4	0.24727900435160813	0.00021053980787705262
+C	KL	auroc	motif_length	5	4	0.9997872340425532	0.00042553191489363984
+C	KL	auprc	motif_length	5	4	0.9916666666666667	0.01666666666666672
+C	KL	sensitivity	motif_length	5	4	1.0	0.0
+C	KL	specificity	motif_length	5	4	0.9936170212765957	0.007370428968378212
+C	KL	boundary_f1	motif_length	5	0		
+C	ClustalW consensus	spearman	motif_length	5	3	0.5667878613238406	0.10680901743345313
+C	ClustalW consensus	auroc	motif_length	5	4	0.625	0.09574271077563379
+C	ClustalW consensus	auprc	motif_length	5	4	0.26562499999999994	0.1874961419356162
+C	ClustalW consensus	sensitivity	motif_length	5	4	0.25	0.19148542155126763
+C	ClustalW consensus	specificity	motif_length	5	4	1.0	0.0
+C	ClustalW consensus	boundary_f1	motif_length	5	0		
+C	AL2CO variance	spearman	motif_length	5	4	0.2473843279423284	4.383508083836247e-08
+C	AL2CO variance	auroc	motif_length	5	4	1.0	0.0
+C	AL2CO variance	auprc	motif_length	5	4	1.0	0.0
+C	AL2CO variance	sensitivity	motif_length	5	4	1.0	0.0
+C	AL2CO variance	specificity	motif_length	5	4	1.0	0.0
+C	AL2CO variance	boundary_f1	motif_length	5	0		
+C	E0	spearman	motif_length	9	4	0.3290640388512996	3.5706362977450106e-08
+C	E0	auroc	motif_length	9	4	1.0	0.0
+C	E0	auprc	motif_length	9	4	1.0	0.0
+C	E0	sensitivity	motif_length	9	4	1.0	0.0
+C	E0	specificity	motif_length	9	4	1.0	0.0
+C	E0	boundary_f1	motif_length	9	0		
+C	E1	spearman	motif_length	9	4	0.3290640388512996	3.5706362977450106e-08
+C	E1	auroc	motif_length	9	4	1.0	0.0
+C	E1	auprc	motif_length	9	4	1.0	0.0
+C	E1	sensitivity	motif_length	9	4	1.0	0.0
+C	E1	specificity	motif_length	9	4	1.0	0.0
+C	E1	boundary_f1	motif_length	9	0		
+C	E7	spearman	motif_length	9	4	0.3290640924109138	1.4282559135381234e-07
+C	E7	auroc	motif_length	9	4	1.0	0.0
+C	E7	auprc	motif_length	9	4	1.0	0.0
+C	E7	sensitivity	motif_length	9	4	1.0	0.0
+C	E7	specificity	motif_length	9	4	1.0	0.0
+C	E7	boundary_f1	motif_length	9	0		
+C	E2	spearman	motif_length	9	4	0.3290640209981181	0.0
+C	E2	auroc	motif_length	9	4	1.0	0.0
+C	E2	auprc	motif_length	9	4	1.0	0.0
+C	E2	sensitivity	motif_length	9	4	0.05555555555555555	0.06415002990995841
+C	E2	specificity	motif_length	9	4	1.0	0.0
+C	E2	boundary_f1	motif_length	9	0		
+C	E3	spearman	motif_length	9	4	0.3290640209981181	0.0
+C	E3	auroc	motif_length	9	4	1.0	0.0
+C	E3	auprc	motif_length	9	4	1.0	0.0
+C	E3	sensitivity	motif_length	9	4	0.7222222222222222	0.06415002990995845
+C	E3	specificity	motif_length	9	4	1.0	0.0
+C	E3	boundary_f1	motif_length	9	0		
+C	E4	spearman	motif_length	9	4	0.32906407455766257	3.570636297745011e-08
+C	E4	auroc	motif_length	9	4	1.0	0.0
+C	E4	auprc	motif_length	9	4	1.0	0.0
+C	E4	sensitivity	motif_length	9	4	1.0	0.0
+C	E4	specificity	motif_length	9	4	1.0	0.0
+C	E4	boundary_f1	motif_length	9	0		
+C	E5	spearman	motif_length	9	4	0.3733026101029531	0.0
+C	E5	auroc	motif_length	9	4	1.0	0.0
+C	E5	auprc	motif_length	9	4	1.0	0.0
+C	E5	sensitivity	motif_length	9	4	1.0	0.0
+C	E5	specificity	motif_length	9	4	1.0	0.0
+C	E5	boundary_f1	motif_length	9	4	1.0	0.0
+C	E6	spearman	motif_length	9	4	0.32906434235618687	3.5706514076028206e-07
+C	E6	auroc	motif_length	9	4	1.0	0.0
+C	E6	auprc	motif_length	9	4	1.0	0.0
+C	E6	sensitivity	motif_length	9	4	1.0	0.0
+C	E6	specificity	motif_length	9	4	1.0	0.0
+C	E6	boundary_f1	motif_length	9	4	1.0	0.0
+C	E8	spearman	motif_length	9	4	0.32907194810020124	1.2855140152645548e-06
+C	E8	auroc	motif_length	9	4	1.0	0.0
+C	E8	auprc	motif_length	9	4	1.0	0.0
+C	E8	sensitivity	motif_length	9	4	1.0	0.0
+C	E8	specificity	motif_length	9	4	1.0	0.0
+C	E8	boundary_f1	motif_length	9	4	1.0	0.0
+C	Shannon	spearman	motif_length	9	4	0.3290640924109138	1.4282559135381234e-07
+C	Shannon	auroc	motif_length	9	4	1.0	0.0
+C	Shannon	auprc	motif_length	9	4	1.0	0.0
+C	Shannon	sensitivity	motif_length	9	4	1.0	0.0
+C	Shannon	specificity	motif_length	9	4	1.0	0.0
+C	Shannon	boundary_f1	motif_length	9	0		
+C	JSD	spearman	motif_length	9	4	0.3290640388512996	3.5706362977450106e-08
+C	JSD	auroc	motif_length	9	4	1.0	0.0
+C	JSD	auprc	motif_length	9	4	1.0	0.0
+C	JSD	sensitivity	motif_length	9	4	1.0	0.0
+C	JSD	specificity	motif_length	9	4	1.0	0.0
+C	JSD	boundary_f1	motif_length	9	0		
+C	BLOSUM62	spearman	motif_length	9	4	0.3290640924109138	1.4282559135381234e-07
+C	BLOSUM62	auroc	motif_length	9	4	1.0	0.0
+C	BLOSUM62	auprc	motif_length	9	4	1.0	0.0
+C	BLOSUM62	sensitivity	motif_length	9	4	1.0	0.0
+C	BLOSUM62	specificity	motif_length	9	4	0.9956709956709957	0.0035346172334533754
+C	BLOSUM62	boundary_f1	motif_length	9	0		
+C	KL	spearman	motif_length	9	4	0.3290640388512996	3.5706362977450106e-08
+C	KL	auroc	motif_length	9	4	1.0	0.0
+C	KL	auprc	motif_length	9	4	1.0	0.0
+C	KL	sensitivity	motif_length	9	4	1.0	0.0
+C	KL	specificity	motif_length	9	4	0.9902597402597403	0.004144706094183296
+C	KL	boundary_f1	motif_length	9	0		
+C	ClustalW consensus	spearman	motif_length	9	4	0.444844911311633	0.15697510164794082
+C	ClustalW consensus	auroc	motif_length	9	4	0.6111111111111112	0.0785674201318386
+C	ClustalW consensus	auprc	motif_length	9	4	0.2513888888888889	0.15124228375378934
+C	ClustalW consensus	sensitivity	motif_length	9	4	0.2222222222222222	0.15713484026367722
+C	ClustalW consensus	specificity	motif_length	9	4	1.0	0.0
+C	ClustalW consensus	boundary_f1	motif_length	9	0		
+C	AL2CO variance	spearman	motif_length	9	4	0.3290640567044811	4.123015655362662e-08
+C	AL2CO variance	auroc	motif_length	9	4	1.0	0.0
+C	AL2CO variance	auprc	motif_length	9	4	1.0	0.0
+C	AL2CO variance	sensitivity	motif_length	9	4	1.0	0.0
+C	AL2CO variance	specificity	motif_length	9	4	1.0	0.0
+C	AL2CO variance	boundary_f1	motif_length	9	0		
+D	E0	spearman	variable_fraction	0.25	4	0.9053797815724423	0.010398260813565015
+D	E0	auroc	variable_fraction	0.25	4	0.9737407407407408	0.008920417336110936
+D	E0	auprc	variable_fraction	0.25	4	0.9555742013537516	0.019268240334930856
+D	E0	variable_recall	variable_fraction	0.25	4	0.59	0.008606629658238716
+D	E0	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E0	variable_site_iou	variable_fraction	0.25	4	0.59	0.008606629658238716
+D	E0	region_iou	variable_fraction	0.25	0		
+D	E0	boundary_f1	variable_fraction	0.25	0		
+D	E0	medium_as_variable	variable_fraction	0.25	4	0.31666666666666665	0.014344382763731173
+D	E0	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E0	auroc_low_vs_medium	variable_fraction	0.25	4	0.9562345679012345	0.014867362226851576
+D	E0	auroc_medium_vs_high	variable_fraction	0.25	4	0.9931018518518518	0.0011650979066775958
+D	E1	spearman	variable_fraction	0.25	4	0.9053797815724423	0.010398260813565015
+D	E1	auroc	variable_fraction	0.25	4	0.9737407407407408	0.008920417336110936
+D	E1	auprc	variable_fraction	0.25	4	0.9555742013537516	0.019268240334930856
+D	E1	variable_recall	variable_fraction	0.25	4	0.59	0.008606629658238716
+D	E1	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E1	variable_site_iou	variable_fraction	0.25	4	0.59	0.008606629658238716
+D	E1	region_iou	variable_fraction	0.25	0		
+D	E1	boundary_f1	variable_fraction	0.25	0		
+D	E1	medium_as_variable	variable_fraction	0.25	4	0.31666666666666665	0.014344382763731173
+D	E1	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E1	auroc_low_vs_medium	variable_fraction	0.25	4	0.9562345679012345	0.014867362226851576
+D	E1	auroc_medium_vs_high	variable_fraction	0.25	4	0.9931018518518518	0.0011650979066775958
+D	E7	spearman	variable_fraction	0.25	4	0.9358480322400601	0.0014674341577230723
+D	E7	auroc	variable_fraction	0.25	4	0.9986111111111111	0.0011780262180706297
+D	E7	auprc	variable_fraction	0.25	4	0.9976884048969468	0.001950930173356006
+D	E7	variable_recall	variable_fraction	0.25	4	0.7216666666666667	0.018358568490953672
+D	E7	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E7	variable_site_iou	variable_fraction	0.25	4	0.7216666666666667	0.018358568490953672
+D	E7	region_iou	variable_fraction	0.25	0		
+D	E7	boundary_f1	variable_fraction	0.25	0		
+D	E7	medium_as_variable	variable_fraction	0.25	4	0.5361111111111112	0.03059761415158945
+D	E7	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E7	auroc_low_vs_medium	variable_fraction	0.25	4	0.9976851851851852	0.0019633770301177088
+D	E7	auroc_medium_vs_high	variable_fraction	0.25	4	0.9996296296296296	0.00042766686606637085
+D	E2	spearman	variable_fraction	0.25	4	0.9371886909093629	0.0003407764066521073
+D	E2	auroc	variable_fraction	0.25	4	0.9997777777777778	0.00025660011963984816
+D	E2	auprc	variable_fraction	0.25	4	0.9996365334519444	0.00041977316242288874
+D	E2	variable_recall	variable_fraction	0.25	4	0.5083333333333333	0.01835856849095365
+D	E2	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E2	variable_site_iou	variable_fraction	0.25	4	0.5083333333333333	0.01835856849095365
+D	E2	region_iou	variable_fraction	0.25	0		
+D	E2	boundary_f1	variable_fraction	0.25	0		
+D	E2	medium_as_variable	variable_fraction	0.25	4	0.18055555555555555	0.030597614151589465
+D	E2	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E2	auroc_low_vs_medium	variable_fraction	0.25	4	0.9996296296296296	0.00042766686606637085
+D	E2	auroc_medium_vs_high	variable_fraction	0.25	4	0.9998148148148148	0.00026189140043945063
+D	E3	spearman	variable_fraction	0.25	4	0.9373449422657173	0.00014715141694781586
+D	E3	auroc	variable_fraction	0.25	4	0.9998703703703703	0.00011111111111111121
+D	E3	auprc	variable_fraction	0.25	4	0.9997869736275533	0.00018242936241302202
+D	E3	variable_recall	variable_fraction	0.25	4	0.55	0.05975257626555002
+D	E3	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E3	variable_site_iou	variable_fraction	0.25	4	0.55	0.05975257626555002
+D	E3	region_iou	variable_fraction	0.25	0		
+D	E3	boundary_f1	variable_fraction	0.25	0		
+D	E3	medium_as_variable	variable_fraction	0.25	4	0.24999999999999997	0.09958762710925001
+D	E3	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E3	auroc_low_vs_medium	variable_fraction	0.25	4	0.9997839506172839	0.00018518518518517097
+D	E3	auroc_medium_vs_high	variable_fraction	0.25	4	0.9999537037037037	9.259259259258858e-05
+D	E4	spearman	variable_fraction	0.25	4	0.9326401919255778	0.007911015896430215
+D	E4	auroc	variable_fraction	0.25	4	0.9958888888888889	0.007086763875156432
+D	E4	auprc	variable_fraction	0.25	4	0.9939179392882204	0.010277768362148294
+D	E4	variable_recall	variable_fraction	0.25	4	0.5283333333333333	0.025748067169458818
+D	E4	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E4	variable_site_iou	variable_fraction	0.25	4	0.5283333333333333	0.025748067169458818
+D	E4	region_iou	variable_fraction	0.25	0		
+D	E4	boundary_f1	variable_fraction	0.25	0		
+D	E4	medium_as_variable	variable_fraction	0.25	4	0.21388888888888888	0.04291344528243136
+D	E4	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E4	auroc_low_vs_medium	variable_fraction	0.25	4	0.9931481481481482	0.011811273125260712
+D	E4	auroc_medium_vs_high	variable_fraction	0.25	4	0.9993518518518518	0.0010638078975070508
+D	E5	spearman	variable_fraction	0.25	4	0.9535281404720576	0.00548465677218013
+D	E5	auroc	variable_fraction	0.25	4	0.99625	0.004787135538781695
+D	E5	auprc	variable_fraction	0.25	4	0.9931312045442481	0.008216207485524723
+D	E5	variable_recall	variable_fraction	0.25	4	0.625	0.28722813232690136
+D	E5	variable_specificity	variable_fraction	0.25	4	0.9944444444444445	0.011111111111111127
+D	E5	variable_site_iou	variable_fraction	0.25	4	0.6217105263157894	0.28152053009374983
+D	E5	region_iou	variable_fraction	0.25	4	0.6611111111111111	0.22525705480792546
+D	E5	boundary_f1	variable_fraction	0.25	4	1.0	0.0
+D	E5	medium_as_variable	variable_fraction	0.25	4	0.375	0.47871355387816905
+D	E5	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E5	auroc_low_vs_medium	variable_fraction	0.25	4	0.99375	0.007978559231302838
+D	E5	auroc_medium_vs_high	variable_fraction	0.25	4	1.0	0.0
+D	E6	spearman	variable_fraction	0.25	4	0.9316234804261695	0.007962855700743244
+D	E6	auroc	variable_fraction	0.25	4	0.9950000000000001	0.007086312211512475
+D	E6	auprc	variable_fraction	0.25	4	0.9918573905486835	0.01008427365065237
+D	E6	variable_recall	variable_fraction	0.25	4	0.5216666666666666	0.030971910810591908
+D	E6	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E6	variable_site_iou	variable_fraction	0.25	4	0.5216666666666666	0.030971910810591908
+D	E6	region_iou	variable_fraction	0.25	4	0.5	0.0
+D	E6	boundary_f1	variable_fraction	0.25	4	1.0	0.0
+D	E6	medium_as_variable	variable_fraction	0.25	4	0.20277777777777778	0.05161985135098649
+D	E6	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E6	auroc_low_vs_medium	variable_fraction	0.25	4	0.9916666666666667	0.01181052035252074
+D	E6	auroc_medium_vs_high	variable_fraction	0.25	4	0.9993055555555556	0.0012684396659280567
+D	E8	spearman	variable_fraction	0.25	4	0.9371332365271838	0.0004382395924901198
+D	E8	auroc	variable_fraction	0.25	4	0.9996666666666667	0.00038962305772985217
+D	E8	auprc	variable_fraction	0.25	4	0.9994243722304527	0.0006737134551151793
+D	E8	variable_recall	variable_fraction	0.25	4	0.9966666666666666	0.0038490017945975296
+D	E8	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	E8	variable_site_iou	variable_fraction	0.25	4	0.9966666666666666	0.0038490017945975296
+D	E8	region_iou	variable_fraction	0.25	4	0.9945054945054945	0.006344508452633227
+D	E8	boundary_f1	variable_fraction	0.25	4	1.0	0.0
+D	E8	medium_as_variable	variable_fraction	0.25	4	0.9944444444444445	0.00641500299099582
+D	E8	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	E8	auroc_low_vs_medium	variable_fraction	0.25	4	0.9994444444444444	0.0006493717628831081
+D	E8	auroc_medium_vs_high	variable_fraction	0.25	4	1.0	0.0
+D	Shannon	spearman	variable_fraction	0.25	4	0.9358480829075811	0.0014673416303217649
+D	Shannon	auroc	variable_fraction	0.25	4	0.9986111111111111	0.0011780262180706297
+D	Shannon	auprc	variable_fraction	0.25	4	0.9976884048969468	0.001950930173356006
+D	Shannon	variable_recall	variable_fraction	0.25	4	0.7216666666666667	0.018358568490953672
+D	Shannon	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	Shannon	variable_site_iou	variable_fraction	0.25	4	0.7216666666666667	0.018358568490953672
+D	Shannon	region_iou	variable_fraction	0.25	0		
+D	Shannon	boundary_f1	variable_fraction	0.25	0		
+D	Shannon	medium_as_variable	variable_fraction	0.25	4	0.5361111111111112	0.03059761415158945
+D	Shannon	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	Shannon	auroc_low_vs_medium	variable_fraction	0.25	4	0.9976851851851852	0.0019633770301177088
+D	Shannon	auroc_medium_vs_high	variable_fraction	0.25	4	0.9996296296296296	0.00042766686606637085
+D	JSD	spearman	variable_fraction	0.25	4	0.9226334096790605	0.008426701751024552
+D	JSD	auroc	variable_fraction	0.25	4	0.988537037037037	0.006686766681373035
+D	JSD	auprc	variable_fraction	0.25	4	0.981015844129226	0.0129547700012777
+D	JSD	variable_recall	variable_fraction	0.25	4	0.6483333333333333	0.02899552966822197
+D	JSD	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	JSD	variable_site_iou	variable_fraction	0.25	4	0.6483333333333333	0.02899552966822197
+D	JSD	region_iou	variable_fraction	0.25	0		
+D	JSD	boundary_f1	variable_fraction	0.25	0		
+D	JSD	medium_as_variable	variable_fraction	0.25	4	0.4138888888888889	0.04832588278036997
+D	JSD	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	JSD	auroc_low_vs_medium	variable_fraction	0.25	4	0.980895061728395	0.011144611135621721
+D	JSD	auroc_medium_vs_high	variable_fraction	0.25	4	0.9947222222222222	0.002890708512090852
+D	BLOSUM62	spearman	variable_fraction	0.25	4	0.9314790204611263	0.0007608129911065962
+D	BLOSUM62	auroc	variable_fraction	0.25	4	0.9958703703703704	0.0009740576443246857
+D	BLOSUM62	auprc	variable_fraction	0.25	4	0.9934554773641109	0.0016632260272983737
+D	BLOSUM62	variable_recall	variable_fraction	0.25	4	0.4766666666666667	0.03464101615137755
+D	BLOSUM62	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	BLOSUM62	variable_site_iou	variable_fraction	0.25	4	0.4766666666666667	0.03464101615137755
+D	BLOSUM62	region_iou	variable_fraction	0.25	0		
+D	BLOSUM62	boundary_f1	variable_fraction	0.25	0		
+D	BLOSUM62	medium_as_variable	variable_fraction	0.25	4	0.13055555555555554	0.05619996631664267
+D	BLOSUM62	high_as_variable	variable_fraction	0.25	4	0.9958333333333333	0.00833333333333336
+D	BLOSUM62	auroc_low_vs_medium	variable_fraction	0.25	4	0.9931172839506173	0.00162342940720777
+D	BLOSUM62	auroc_medium_vs_high	variable_fraction	0.25	4	0.9962037037037037	0.001766554076698021
+D	KL	spearman	variable_fraction	0.25	4	0.8411743357998377	0.013943635690176235
+D	KL	auroc	variable_fraction	0.25	4	0.9223333333333334	0.012732770978468264
+D	KL	auprc	variable_fraction	0.25	4	0.8547119445136604	0.029891716722596624
+D	KL	variable_recall	variable_fraction	0.25	4	0.6333333333333333	0.03311036539055855
+D	KL	variable_specificity	variable_fraction	0.25	4	0.9972222222222222	0.005555555555555536
+D	KL	variable_site_iou	variable_fraction	0.25	4	0.6322185430463576	0.031342564698632454
+D	KL	region_iou	variable_fraction	0.25	0		
+D	KL	boundary_f1	variable_fraction	0.25	0		
+D	KL	medium_as_variable	variable_fraction	0.25	4	0.39722222222222225	0.04999999999999999
+D	KL	high_as_variable	variable_fraction	0.25	4	0.9875	0.015957118462605637
+D	KL	auroc_low_vs_medium	variable_fraction	0.25	4	0.8707716049382717	0.021197780125131
+D	KL	auroc_medium_vs_high	variable_fraction	0.25	4	0.9764351851851852	0.010080125950904573
+D	ClustalW consensus	spearman	variable_fraction	0.25	4	0.3345516538218693	0.04107942552262015
+D	ClustalW consensus	auroc	variable_fraction	0.25	4	0.6041666666666666	0.024162941390184947
+D	ClustalW consensus	auprc	variable_fraction	0.25	4	0.5052083333333334	0.030203676737731236
+D	ClustalW consensus	variable_recall	variable_fraction	0.25	4	1.0	0.0
+D	ClustalW consensus	variable_specificity	variable_fraction	0.25	4	0.20833333333333334	0.04832588278036997
+D	ClustalW consensus	variable_site_iou	variable_fraction	0.25	4	0.6781656252143268	0.013533760868061979
+D	ClustalW consensus	region_iou	variable_fraction	0.25	0		
+D	ClustalW consensus	boundary_f1	variable_fraction	0.25	0		
+D	ClustalW consensus	medium_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	ClustalW consensus	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	ClustalW consensus	auroc_low_vs_medium	variable_fraction	0.25	4	0.6041666666666666	0.024162941390184947
+D	ClustalW consensus	auroc_medium_vs_high	variable_fraction	0.25	4	0.5	0.0
+D	AL2CO variance	spearman	variable_fraction	0.25	4	0.9349288126260576	0.0013082820164854673
+D	AL2CO variance	auroc	variable_fraction	0.25	4	0.9979074074074074	0.001044724592495801
+D	AL2CO variance	auprc	variable_fraction	0.25	4	0.9965221872966916	0.0017864868369509136
+D	AL2CO variance	variable_recall	variable_fraction	0.25	4	0.755	0.030971910810591873
+D	AL2CO variance	variable_specificity	variable_fraction	0.25	4	1.0	0.0
+D	AL2CO variance	variable_site_iou	variable_fraction	0.25	4	0.755	0.030971910810591873
+D	AL2CO variance	region_iou	variable_fraction	0.25	0		
+D	AL2CO variance	boundary_f1	variable_fraction	0.25	0		
+D	AL2CO variance	medium_as_variable	variable_fraction	0.25	4	0.5916666666666667	0.0516198513509865
+D	AL2CO variance	high_as_variable	variable_fraction	0.25	4	1.0	0.0
+D	AL2CO variance	auroc_low_vs_medium	variable_fraction	0.25	4	0.9965123456790124	0.0017412076541596679
+D	AL2CO variance	auroc_medium_vs_high	variable_fraction	0.25	4	0.9993981481481482	0.0007911114578997868
+D	E0	spearman	variable_fraction	0.4	4	0.9226005153881726	0.004291184173991721
+D	E0	auroc	variable_fraction	0.4	4	0.9810474537037037	0.005011664264158803
+D	E0	auprc	variable_fraction	0.4	4	0.9528793333542859	0.017517174754376818
+D	E0	variable_recall	variable_fraction	0.4	4	0.7157738095238095	0.011267675289286218
+D	E0	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E0	variable_site_iou	variable_fraction	0.4	4	0.7157738095238095	0.011267675289286218
+D	E0	region_iou	variable_fraction	0.4	0		
+D	E0	boundary_f1	variable_fraction	0.4	0		
+D	E0	medium_as_variable	variable_fraction	0.4	4	0.3368055555555555	0.026291242341667947
+D	E0	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E0	auroc_low_vs_medium	variable_fraction	0.4	4	0.9557773919753088	0.011693883283037243
+D	E0	auroc_medium_vs_high	variable_fraction	0.4	4	0.9975766782407407	0.0008216013231770843
+D	E1	spearman	variable_fraction	0.4	4	0.9226005153881726	0.004291184173991721
+D	E1	auroc	variable_fraction	0.4	4	0.9810474537037037	0.005011664264158803
+D	E1	auprc	variable_fraction	0.4	4	0.9528793333542859	0.017517174754376818
+D	E1	variable_recall	variable_fraction	0.4	4	0.7157738095238095	0.011267675289286218
+D	E1	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E1	variable_site_iou	variable_fraction	0.4	4	0.7157738095238095	0.011267675289286218
+D	E1	region_iou	variable_fraction	0.4	0		
+D	E1	boundary_f1	variable_fraction	0.4	0		
+D	E1	medium_as_variable	variable_fraction	0.4	4	0.3368055555555555	0.026291242341667947
+D	E1	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E1	auroc_low_vs_medium	variable_fraction	0.4	4	0.9557773919753088	0.011693883283037243
+D	E1	auroc_medium_vs_high	variable_fraction	0.4	4	0.9975766782407407	0.0008216013231770843
+D	E7	spearman	variable_fraction	0.4	4	0.9382510658802854	0.0008685576306474379
+D	E7	auroc	variable_fraction	0.4	4	0.9989459325396824	0.0010223171186920902
+D	E7	auprc	variable_fraction	0.4	4	0.9974995467776706	0.0024213077763361036
+D	E7	variable_recall	variable_fraction	0.4	4	0.8199404761904763	0.022469745343067695
+D	E7	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E7	variable_site_iou	variable_fraction	0.4	4	0.8199404761904763	0.022469745343067695
+D	E7	region_iou	variable_fraction	0.4	0		
+D	E7	boundary_f1	variable_fraction	0.4	0		
+D	E7	medium_as_variable	variable_fraction	0.4	4	0.579861111111111	0.052429405800491324
+D	E7	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E7	auroc_low_vs_medium	variable_fraction	0.4	4	0.9975405092592592	0.002385406610281589
+D	E7	auroc_medium_vs_high	variable_fraction	0.4	4	0.9998553240740741	0.00020460265659333555
+D	E2	spearman	variable_fraction	0.4	4	0.9385355676016576	0.0007648719366321476
+D	E2	auroc	variable_fraction	0.4	4	0.9992766203703705	0.0009720548955278533
+D	E2	auprc	variable_fraction	0.4	4	0.9983531962657742	0.0022091474604260786
+D	E2	variable_recall	variable_fraction	0.4	4	0.6607142857142857	0.00972019739199675
+D	E2	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E2	variable_site_iou	variable_fraction	0.4	4	0.6607142857142857	0.00972019739199675
+D	E2	region_iou	variable_fraction	0.4	0		
+D	E2	boundary_f1	variable_fraction	0.4	0		
+D	E2	medium_as_variable	variable_fraction	0.4	4	0.20833333333333334	0.022680460581325723
+D	E2	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E2	auroc_low_vs_medium	variable_fraction	0.4	4	0.9983121141975309	0.0022681280895649704
+D	E2	auroc_medium_vs_high	variable_fraction	0.4	4	0.999927662037037	8.352868477859406e-05
+D	E3	spearman	variable_fraction	0.4	4	0.938807314332846	0.0006108498189606445
+D	E3	auroc	variable_fraction	0.4	4	0.9995659722222222	0.0007588277013345667
+D	E3	auprc	variable_fraction	0.4	4	0.9990047538205601	0.0017391282407529809
+D	E3	variable_recall	variable_fraction	0.4	4	0.7321428571428572	0.021184679071490683
+D	E3	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E3	variable_site_iou	variable_fraction	0.4	4	0.7321428571428572	0.021184679071490683
+D	E3	region_iou	variable_fraction	0.4	0		
+D	E3	boundary_f1	variable_fraction	0.4	0		
+D	E3	medium_as_variable	variable_fraction	0.4	4	0.375	0.04943091783347832
+D	E3	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E3	auroc_low_vs_medium	variable_fraction	0.4	4	0.9989872685185184	0.0017705979697806558
+D	E3	auroc_medium_vs_high	variable_fraction	0.4	4	1.0	0.0
+D	E4	spearman	variable_fraction	0.4	4	0.9388907059141647	0.0004891716826670986
+D	E4	auroc	variable_fraction	0.4	4	0.9996693121693121	0.0006075123369998192
+D	E4	auprc	variable_fraction	0.4	4	0.999183424412616	0.0015089797709679207
+D	E4	variable_recall	variable_fraction	0.4	4	0.6622023809523809	0.04411058348296768
+D	E4	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E4	variable_site_iou	variable_fraction	0.4	4	0.6622023809523809	0.04411058348296768
+D	E4	region_iou	variable_fraction	0.4	0		
+D	E4	boundary_f1	variable_fraction	0.4	0		
+D	E4	medium_as_variable	variable_fraction	0.4	4	0.21180555555555555	0.10292469479359126
+D	E4	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E4	auroc_low_vs_medium	variable_fraction	0.4	4	0.9992283950617283	0.0014175287863328375
+D	E4	auroc_medium_vs_high	variable_fraction	0.4	4	1.0	0.0
+D	E5	spearman	variable_fraction	0.4	4	0.9774926824356662	0.0006194632834862767
+D	E5	auroc	variable_fraction	0.4	4	0.9996279761904762	0.0007440476190476164
+D	E5	auprc	variable_fraction	0.4	4	0.9982876712328768	0.0034246575342465895
+D	E5	variable_recall	variable_fraction	0.4	4	0.8913690476190476	0.12202380952380952
+D	E5	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E5	variable_site_iou	variable_fraction	0.4	4	0.8913690476190476	0.12202380952380952
+D	E5	region_iou	variable_fraction	0.4	4	0.8299086757990867	0.18857857815436996
+D	E5	boundary_f1	variable_fraction	0.4	4	1.0	0.0
+D	E5	medium_as_variable	variable_fraction	0.4	4	0.7465277777777778	0.28472222222222227
+D	E5	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E5	auroc_low_vs_medium	variable_fraction	0.4	4	0.9991319444444444	0.001736111111111105
+D	E5	auroc_medium_vs_high	variable_fraction	0.4	4	1.0	0.0
+D	E6	spearman	variable_fraction	0.4	4	0.938650428500195	0.0010144512966371625
+D	E6	auroc	variable_fraction	0.4	4	0.9993696263227514	0.0012607473544973269
+D	E6	auprc	variable_fraction	0.4	4	0.9980980348018824	0.003803930396235278
+D	E6	variable_recall	variable_fraction	0.4	4	0.6532738095238095	0.04329990643411745
+D	E6	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E6	variable_site_iou	variable_fraction	0.4	4	0.6532738095238095	0.04329990643411745
+D	E6	region_iou	variable_fraction	0.4	4	0.5	0.0
+D	E6	boundary_f1	variable_fraction	0.4	4	1.0	0.0
+D	E6	medium_as_variable	variable_fraction	0.4	4	0.19097222222222224	0.10103311501294072
+D	E6	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E6	auroc_low_vs_medium	variable_fraction	0.4	4	0.9985291280864197	0.0029417438271605034
+D	E6	auroc_medium_vs_high	variable_fraction	0.4	4	1.0	0.0
+D	E8	spearman	variable_fraction	0.4	4	0.9391567539406445	1.0190682658839378e-07
+D	E8	auroc	variable_fraction	0.4	4	1.0	0.0
+D	E8	auprc	variable_fraction	0.4	4	1.0	0.0
+D	E8	variable_recall	variable_fraction	0.4	4	1.0	0.0
+D	E8	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	E8	variable_site_iou	variable_fraction	0.4	4	1.0	0.0
+D	E8	region_iou	variable_fraction	0.4	4	1.0	0.0
+D	E8	boundary_f1	variable_fraction	0.4	4	1.0	0.0
+D	E8	medium_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E8	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	E8	auroc_low_vs_medium	variable_fraction	0.4	4	1.0	0.0
+D	E8	auroc_medium_vs_high	variable_fraction	0.4	4	1.0	0.0
+D	Shannon	spearman	variable_fraction	0.4	4	0.9382511677340045	0.0008686165436470686
+D	Shannon	auroc	variable_fraction	0.4	4	0.9989459325396824	0.0010223171186920902
+D	Shannon	auprc	variable_fraction	0.4	4	0.9974995467776706	0.0024213077763361036
+D	Shannon	variable_recall	variable_fraction	0.4	4	0.8199404761904763	0.022469745343067695
+D	Shannon	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	Shannon	variable_site_iou	variable_fraction	0.4	4	0.8199404761904763	0.022469745343067695
+D	Shannon	region_iou	variable_fraction	0.4	0		
+D	Shannon	boundary_f1	variable_fraction	0.4	0		
+D	Shannon	medium_as_variable	variable_fraction	0.4	4	0.579861111111111	0.052429405800491324
+D	Shannon	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	Shannon	auroc_low_vs_medium	variable_fraction	0.4	4	0.9975405092592592	0.002385406610281589
+D	Shannon	auroc_medium_vs_high	variable_fraction	0.4	4	0.9998553240740741	0.00020460265659333555
+D	JSD	spearman	variable_fraction	0.4	4	0.9323501333661759	0.003078743579000266
+D	JSD	auroc	variable_fraction	0.4	4	0.9930142195767196	0.003514287583801592
+D	JSD	auprc	variable_fraction	0.4	4	0.9830035464861956	0.01031905346082306
+D	JSD	variable_recall	variable_fraction	0.4	4	0.7589285714285714	0.022005032750812312
+D	JSD	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	JSD	variable_site_iou	variable_fraction	0.4	4	0.7589285714285714	0.022005032750812312
+D	JSD	region_iou	variable_fraction	0.4	0		
+D	JSD	boundary_f1	variable_fraction	0.4	0		
+D	JSD	medium_as_variable	variable_fraction	0.4	4	0.4375	0.051345076418562084
+D	JSD	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	JSD	auroc_low_vs_medium	variable_fraction	0.4	4	0.9836998456790124	0.008200004362203802
+D	JSD	auroc_medium_vs_high	variable_fraction	0.4	4	0.9977936921296297	0.001039084752431261
+D	BLOSUM62	spearman	variable_fraction	0.4	4	0.9332062988766353	0.0016766993471023172
+D	BLOSUM62	auroc	variable_fraction	0.4	4	0.9966104497354497	0.0015902268569503272
+D	BLOSUM62	auprc	variable_fraction	0.4	4	0.9921446876628386	0.004295133535239927
+D	BLOSUM62	variable_recall	variable_fraction	0.4	4	0.6383928571428572	0.02495981274882764
+D	BLOSUM62	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	BLOSUM62	variable_site_iou	variable_fraction	0.4	4	0.6383928571428572	0.02495981274882764
+D	BLOSUM62	region_iou	variable_fraction	0.4	0		
+D	BLOSUM62	boundary_f1	variable_fraction	0.4	0		
+D	BLOSUM62	medium_as_variable	variable_fraction	0.4	4	0.15972222222222224	0.05726535591135639
+D	BLOSUM62	high_as_variable	variable_fraction	0.4	4	0.9973958333333334	0.005208333333333315
+D	BLOSUM62	auroc_low_vs_medium	variable_fraction	0.4	4	0.992091049382716	0.0037105293328841328
+D	BLOSUM62	auroc_medium_vs_high	variable_fraction	0.4	4	0.9939597800925926	0.0018766090525278924
+D	KL	spearman	variable_fraction	0.4	4	0.8903846286242441	0.003286565877812492
+D	KL	auroc	variable_fraction	0.4	4	0.949177414021164	0.005064571215641154
+D	KL	auprc	variable_fraction	0.4	4	0.8493901987484798	0.030063095239115812
+D	KL	variable_recall	variable_fraction	0.4	4	0.7217261904761905	0.012271147695290613
+D	KL	variable_specificity	variable_fraction	0.4	4	0.9930555555555556	0.013888888888888895
+D	KL	variable_site_iou	variable_fraction	0.4	4	0.7196428571428571	0.015567496226930969
+D	KL	region_iou	variable_fraction	0.4	0		
+D	KL	boundary_f1	variable_fraction	0.4	0		
+D	KL	medium_as_variable	variable_fraction	0.4	4	0.3680555555555555	0.024056261216234418
+D	KL	high_as_variable	variable_fraction	0.4	4	0.9869791666666667	0.013107351450122835
+D	KL	auroc_low_vs_medium	variable_fraction	0.4	4	0.8816068672839507	0.011958191131409978
+D	KL	auroc_medium_vs_high	variable_fraction	0.4	4	0.9854962384259258	0.0048351133116716185
+D	ClustalW consensus	spearman	variable_fraction	0.4	4	0.3386920814768044	0.019902802876102278
+D	ClustalW consensus	auroc	variable_fraction	0.4	4	0.6076388888888888	0.012028130608117214
+D	ClustalW consensus	auprc	variable_fraction	0.4	4	0.4506944444444445	0.016839382851364094
+D	ClustalW consensus	variable_recall	variable_fraction	0.4	4	1.0	0.0
+D	ClustalW consensus	variable_specificity	variable_fraction	0.4	4	0.2152777777777778	0.024056261216234404
+D	ClustalW consensus	variable_site_iou	variable_fraction	0.4	4	0.7483632304871244	0.005808382657242284
+D	ClustalW consensus	region_iou	variable_fraction	0.4	0		
+D	ClustalW consensus	boundary_f1	variable_fraction	0.4	0		
+D	ClustalW consensus	medium_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	ClustalW consensus	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	ClustalW consensus	auroc_low_vs_medium	variable_fraction	0.4	4	0.6076388888888888	0.012028130608117214
+D	ClustalW consensus	auroc_medium_vs_high	variable_fraction	0.4	4	0.5	0.0
+D	AL2CO variance	spearman	variable_fraction	0.4	4	0.9379210984634341	0.001100440325940427
+D	AL2CO variance	auroc	variable_fraction	0.4	4	0.9986565806878307	0.0010638160354363658
+D	AL2CO variance	auprc	variable_fraction	0.4	4	0.9968873640310306	0.0024668595992442884
+D	AL2CO variance	variable_recall	variable_fraction	0.4	4	0.8407738095238095	0.030496877279641656
+D	AL2CO variance	variable_specificity	variable_fraction	0.4	4	1.0	0.0
+D	AL2CO variance	variable_site_iou	variable_fraction	0.4	4	0.8407738095238095	0.030496877279641656
+D	AL2CO variance	region_iou	variable_fraction	0.4	0		
+D	AL2CO variance	boundary_f1	variable_fraction	0.4	0		
+D	AL2CO variance	medium_as_variable	variable_fraction	0.4	4	0.6284722222222222	0.07115938031916387
+D	AL2CO variance	high_as_variable	variable_fraction	0.4	4	1.0	0.0
+D	AL2CO variance	auroc_low_vs_medium	variable_fraction	0.4	4	0.9968653549382716	0.0024822374160182385
+D	AL2CO variance	auroc_medium_vs_high	variable_fraction	0.4	4	0.9997106481481481	0.0005787037037037202
+D	E0	spearman	variable_fraction	0.6	4	0.869386592874519	0.00053128693556108
+D	E0	auroc	variable_fraction	0.6	4	0.9885796440972221	0.0026775430644753436
+D	E0	auprc	variable_fraction	0.6	4	0.9585440459464736	0.0071659957307910254
+D	E0	variable_recall	variable_fraction	0.6	4	0.8125	0.00950907217890912
+D	E0	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E0	variable_site_iou	variable_fraction	0.6	4	0.8125	0.00950907217890912
+D	E0	region_iou	variable_fraction	0.6	0		
+D	E0	boundary_f1	variable_fraction	0.6	0		
+D	E0	medium_as_variable	variable_fraction	0.6	4	0.2552083333333333	0.03125000000000001
+D	E0	high_as_variable	variable_fraction	0.6	4	0.9982638888888888	0.00347222222222221
+D	E0	auroc_low_vs_medium	variable_fraction	0.6	4	0.9543185763888888	0.010710172257901248
+D	E0	auroc_medium_vs_high	variable_fraction	0.6	4	0.996997974537037	0.001443742031242546
+D	E1	spearman	variable_fraction	0.6	4	0.869386592874519	0.00053128693556108
+D	E1	auroc	variable_fraction	0.6	4	0.9885796440972221	0.0026775430644753436
+D	E1	auprc	variable_fraction	0.6	4	0.9585440459464736	0.0071659957307910254
+D	E1	variable_recall	variable_fraction	0.6	4	0.8125	0.00950907217890912
+D	E1	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E1	variable_site_iou	variable_fraction	0.6	4	0.8125	0.00950907217890912
+D	E1	region_iou	variable_fraction	0.6	0		
+D	E1	boundary_f1	variable_fraction	0.6	0		
+D	E1	medium_as_variable	variable_fraction	0.6	4	0.2552083333333333	0.03125000000000001
+D	E1	high_as_variable	variable_fraction	0.6	4	0.9982638888888888	0.00347222222222221
+D	E1	auroc_low_vs_medium	variable_fraction	0.6	4	0.9543185763888888	0.010710172257901248
+D	E1	auroc_medium_vs_high	variable_fraction	0.6	4	0.996997974537037	0.001443742031242546
+D	E7	spearman	variable_fraction	0.6	4	0.8752995105372163	0.0008248951344086768
+D	E7	auroc	variable_fraction	0.6	4	0.9984537760416667	0.0017859750834201228
+D	E7	auprc	variable_fraction	0.6	4	0.9938282790799766	0.007400052829463972
+D	E7	variable_recall	variable_fraction	0.6	4	0.875	0.011251285934735863
+D	E7	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E7	variable_site_iou	variable_fraction	0.6	4	0.875	0.011251285934735863
+D	E7	region_iou	variable_fraction	0.6	0		
+D	E7	boundary_f1	variable_fraction	0.6	0		
+D	E7	medium_as_variable	variable_fraction	0.6	4	0.5	0.04500514373894348
+D	E7	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E7	auroc_low_vs_medium	variable_fraction	0.6	4	0.9938151041666666	0.007143900333680406
+D	E7	auroc_medium_vs_high	variable_fraction	0.6	4	0.9993851273148149	0.000731770394747972
+D	E2	spearman	variable_fraction	0.6	4	0.8762923807046328	0.00011318157979576771
+D	E2	auroc	variable_fraction	0.6	4	0.9998372395833333	0.00025829819258328744
+D	E2	auprc	variable_fraction	0.6	4	0.9993845595129077	0.0009684021377526267
+D	E2	variable_recall	variable_fraction	0.6	4	0.8216145833333334	0.0078125
+D	E2	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E2	variable_site_iou	variable_fraction	0.6	4	0.8216145833333334	0.0078125
+D	E2	region_iou	variable_fraction	0.6	0		
+D	E2	boundary_f1	variable_fraction	0.6	0		
+D	E2	medium_as_variable	variable_fraction	0.6	4	0.2864583333333333	0.03125
+D	E2	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E2	auroc_low_vs_medium	variable_fraction	0.6	4	0.9993489583333334	0.001033192770333142
+D	E2	auroc_medium_vs_high	variable_fraction	0.6	4	1.0	0.0
+D	E3	spearman	variable_fraction	0.6	4	0.8763280400348481	4.552161252306679e-05
+D	E3	auroc	variable_fraction	0.6	4	0.9999186197916667	0.00010388748999089849
+D	E3	auprc	variable_fraction	0.6	4	0.9996853741496599	0.00039969001671366774
+D	E3	variable_recall	variable_fraction	0.6	4	0.8203124999999999	0.01377995474512807
+D	E3	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E3	variable_site_iou	variable_fraction	0.6	4	0.8203124999999999	0.01377995474512807
+D	E3	region_iou	variable_fraction	0.6	0		
+D	E3	boundary_f1	variable_fraction	0.6	0		
+D	E3	medium_as_variable	variable_fraction	0.6	4	0.28125	0.05511981898051231
+D	E3	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E3	auroc_low_vs_medium	variable_fraction	0.6	4	0.9996744791666666	0.0004155499599637002
+D	E3	auroc_medium_vs_high	variable_fraction	0.6	4	1.0	0.0
+D	E4	spearman	variable_fraction	0.6	4	0.8760190875892594	0.0001796576901960326
+D	E4	auroc	variable_fraction	0.6	4	0.9994845920138888	0.0004962537157845949
+D	E4	auprc	variable_fraction	0.6	4	0.9979313686820269	0.0020631795609489323
+D	E4	variable_recall	variable_fraction	0.6	4	0.78125	0.015332918170708051
+D	E4	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E4	variable_site_iou	variable_fraction	0.6	4	0.78125	0.015332918170708051
+D	E4	region_iou	variable_fraction	0.6	0		
+D	E4	boundary_f1	variable_fraction	0.6	0		
+D	E4	medium_as_variable	variable_fraction	0.6	4	0.125	0.06133167268283227
+D	E4	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E4	auroc_low_vs_medium	variable_fraction	0.6	4	0.9979383680555556	0.001985014863138341
+D	E4	auroc_medium_vs_high	variable_fraction	0.6	4	0.9998191550925926	0.0003616898148148251
+D	E5	spearman	variable_fraction	0.6	4	0.9919614870172411	0.0006327793928531112
+D	E5	auroc	variable_fraction	0.6	4	0.9993489583333334	0.0013020833333333148
+D	E5	auprc	variable_fraction	0.6	4	0.995	0.010000000000000009
+D	E5	variable_recall	variable_fraction	0.6	4	0.8125	0.07216878364870322
+D	E5	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E5	variable_site_iou	variable_fraction	0.6	4	0.8125	0.07216878364870322
+D	E5	region_iou	variable_fraction	0.6	4	0.5833333333333333	0.0962250448649376
+D	E5	boundary_f1	variable_fraction	0.6	4	1.0	0.0
+D	E5	medium_as_variable	variable_fraction	0.6	4	0.25	0.28867513459481287
+D	E5	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E5	auroc_low_vs_medium	variable_fraction	0.6	4	0.9973958333333334	0.005208333333333316
+D	E5	auroc_medium_vs_high	variable_fraction	0.6	4	1.0	0.0
+D	E6	spearman	variable_fraction	0.6	4	0.8759664540099594	0.0004077865173629486
+D	E6	auroc	variable_fraction	0.6	4	0.9993082682291666	0.0010382844622941162
+D	E6	auprc	variable_fraction	0.6	4	0.997032494594612	0.004543272332987428
+D	E6	variable_recall	variable_fraction	0.6	4	0.7708333333333333	0.017533862740211924
+D	E6	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	E6	variable_site_iou	variable_fraction	0.6	4	0.7708333333333333	0.017533862740211924
+D	E6	region_iou	variable_fraction	0.6	4	0.5	0.0
+D	E6	boundary_f1	variable_fraction	0.6	4	1.0	0.0
+D	E6	medium_as_variable	variable_fraction	0.6	4	0.08333333333333333	0.07013545096084776
+D	E6	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E6	auroc_low_vs_medium	variable_fraction	0.6	4	0.9972330729166666	0.004153137849176335
+D	E6	auroc_medium_vs_high	variable_fraction	0.6	4	0.9998553240740741	0.0002893518518518601
+D	E8	spearman	variable_fraction	0.6	4	0.8762048845749958	0.0005699987369222611
+D	E8	auroc	variable_fraction	0.6	4	0.9993489583333334	0.0013020833333333148
+D	E8	auprc	variable_fraction	0.6	4	0.9982638888888888	0.0034722222222222654
+D	E8	variable_recall	variable_fraction	0.6	4	0.9661458333333334	0.05744927815199407
+D	E8	variable_specificity	variable_fraction	0.6	4	0.9947916666666666	0.010416666666666685
+D	E8	variable_site_iou	variable_fraction	0.6	4	0.9648639896373057	0.05680560555286457
+D	E8	region_iou	variable_fraction	0.6	4	0.9063562925170067	0.16008857570327611
+D	E8	boundary_f1	variable_fraction	0.6	4	1.0	0.0
+D	E8	medium_as_variable	variable_fraction	0.6	4	0.8645833333333334	0.22979711260797633
+D	E8	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	E8	auroc_low_vs_medium	variable_fraction	0.6	4	0.9973958333333334	0.005208333333333315
+D	E8	auroc_medium_vs_high	variable_fraction	0.6	4	1.0	0.0
+D	Shannon	spearman	variable_fraction	0.6	4	0.8752995580502412	0.000824924503962342
+D	Shannon	auroc	variable_fraction	0.6	4	0.9984537760416667	0.0017859750834201228
+D	Shannon	auprc	variable_fraction	0.6	4	0.9938282790799766	0.007400052829463972
+D	Shannon	variable_recall	variable_fraction	0.6	4	0.875	0.011251285934735863
+D	Shannon	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	Shannon	variable_site_iou	variable_fraction	0.6	4	0.875	0.011251285934735863
+D	Shannon	region_iou	variable_fraction	0.6	0		
+D	Shannon	boundary_f1	variable_fraction	0.6	0		
+D	Shannon	medium_as_variable	variable_fraction	0.6	4	0.5	0.04500514373894348
+D	Shannon	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	Shannon	auroc_low_vs_medium	variable_fraction	0.6	4	0.9938151041666666	0.007143900333680406
+D	Shannon	auroc_medium_vs_high	variable_fraction	0.6	4	0.9993851273148149	0.000731770394747972
+D	JSD	spearman	variable_fraction	0.6	4	0.8722275012203953	0.0015732558259145388
+D	JSD	auroc	variable_fraction	0.6	4	0.9945746527777778	0.000831099919927352
+D	JSD	auprc	variable_fraction	0.6	4	0.9785752212220306	0.002684816223784383
+D	JSD	variable_recall	variable_fraction	0.6	4	0.8398437499999999	0.019661027175184226
+D	JSD	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	JSD	variable_site_iou	variable_fraction	0.6	4	0.8398437499999999	0.019661027175184226
+D	JSD	region_iou	variable_fraction	0.6	0		
+D	JSD	boundary_f1	variable_fraction	0.6	0		
+D	JSD	medium_as_variable	variable_fraction	0.6	4	0.36458333333333337	0.08419691425682042
+D	JSD	high_as_variable	variable_fraction	0.6	4	0.9982638888888888	0.00347222222222221
+D	JSD	auroc_low_vs_medium	variable_fraction	0.6	4	0.9782986111111112	0.0033243996797094957
+D	JSD	auroc_medium_vs_high	variable_fraction	0.6	4	0.9973234953703703	0.0020948887566525323
+D	BLOSUM62	spearman	variable_fraction	0.6	4	0.8711150432552338	0.002991628804857965
+D	BLOSUM62	auroc	variable_fraction	0.6	4	0.9963921440972222	0.0030924479166666912
+D	BLOSUM62	auprc	variable_fraction	0.6	4	0.9866888486498968	0.011026063872978348
+D	BLOSUM62	variable_recall	variable_fraction	0.6	4	0.7786458333333334	0.019254403656960763
+D	BLOSUM62	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	BLOSUM62	variable_site_iou	variable_fraction	0.6	4	0.7786458333333334	0.019254403656960763
+D	BLOSUM62	region_iou	variable_fraction	0.6	0		
+D	BLOSUM62	boundary_f1	variable_fraction	0.6	0		
+D	BLOSUM62	medium_as_variable	variable_fraction	0.6	4	0.125	0.07414637675021744
+D	BLOSUM62	high_as_variable	variable_fraction	0.6	4	0.9965277777777777	0.004009376869372387
+D	BLOSUM62	auroc_low_vs_medium	variable_fraction	0.6	4	0.9855685763888888	0.012369791666666685
+D	BLOSUM62	auroc_medium_vs_high	variable_fraction	0.6	4	0.9943938078703705	0.006193949078992425
+D	KL	spearman	variable_fraction	0.6	4	0.8550278115745626	0.0027425997502506217
+D	KL	auroc	variable_fraction	0.6	4	0.9702962239583333	0.008801054829300773
+D	KL	auprc	variable_fraction	0.6	4	0.8709489818041617	0.04813773207507227
+D	KL	variable_recall	variable_fraction	0.6	4	0.8411458333333334	0.012398313243998038
+D	KL	variable_specificity	variable_fraction	0.6	4	0.9947916666666666	0.010416666666666685
+D	KL	variable_site_iou	variable_fraction	0.6	4	0.840046146373057	0.011646685019049289
+D	KL	region_iou	variable_fraction	0.6	0		
+D	KL	boundary_f1	variable_fraction	0.6	0		
+D	KL	medium_as_variable	variable_fraction	0.6	4	0.375	0.06133167268283226
+D	KL	high_as_variable	variable_fraction	0.6	4	0.9965277777777778	0.00694444444444442
+D	KL	auroc_low_vs_medium	variable_fraction	0.6	4	0.8823784722222222	0.03654950296147632
+D	KL	auroc_medium_vs_high	variable_fraction	0.6	4	0.9877387152777778	0.006274527800814412
+D	ClustalW consensus	spearman	variable_fraction	0.6	4	0.373534968879658	0.032461320079018634
+D	ClustalW consensus	auroc	variable_fraction	0.6	4	0.6328124999999999	0.021474508466758663
+D	ClustalW consensus	auprc	variable_fraction	0.6	4	0.41250000000000003	0.03435921354681383
+D	ClustalW consensus	variable_recall	variable_fraction	0.6	4	1.0	0.0
+D	ClustalW consensus	variable_specificity	variable_fraction	0.6	4	0.265625	0.04294901693351729
+D	ClustalW consensus	variable_site_iou	variable_fraction	0.6	4	0.8449364744940305	0.007640937240630827
+D	ClustalW consensus	region_iou	variable_fraction	0.6	0		
+D	ClustalW consensus	boundary_f1	variable_fraction	0.6	0		
+D	ClustalW consensus	medium_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	ClustalW consensus	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	ClustalW consensus	auroc_low_vs_medium	variable_fraction	0.6	4	0.6328124999999999	0.021474508466758663
+D	ClustalW consensus	auroc_medium_vs_high	variable_fraction	0.6	4	0.5	0.0
+D	AL2CO variance	spearman	variable_fraction	0.6	4	0.875341750236029	0.0005552727317998005
+D	AL2CO variance	auroc	variable_fraction	0.6	4	0.9986436631944444	0.0010868763889841362
+D	AL2CO variance	auprc	variable_fraction	0.6	4	0.994828021367221	0.004188124283479517
+D	AL2CO variance	variable_recall	variable_fraction	0.6	4	0.8854166666666666	0.008505172717997162
+D	AL2CO variance	variable_specificity	variable_fraction	0.6	4	1.0	0.0
+D	AL2CO variance	variable_site_iou	variable_fraction	0.6	4	0.8854166666666666	0.008505172717997162
+D	AL2CO variance	region_iou	variable_fraction	0.6	0		
+D	AL2CO variance	boundary_f1	variable_fraction	0.6	0		
+D	AL2CO variance	medium_as_variable	variable_fraction	0.6	4	0.5416666666666666	0.0340206908719886
+D	AL2CO variance	high_as_variable	variable_fraction	0.6	4	1.0	0.0
+D	AL2CO variance	auroc_low_vs_medium	variable_fraction	0.6	4	0.9945746527777778	0.004347505555936569
+D	AL2CO variance	auroc_medium_vs_high	variable_fraction	0.6	4	0.9993489583333333	0.0007517581630073466

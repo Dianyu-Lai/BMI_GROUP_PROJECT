@@ -7,7 +7,7 @@ from benchmarks.metrics import (
     sensitivity_specificity,
     spearman,
 )
-from benchmarks.synthetic import RESIDUE_CLASSES, generate_alignment, generate_constraint_alignment
+from data_generation.synthetic import RESIDUE_CLASSES, generate_alignment, generate_constraint_alignment
 from msa_conservation.scoring.fusion import score_alignment
 
 

@@ -1,8 +1,8 @@
 # BMI_GROUP_PROJECT
 
-BMI3 Algorithms ICA Group 1 project on position-specific conservation scoring for globular protein multiple sequence alignments (MSAs). The core scoring methods will be implemented in Python 3.
+This package implements the earlier entropy, BLOSUM62 and AAindex conservation-scoring experiments for globular protein multiple sequence alignments (MSAs). It requires Python 3.10 or newer and uses the standard library for scoring, benchmarks and tests.
 
-| Path | Planned responsibility |
+| Path | Contents |
 | --- | --- |
 | `src/msa_conservation/msa.py` | Alignment input and shared handling of gaps, ambiguous residues, and optional sequence weights. |
 | `src/msa_conservation/cli.py` | Command-line entry point for scoring an alignment. |
@@ -11,22 +11,18 @@ BMI3 Algorithms ICA Group 1 project on position-specific conservation scoring fo
 | `src/msa_conservation/scoring/physicochemical.py` | Standardized AAindex1 descriptors and probability tilting for BLOSUM62. |
 | `src/msa_conservation/scoring/fusion.py` | Combinations of entropy and substitution scores for benchmarking. |
 | `src/msa_conservation/scoring/context.py` | Fixed-window and context-adaptive scoring variants for ablation. |
-| `benchmarks/synthetic.py` | Rate-driven alignments and frequency-matched within-class and cross-class substitutions. |
-| `benchmarks/metrics.py` | Sensitivity, specificity, and correlation with known conservation patterns. |
-| `benchmarks/run_benchmark.py` | Baseline comparisons, ablations, and runtime and scaling measurements. |
+| `../data_generation/synthetic.py` | Rate-driven alignments and frequency-matched within-class and cross-class substitutions. |
+| `../benchmarks/metrics.py` | Sensitivity, specificity, and correlation with known conservation patterns. |
+| `../benchmarks/run_benchmark.py` | Baseline comparisons, ablations, and runtime and scaling measurements. |
 | `data/reference/` | Reference inputs such as BLOSUM62 and selected AAindex properties. |
-| `data/real/` | Optional validation alignments from globular protein families. |
-| `data/synthetic/` | Generated alignments and their ground-truth labels. |
-| `results/` | Generated benchmark tables and figures. |
-| `tests/` | Future tests and fixtures for alignment parsing, scoring, and benchmark inputs. |
-| `docs/` | Method, benchmark design, and complexity notes. |
+| `tests/` | Alignment parsing, scoring and synthetic benchmark checks. |
 
 ## Run the baseline scores
 
-From the repository root in PowerShell, using Python 3.10 or newer:
+From `code/baselines` in PowerShell, using Python 3.10 or newer.
 
 ```powershell
-$env:PYTHONPATH = "src"
+$env:PYTHONPATH = "..;src"
 python -m msa_conservation.cli path\to\alignment.fasta
 python -m msa_conservation.cli path\to\alignment.fasta --weights henikoff
 python -m benchmarks.run_benchmark --size 64 --length 300 --divergence 0.8 --seed 1
@@ -42,7 +38,7 @@ The BLOSUM62 reference table contains full-precision, ordered joint residue prob
 ## Compare reference baselines
 
 ```powershell
-$env:PYTHONPATH = "src"
+$env:PYTHONPATH = "..;src"
 python -m msa_conservation.cli path\to\alignment.fasta --reference-baselines
 python -m benchmarks.run_benchmark --reference-baselines --suite rate
 python -m benchmarks.run_benchmark --reference-baselines --suite constraint

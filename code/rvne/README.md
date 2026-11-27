@@ -4,15 +4,15 @@ BMI3 Algorithms ICA Group 1 implements position-specific conservation scoring fo
 
 ## Installation
 
-Run from `code/rvne` in the BMI3 repository with Python 3.10 or newer. The benchmark was verified with Python 3.13.5 and NumPy 2.5.2.
+Run from `code/rvne` with Python 3.10 or newer. [`requirements.txt`](requirements.txt) declares `numpy>=1.26,<3` for scoring, benchmarking, SVG generation and tests. The benchmark was verified with Python 3.13.5 and NumPy 2.5.2. The `real-data` command also calls MAFFT 7 and/or ClustalW 2.1 through their command-line executables. See the [real-data setup](docs/real_data_alignment.md).
 
 ```powershell
 python -m pip install -r requirements.txt
-$env:PYTHONPATH = "src"
+$env:PYTHONPATH = "..;src"
 python -m unittest discover -s tests
 ```
 
-In POSIX shells, use `export PYTHONPATH=src`.
+In POSIX shells, use `export PYTHONPATH=..:src`.
 
 ## Score an alignment
 
@@ -25,50 +25,32 @@ Use `rvne` for the original formula, `rvne-optimized` for the batched trace form
 
 The scoring defaults are `--r 0.8 --s1 0.8 --s2 0.8 --max-gap 0.3`. The context defaults are `--beta 6 --smoothing 0.25 --radii 0 1 2 4 8 --min-support 1.5 --min-segment 3` and an unbounded maximum length. Each flag is optional. `--r` controls background interpolation, `--s1` and `--s2` control observed and background similarity. `--beta` sets the segmentation penalty in global-variance units. `--smoothing` sets the weight on reciprocal support in the window objective. `--max-segment` can constrain segment length and takes zero for an unbounded partition. Export raw-mean segment classes using two increasing, independently calibrated `--segment-thresholds`. The default segment class is unclassified. Use `--settings results/reference_run/parameters.json` to select the benchmark's retuned configuration.
 
-## Simulate and benchmark
+## Align and score real proteins
+
+Install MAFFT 7 and ClustalW 2.1, then run from `code/rvne` with the same `PYTHONPATH` as above. The example aligns five UniProt globins with both tools and compares SCAW-RVNE scores in human myoglobin coordinates.
 
 ```powershell
-python -m benchmarks.rvne_simulation --scenario motifs --seed 42 --output data/synthetic/motifs.fasta --truth data/synthetic/motifs_truth.tsv
-$env:OPENBLAS_NUM_THREADS = "1"
-python -m benchmarks.run_rvne_benchmark --mode all --sweep --repeats 4 --output results/rvne
-python -m benchmarks.plot_rvne --results results/rvne
+python -m msa_conservation.cli real-data --input data/real/globins.fasta --reference-id P02144 --output-dir results/globins
 ```
 
-`--mode tune` writes the tuning grid and frozen settings without evaluating the test sets. `--mode benchmark --parameters results/reference_run/parameters.json` evaluates the held-out data using the saved settings. Wall times vary across runs. Keep `results/reference_run` as the recorded run and direct new runs to another directory.
+See the [real-data protocol](docs/real_data_alignment.md) for the comparison design, Windows setup, input rules and output files.
 
-### Generate supplemental test datasets
+## Evaluate RVNE on synthetic data
 
-```powershell
-python -m benchmarks.generate_pattern_data --output data/synthetic/patterns_abc
-```
-
-Choose a new output directory. The generator writes 36 aligned FASTA files, matching site-truth TSVs, and a manifest with the settings and seeds. Each alignment has 50 sequences and 240 columns. Each setting has four independent replicates.
-
-| Pattern | Site-rate profile | Varied setting |
-| --- | --- | --- |
-| A | Uniformly conserved at rate 0.06 | Divergence 0.35, 0.7, 1.4 |
-| B | Conserved flanks at 0.06 and a central variable block at 1.0 | Variable block fraction 25%, 40%, 60% |
-| C | A central conserved motif at 0.06 in a variable background at 1.0 | Motif length 3, 5, 9 residues |
-
-The truth TSV records the one-based position, simulated mutation rate, expected conservation probability, conserved label and a flag for a boundary immediately before the position. The supplemental seeds 50100–50135 are independent of the reference benchmark's seeds.
-
-Generate the optional three-rate Pattern D in a new directory.
-
-```powershell
-python -m benchmarks.generate_pattern_data --suite d --output data/synthetic/patterns_d
-```
-
-Pattern D uses five consecutive blocks with low, medium, high, medium and low mutation rates (0.06, 0.32 and 1.0). The central high-rate block takes up 25%, 40% or 60% of the alignment, matching Pattern B's settings. The medium-rate blocks take up half of each flank, rounded down to a whole number of columns. At divergence 0.7, the three per-descendant mutation probabilities are approximately 4.1%, 20.1% and 50.3%, using `1 - exp(-divergence * rate)`. The suite contains 12 families (four seeds per setting, 50136–50147), with 50 sequences and 240 columns each.
-
-Use Spearman correlation against the `conservation` column to check whether scores recover the three-tier ordering. The binary `conserved` column marks only the low-rate sites as conserved. The truth file records all four rate transitions for boundary evaluation.
+Use the [data generators](../data_generation/README.md) to create aligned FASTA files and truth labels, and the [benchmark commands](../benchmarks/README.md) to tune and evaluate RVNE or reproduce the ablations.
 
 ## Repository guide
 
 | Path | Contents |
 | --- | --- |
-| `src/msa_conservation` | FASTA parsing, sequence weighting, RVNE, exact optimization, contextual scoring and CLI |
-| `benchmarks` | Synthetic families, metrics, parameter selection, ablation and timing runners |
-| `data/examples` | Runnable example alignment |
+| `src/msa_conservation/` | FASTA parsing, sequence weighting and CLI entry points |
+| `src/msa_conservation/scoring/` | Original RVNE, batched RVNE, contextual scoring and SCAW |
+| `src/msa_conservation/real_data.py` | MAFFT and ClustalW integration, scoring and reference residue mapping |
+| [`../benchmarks/`](../benchmarks/README.md) | Parameter selection, evaluation, ablations, timing and SVG plots |
+| `data/examples/` | Example aligned FASTA for scoring |
+| `data/real/` | Unaligned UniProt globin sequences for the real-data workflow |
+| `data/reference/` | BLOSUM62 and AAindex tables |
+| [`../data_generation/datasets/`](../data_generation/README.md) | Generated alignments and truth labels |
 | `tests` | Mathematical checks, optimization equivalence and CLI integration |
 | `results/reference_run` | Frozen settings, held-out tables, timing and figures |
 | `docs` | Methods, complexity, benchmark protocol, results and LaTeX documentation |

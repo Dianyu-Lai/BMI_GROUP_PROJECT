@@ -7,10 +7,10 @@ from pathlib import Path
 
 import numpy as np
 
+from data_generation.rvne_simulation import simulate
 from msa_conservation.scoring.rvne import site_profiles
 from msa_conservation.scoring.rvne_optimized import score_optimized
 from msa_conservation.scoring.scaw import contextual_scores
-from .rvne_simulation import simulate
 
 
 INK = "#19263a"
