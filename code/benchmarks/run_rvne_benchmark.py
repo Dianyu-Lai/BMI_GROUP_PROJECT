@@ -15,7 +15,8 @@ import tracemalloc
 
 import numpy as np
 
-from data_generation.rvne_simulation import SCENARIOS, Simulation, simulate
+from data_generation.indelible import Options, find_executable
+from data_generation.rvne_simulation import SCENARIOS, Simulation, simulate, write_simulation
 from msa_conservation.scoring.rvne import (
     DEFAULT_PARAMETERS, RVNEParameters, SiteProfiles, paper_parameter_grid,
     score_reference, site_profiles,
@@ -41,7 +42,6 @@ SWEEPS = (
     *({"variable_fraction": p} for p in (.2, .6, .8)),
     *({"scenario": "indels", "gaps": p} for p in (.1, .3, .5)),
     *({"scenario": "redundant", "redundancy": p} for p in (.3, .85)),
-    *({"mutation": mode} for mode in ("conservative", "radical")),
 )
 
 
@@ -54,12 +54,12 @@ class Family:
     sites: SiteProfiles
 
 
-def families(specs: tuple[dict, ...], seed_groups: tuple[int, ...]) -> list[Family]:
+def families(specs: tuple[dict, ...], seed_groups: tuple[int, ...], generate=simulate) -> list[Family]:
     """Generate independent alignments with unique RNG seeds within a split."""
     result = []
     for group, (index, spec) in product(seed_groups, enumerate(specs)):
         seed = group * 100 + index
-        sim = simulate(seed=seed, **spec)
+        sim = generate(seed=seed, **spec)
         name = spec.get("scenario", "blocks")
         result.append(Family(seed, name, spec, sim, site_profiles(sim.alignment)))
     return result
@@ -212,9 +212,19 @@ def evaluation_rows(inputs: list[Family], params: RVNEParameters,
         truth = family.truth
         for name, (scores, fitted) in methods(family, params, context).items():
             measures = site_metrics(scores, truth.truth, truth.conserved, thresholds[name])
+            binary_reason = ""
+            if not np.isfinite(measures["auroc"]):
+                labels = truth.conserved[np.isfinite(scores)]
+                if not labels.size:
+                    binary_reason = "no finite site scores"
+                elif not truth.conserved.any() or truth.conserved.all():
+                    binary_reason = "designed truth contains one class"
+                else:
+                    binary_reason = "finite site scores cover only one designed class"
             row = {"method": name, "seed": family.seed, "scenario": family.scenario,
                    "N": truth.alignment.size, "L": truth.alignment.length,
-                   "settings": json.dumps(family.settings, sort_keys=True), **measures}
+                   "settings": json.dumps(family.settings, sort_keys=True),
+                   "binary_metrics_reason": binary_reason, **measures}
             valid = family.sites.valid
             if fitted is not None:
                 widths = fitted.window_size[valid]
@@ -279,11 +289,11 @@ def timed(function, repeats: int) -> dict:
             "peak_traced_bytes": peak, "repeats": repeats}
 
 
-def runtime_rows(repeats: int) -> list[dict]:
+def runtime_rows(repeats: int, generate=simulate) -> list[dict]:
     rows = []
     for size, length in ((20, 100), (50, 100), (100, 100), (500, 100),
                          (50, 500), (50, 1000), (50, 5000)):
-        alignment = simulate(size=size, length=length, seed=90100 + size + length).alignment
+        alignment = generate(size=size, length=length, seed=90100 + size + length).alignment
         sites = site_profiles(alignment)
         raw, optimized = score_reference(sites), score_optimized(sites)
         error = abs(raw - optimized)
@@ -300,7 +310,7 @@ def runtime_rows(repeats: int) -> list[dict]:
                 lambda: contextual_scores(optimized, sites.coverage, "scaw"), repeats)),
         ])
     for length in (100, 500, 1000, 5000):
-        sites = site_profiles(simulate(length=length, seed=90200 + length).alignment)
+        sites = site_profiles(generate(length=length, seed=90200 + length).alignment)
         grid = paper_parameter_grid()
         rows.append(dict(N=50, L=length, stage="grid_1331",
                          **timed(lambda: score_grid(sites, grid), repeats)))
@@ -323,15 +333,36 @@ def main() -> int:
     parser.add_argument("--parameters", type=Path, help="previously frozen tuning JSON")
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--sweep", action="store_true", help="include held-out one-factor sweeps")
+    parser.add_argument("--legacy-reference", action="store_true", help="replay the historical data inputs")
     args = parser.parse_args()
     if args.repeats < 2:
         parser.error("at least two timing repeats are required")
     if args.mode == "benchmark" and args.parameters is None:
         parser.error("benchmark mode requires --parameters")
+    if args.legacy_reference:
+        from data_generation.legacy_reference import simulate as generate
+        model_sweeps = tuple({"mutation": mode} for mode in ("conservative", "radical"))
+    else:
+        try:
+            executable = find_executable()
+        except OSError as exc:
+            parser.exit(2, f"error: {exc}\n")
+        raw_root = args.output / "simulated_inputs"
+        if raw_root.exists():
+            parser.error(f"use a new output directory; generated inputs already exist at {raw_root}")
+
+        def generate(*, seed, size=50, length=240, model="WAG", **settings):
+            directory = raw_root / f"{seed}_{size}x{length}"
+            simulation = simulate(seed=seed, size=size, length=length, executable=executable,
+                                  options=Options(model=model), work_dir=directory, **settings)
+            write_simulation(simulation, directory / "aligned.fasta", directory / "truth.tsv", directory)
+            return simulation
+
+        model_sweeps = tuple({"model": model} for model in ("JTT", "LG"))
     args.output.mkdir(parents=True, exist_ok=True)
-    validation = families(BASE_SPECS, VALIDATION)
+    validation = families(BASE_SPECS, VALIDATION, generate)
     if args.mode in ("tune", "all"):
-        selected, tuning = select_parameters(families(BASE_SPECS, TRAINING), validation)
+        selected, tuning = select_parameters(families(BASE_SPECS, TRAINING, generate), validation)
         write_tsv(args.output / "tuning.tsv", tuning)
     else:
         selected = json.loads(args.parameters.read_text(encoding="utf-8"))
@@ -347,17 +378,19 @@ def main() -> int:
     selected["test_seed_groups"] = HELD_OUT
     selected["python"] = platform.python_version()
     selected["numpy"] = np.__version__
+    selected["simulator"] = "legacy_reference" if args.legacy_reference else "INDELible 1.03"
     (args.output / "parameters.json").write_text(
         json.dumps(selected, allow_nan=False, indent=2) + "\n", encoding="utf-8")
     if args.mode != "tune":
-        rows = evaluation_rows(families(BASE_SPECS, HELD_OUT), rvne, context, thresholds)
+        rows = evaluation_rows(families(BASE_SPECS, HELD_OUT, generate), rvne, context, thresholds)
         write_tsv(args.output / "test_families.tsv", rows)
         write_tsv(args.output / "test_summary.tsv", summarize(rows))
         if args.sweep:
-            rows = evaluation_rows(families(SWEEPS, (401, 402, 403)), rvne, context, thresholds)
+            rows = evaluation_rows(families(SWEEPS + model_sweeps, (401, 402, 403), generate),
+                                   rvne, context, thresholds)
             write_tsv(args.output / "sweep_families.tsv", rows)
             write_tsv(args.output / "sweep_summary.tsv", summarize(rows))
-        write_tsv(args.output / "runtime.tsv", runtime_rows(args.repeats))
+        write_tsv(args.output / "runtime.tsv", runtime_rows(args.repeats, generate))
     print(f"Wrote {args.mode} outputs to {args.output}")
     return 0
 

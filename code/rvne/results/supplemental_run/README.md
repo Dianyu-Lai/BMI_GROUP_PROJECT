@@ -30,14 +30,12 @@ E7 and E8 use the same retuned RVNE profiles. Their comparison measures the comb
 
 ## Reproduce the run
 
-From `code/`, install `rvne/requirements.txt` and use PowerShell. Choose output directories that do not exist yet. If the supplied datasets are already extracted, pass those manifests directly and skip the generator commands.
+From `code/`, install `rvne/requirements.txt` and use PowerShell. Use the archived A/B/C and D manifests under `data_generation/datasets/` and choose a new output directory.
 
 ```powershell
 $env:PYTHONPATH = 'rvne/src'
 $env:OPENBLAS_NUM_THREADS = '1'
-python -m data_generation.generate_pattern_data --suite abc --output data_generation/datasets/repro_abc
-python -m data_generation.generate_pattern_data --suite d --output data_generation/datasets/repro_d
-python -m benchmarks.run_supplemental_benchmark --manifest data_generation/datasets/repro_abc/manifest.tsv --manifest data_generation/datasets/repro_d/manifest.tsv --parameters rvne/results/reference_run/parameters.json --output rvne/results/supplemental_repro
+python -m benchmarks.run_supplemental_benchmark --manifest data_generation/datasets/patterns_abc/manifest.tsv --manifest data_generation/datasets/patterns_d/manifest.tsv --parameters rvne/results/reference_run/parameters.json --output rvne/results/supplemental_repro
 ```
 
 The three TSV outputs were identical when rerun from regenerated inputs. The original 480-row held-out table also reproduced exactly.

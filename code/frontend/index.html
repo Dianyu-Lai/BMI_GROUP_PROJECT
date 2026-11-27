@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Protein Conservation Scorer</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a href="#analyze" class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>Protein Conservation Scorer</a>
+      <nav aria-label="Main navigation">
+        <a id="nav-analyze" href="#analyze" aria-current="page">Analyze</a>
+        <a id="nav-benchmarks" href="#benchmarks">Benchmarks</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell main">
+    <section id="analyze-page" aria-label="Analyze">
+      <div id="setup">
+        <div class="page-heading">
+          <h1>Analyze protein conservation</h1>
+          <p>Upload a protein FASTA to score each position in a multiple sequence alignment.</p>
+        </div>
+        <form id="analysis-form" class="analysis-layout">
+          <section class="panel upload-panel" aria-labelledby="fasta-heading">
+            <div class="panel-heading"><h2 id="fasta-heading">Protein FASTA</h2></div>
+            <div id="drop-zone" class="drop-zone">
+              <span class="file-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+              <p id="drop-prompt">Drag a protein FASTA here</p>
+              <input id="fasta-file" type="file" accept=".fasta,.fa,.faa,.fas,.txt" hidden>
+              <button type="button" id="upload" class="button primary">Upload FASTA</button>
+              <p class="file-types">Up to 1 MiB</p>
+            </div>
+            <div id="file-meta" class="file-meta" hidden>
+              <div><strong id="file-name"></strong><span id="file-summary"></span></div>
+              <button id="remove-file" type="button" class="text-button">Remove</button>
+            </div>
+            <div class="example-controls">
+              <label for="example">Example dataset</label>
+              <div class="example-picker">
+                <select id="example" disabled></select>
+                <button id="load-example" type="button" class="button" disabled>Load example</button>
+              </div>
+            </div>
+          </section>
+          <section class="panel settings-panel" aria-labelledby="settings-heading">
+            <div class="panel-heading"><h2 id="settings-heading">Analysis settings</h2></div>
+            <fieldset>
+              <legend>Input mode</legend>
+              <label class="mode-option"><input type="radio" name="mode" value="aligned" checked><span><strong>Aligned FASTA</strong><small>Score an existing alignment.</small></span></label>
+              <label class="mode-option"><input type="radio" name="mode" value="unaligned"><span><strong>Unaligned FASTA</strong><small>Align sequences, then score.</small></span></label>
+            </fieldset>
+            <div id="aligner-field" class="field" hidden>
+              <label for="aligner">Alignment tool</label>
+              <select id="aligner"><option value="mafft">MAFFT</option><option value="clustalw">ClustalW</option></select>
+              <p id="aligner-status" class="field-note"></p>
+            </div>
+            <div class="field">
+              <label for="method">Scoring method</label>
+              <select id="method"><option value="scaw-rvne">SCAW-RVNE</option><option value="rvne">Original RVNE</option></select>
+            </div>
+            <details id="advanced">
+              <summary>Advanced settings</summary>
+              <div class="advanced-body">
+                <div class="field">
+                  <label for="preset">Parameter preset</label>
+                  <select id="preset">
+                    <option value="frozen">Frozen benchmark settings</option>
+                    <option value="default">Software defaults</option>
+                    <option value="custom" disabled>Custom</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="max-gap">Maximum gap fraction</label>
+                  <input id="max-gap" type="number" min="0" max="1" step="any" value="0.30" required>
+                </div>
+                <dl id="parameter-values" class="parameter-values"></dl>
+                <fieldset id="custom-rvne" class="custom-parameters rvne-parameters" hidden disabled>
+                  <legend>RVNE parameters</legend>
+                  <div class="field">
+                    <label for="rvne-r">r</label>
+                    <input id="rvne-r" name="r" type="number" min="0" max="1" step="any" required>
+                  </div>
+                  <div class="field">
+                    <label for="rvne-s1">s1</label>
+                    <input id="rvne-s1" name="s1" type="number" min="0" max="1" step="any" required>
+                  </div>
+                  <div class="field">
+                    <label for="rvne-s2">s2</label>
+                    <input id="rvne-s2" name="s2" type="number" min="0" max="1" step="any" required>
+                  </div>
+                </fieldset>
+                <fieldset id="custom-context" class="custom-parameters" hidden disabled>
+                  <legend>SCAW parameters</legend>
+                  <div class="field">
+                    <label for="context-beta">Segmentation penalty (β)</label>
+                    <input id="context-beta" name="beta" type="number" min="0" step="any" required>
+                  </div>
+                  <div class="field">
+                    <label for="context-smoothing">Window smoothing (λ)</label>
+                    <input id="context-smoothing" name="smoothing" type="number" min="0" step="any" required>
+                  </div>
+                  <div class="field">
+                    <label for="context-radii">Window radii</label>
+                    <input id="context-radii" name="radii" type="text" pattern=" *[0-9]+( *, *[0-9]+)* *" title="Enter increasing whole numbers separated by commas, starting with 0." required>
+                  </div>
+                  <div class="field">
+                    <label for="context-min-support">Minimum support</label>
+                    <input id="context-min-support" name="min_support" type="number" min="0" step="any" required>
+                  </div>
+                  <div class="field">
+                    <label for="context-min-segment">Minimum segment length</label>
+                    <input id="context-min-segment" name="min_segment" type="number" min="1" step="1" required>
+                  </div>
+                  <div class="field">
+                    <label for="context-max-segment">Maximum segment length</label>
+                    <input id="context-max-segment" name="max_segment" type="number" min="1" step="1" placeholder="Unbounded">
+                  </div>
+                </fieldset>
+              </div>
+            </details>
+            <div class="run-row">
+              <button id="run-analysis" class="button primary" disabled>Score alignment</button>
+              <span id="run-status" role="status"></span>
+            </div>
+            <p id="form-error" class="notice error" role="alert" hidden></p>
+          </section>
+        </form>
+      </div>
+      <div id="results" hidden></div>
+    </section>
+    <section id="benchmarks-page" aria-label="Benchmarks" hidden></section>
+  </main>
+</body>
+</html>

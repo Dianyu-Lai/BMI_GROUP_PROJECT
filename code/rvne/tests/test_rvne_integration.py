@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 
 from benchmarks.rvne_evaluation import average_precision, boundary_metrics, comparator_profiles, correlations
-from data_generation.rvne_simulation import SCENARIOS, simulate
+from data_generation.legacy_reference import SCENARIOS, simulate
 from msa_conservation.cli import main
 from msa_conservation.msa import Alignment
 from msa_conservation.scoring.rvne import RVNEParameters, score_reference, site_profiles

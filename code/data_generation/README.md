@@ -1,69 +1,66 @@
 # Synthetic protein alignments
 
-Run from `code/` in PowerShell with Python 3.10 or newer. Install NumPy from [the RVNE requirements](../rvne/requirements.txt). The generators use the scorers' shared alignment format.
+INDELible 1.03 evolves globular-protein sequences along a rooted tree under an empirical amino-acid substitution model. The simulator tracks the history of insertions and deletions and exports the true alignment. The previous independent-descendant and gap-masking simulations are available for historical reproduction through `legacy_reference.py` and the benchmark's `--legacy-reference` mode.
+
+## Install and configure
+
+Install Python 3.10 or newer, NumPy from [`rvne/requirements.txt`](../rvne/requirements.txt), and **INDELible 1.03** as an external program. Windows users can extract the Windows executable from the [INDELible distribution](http://abacus.gene.ucl.ac.uk/software/indelible/) or build its C++ source with MinGW and `-DWINDOWS`. On Debian or Ubuntu, `sudo apt install indelible` installs the packaged program where available. Other Linux platforms can compile the release source using its build instructions. Set `INDELIBLE_BIN` to the executable's full path, add it to `PATH`, or pass `--indelible-bin` to either generator CLI.
+
+Run the following commands from `code/` in PowerShell. For a POSIX shell use `export PYTHONPATH=rvne/src` and `export INDELIBLE_BIN=/path/to/indelible` when needed.
 
 ```powershell
 python -m pip install -r rvne/requirements.txt
 $env:PYTHONPATH = "rvne/src"
+$env:INDELIBLE_BIN = "C:\tools\INDELible\indelible.exe"
 ```
 
-In a POSIX shell, use `export PYTHONPATH=rvne/src`.
+## Model and truth
 
-| Path | Contents |
-| --- | --- |
-| `rvne_simulation.py` | Reference RVNE scenarios and single-family FASTA and site-truth export. |
-| `generate_pattern_data.py` | Supplemental A–D dataset suites and manifests. |
-| `synthetic.py` | Rate-driven and matched-pair synthetic alignments for the earlier baseline comparisons. This generator uses the standard library. |
-| `datasets/` | Local generated or extracted inputs. |
+Each family shares one seeded, rooted topology and taxon set across its regions. The base tree's root-to-tip distance is `--divergence` in **expected substitutions per site** for a region with rate 1. Each region multiplies all branch lengths by its designed relative rate. The default WAG substitution model is independent of the scoring methods' BLOSUM62 matrix. JTT and LG are available. Method 1 is the default, and `--method 2` selects INDELible's alternative simulation algorithm.
 
-## Generate a single family
+Insertion and deletion rates are event rates relative to an average substitution rate of 1. Fixed event rates default to zero so the A–D gap-free controls retain their original design. Each event type has an independent length distribution. The default is truncated Zipf, `POW 1.7 15`, to favor shorter events while bounding the tail. Supported syntax includes `NB q r`, `POW exponent [maximum]`, `LAV exponent maximum` and `USER weight1 weight2 ...`. USER weights correspond to lengths 1, 2, and so on.
+
+With target gap occupancies, the generator tests up to seven candidate total event rates on five independently seeded pilots per candidate. It scales insertion and deletion together, keeping the supplied ratio, or using 1:1 when both rates are zero. It uses the closest tested value and reuses it for matching regions within the family. The production regions each use separate seeds. The bounded search tests total rates between 0 and 1.5. Metadata records the target, candidate measurements, selected rates and production occupancy. Finite families, short regions and the upper search bound can leave residual differences from the target.
+
+By default the designed relative rates are 0.06, 0.32 and 1.0. Every simulated column, including insertions, inherits its source region's rate. The existing truth TSV keeps one-based `position`, `rate`, `conservation`, `conserved` and `boundary_before`. The continuous design target remains `exp(-effective_divergence × rate)` and `conserved` is 1 for rates at or below 0.18. Partition IDs, rate classes, boundary masks and observed column gap fractions are additional fields. Tree-based divergence and observed pairwise identity are reported separately from the designed target.
+
+Separate partitions constrain indel events to their own region. Rates are constant within each partition, and the reference `gradual` scenario uses up to twelve piecewise-constant intervals. The `redundant` scenario uses a near-tip clade. The optional `--boundary-width` marks a number of columns on either side of each join in the truth TSV for sensitivity analyses. The current benchmark includes those columns under its existing coverage rules.
+
+## Generate one family
 
 ```powershell
-python -m data_generation.rvne_simulation --scenario motifs --seed 42 --output data_generation/datasets/motifs.fasta --truth data_generation/datasets/motifs_truth.tsv
+python -m data_generation.rvne_simulation --scenario three-rate-blocks --size 4 --length 60 --seed 42 --insertion-rate 0.08 --deletion-rate 0.05 --boundary-width 2 --output data_generation/datasets/pilot.fasta --truth data_generation/datasets/pilot.truth.tsv
 ```
 
-## Generate supplemental test datasets
+For arbitrary regions, pass `--regions` with a JSON array ordered from N-terminus to C-terminus. Each entry supplies an ancestral `length` and relative `rate`, plus optional `gap_target` and overrides of the global settings. For example, this configuration uses `--insertion-rate` and `--deletion-rate` for the first two regions and an independent deletion rate and distribution for the final region.
 
-If you already have the supplemental ZIP archives, extract them under `datasets/` so that `patterns_abc/manifest.tsv` and `patterns_d/manifest.tsv` sit alongside their FASTA and truth files. The commands below regenerate the inputs from their recorded seeds.
+```json
+[
+  {"length": 20, "rate": 0.06},
+  {"length": 20, "rate": 0.32},
+  {"length": 20, "rate": 1.0, "deletion_rate": 0.1, "deletion_length": {"name": "USER", "parameters": [6, 3, 1]}}
+]
+```
+
+Choose new output paths for each run. Alongside the normalized aligned FASTA and truth TSV, the `.run` directory contains combined unaligned FASTA, `metadata.json`, and a raw directory for each region. The raw output retains case-sensitive insertion markers, ancestral FASTA, site-rate reports, simulator logs and the exact `control.txt`. Metadata includes requested ancestry and final lengths, trees, seeds, actual insertion and deletion counts and mean event lengths, aligned gap-run length counts, and mean pairwise identity and p-distance over positions with residues present in both taxa. Use the same executable build, options and seed to reproduce the sequence and truth files.
+
+## Generate the full supplemental suites
 
 ```powershell
-python -m data_generation.generate_pattern_data --output data_generation/datasets/patterns_abc
+python -m data_generation.generate_pattern_data --suite abc --output data_generation/datasets/indelible_abc
+python -m data_generation.generate_pattern_data --suite d --output data_generation/datasets/indelible_d
+python -m data_generation.generate_pattern_data --suite d-gaps --output data_generation/datasets/indelible_d_gaps
 ```
 
-Choose a new output directory. The generator writes 36 aligned FASTA files, matching site-truth TSVs, and a manifest with the settings and seeds. Each alignment has 50 sequences and 240 columns. Each setting has four independent replicates.
-
-| Pattern | Site-rate profile | Varied setting |
+| Pattern | Ancestral design | Varied setting |
 | --- | --- | --- |
-| A | Uniformly conserved at rate 0.06 | Divergence 0.35, 0.7, 1.4 |
-| B | Conserved flanks at 0.06 and a central variable block at 1.0 | Variable block fraction 25%, 40%, 60% |
-| C | A central conserved motif at 0.06 in a variable background at 1.0 | Motif length 3, 5, 9 residues |
+| A | Uniform low rate | Root-to-tip divergence 0.35, 0.7, 1.4 |
+| B | Low-rate flanks and a central high-rate block | High-rate fraction 25%, 40%, 60% |
+| C | A low-rate motif in a high-rate background | Motif length 3, 5, 9 residues |
+| D | Low, medium, high, medium, low | High-rate fraction 25%, 40%, 60% |
 
-The truth TSV records the one-based position, simulated mutation rate, expected conservation probability, conserved label and a flag for a boundary immediately before the position. The supplemental seeds 50100–50135 are independent of the reference benchmark's seeds.
+The default is 50 sequences, 240 ancestral sites and four replicates per setting. The manifest's `length` is the actual alignment width. `ancestral_length` records the original length separately. The `d-gaps` suite defaults to gap occupancy targets of 3%, 12% and 25% for low, medium and high regions. It shares the corresponding D seed and initial topology. Evolutionary indels change the subsequent simulation and its alignment coordinates, so comparisons are at the family or setting level. Pattern A contains a single designed class, which makes binary AUROC and AUPRC undefined. The manifest and benchmark family table give the reason. The suite's `validation.json` reports the observed p-distance by rate and whether it increases across rates at the suite level.
 
-Generate the optional three-rate Pattern D in a new directory.
+See the [benchmark commands](../benchmarks/README.md) for evaluation. The historical ZIPs under `datasets/` contain the earlier fixed-length alignments and truth tables used for the recorded supplemental results.
 
-```powershell
-python -m data_generation.generate_pattern_data --suite d --output data_generation/datasets/patterns_d
-```
-
-Pattern D uses five consecutive blocks with low, medium, high, medium and low mutation rates (0.06, 0.32 and 1.0). The central high-rate block takes up 25%, 40% or 60% of the alignment, matching Pattern B's settings. The medium-rate blocks take up half of each flank, rounded down to a whole number of columns. At divergence 0.7, the three per-descendant mutation probabilities are approximately 4.1%, 20.1% and 50.3%, using `1 - exp(-divergence * rate)`. The suite contains 12 families (four seeds per setting, 50136–50147), with 50 sequences and 240 columns each.
-
-Use Spearman correlation against the `conservation` column to check whether scores recover the three-tier ordering. The binary `conserved` column marks only the low-rate sites as conserved. The truth file records all four rate transitions for boundary evaluation.
-
-### Pattern D with rate-specific gaps
-
-```powershell
-python -m data_generation.generate_pattern_data --suite d-gaps --output data_generation/datasets/patterns_d_gaps
-```
-
-| Rate regime | Substitution rate | Gap probability per aligned cell |
-| --- | ---: | ---: |
-| Low | 0.06 | 3% |
-| Medium | 0.32 | 12% |
-| High | 1.00 | 25% |
-
-Each of the 12 families matches a gap-free D family in substitution seed, aligned positions and substitution-rate truth. After generating substitutions, the simulator independently masks each sequence and column as `-` according to its rate regime. This models position-dependent missingness in an existing alignment. The 25% setting places the high-rate block near the default 30% scoring threshold, allowing some finite-sample columns to exceed it. The manifest records both seeds and all three gap probabilities. Each truth TSV adds the expected gap probability and observed gap fraction for each column.
-
-Use the `patterns_d_gaps` manifest in a separate benchmark run when comparing against gap-free D. Both manifests use the same pattern label so that the benchmark applies the D-specific diagnostics to both.
-
-See the [benchmark commands](../benchmarks/README.md) to evaluate generated inputs.
+Fletcher, W. and Yang, Z. (2009). [INDELible: A Flexible Simulator of Biological Sequence Evolution](https://doi.org/10.1093/molbev/msp098). *Molecular Biology and Evolution*, 26(8), 1879–1888.

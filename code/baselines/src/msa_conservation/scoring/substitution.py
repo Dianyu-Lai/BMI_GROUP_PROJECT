@@ -1,4 +1,4 @@
-"""BLOSUM62-based substitution severity from full-precision pair probabilities."""
+"""BLOSUM62 background frequencies, integer scores, and weighted sum of pairs."""
 
 import csv
 from dataclasses import dataclass
@@ -17,10 +17,7 @@ SIZE = len(AMINO_ACIDS)
 
 @dataclass(frozen=True)
 class Blosum62:
-    joint: tuple[tuple[float, ...], ...]
     background: tuple[float, ...]
-    severity: tuple[tuple[float, ...], ...]
-    normalizer: float
     log_odds: tuple[tuple[float, ...], ...]
 
 
@@ -44,58 +41,7 @@ def load_blosum62() -> Blosum62:
         tuple(2 * log2(joint[i][j] / (background[i] * background[j])) for j in range(SIZE))
         for i in range(SIZE)
     )
-    return _build_blosum62(joint, background, log_odds, normalizer=None)
-
-
-def blosum_from_log_joint(
-    log_joint: tuple[tuple[float, ...], ...], *, normalizer: float
-) -> Blosum62:
-    """Construct a matrix from a normalized, symmetric log2 joint distribution."""
-    joint = tuple(tuple(2 ** log_p for log_p in row) for row in log_joint)
-    background = tuple(fsum(row) for row in joint)
-    log_background = tuple(log2(p) for p in background)
-    log_odds = tuple(
-        tuple(2 * (log_joint[i][j] - (log_background[i] + log_background[j])) for j in range(SIZE))
-        for i in range(SIZE)
-    )
-    return _build_blosum62(joint, background, log_odds, normalizer=normalizer)
-
-
-def _build_blosum62(
-    joint: tuple[tuple[float, ...], ...],
-    background: tuple[float, ...],
-    log_odds: tuple[tuple[float, ...], ...],
-    *,
-    normalizer: float | None,
-) -> Blosum62:
-    severity = tuple(
-        tuple(max(0.0, (log_odds[i][i] + log_odds[j][j]) / 2 - log_odds[i][j]) for j in range(SIZE))
-        for i in range(SIZE)
-    )
-    if normalizer is None:
-        unlike_pairs = tuple(combinations(range(SIZE), 2))
-        unlike_mass = fsum(joint[i][j] for i, j in unlike_pairs)
-        normalizer = fsum(joint[i][j] * severity[i][j] for i, j in unlike_pairs) / unlike_mass
-    return Blosum62(joint, background, severity, normalizer, log_odds)
-
-
-def substitution_scores(
-    frequencies: Sequence[float], matrix: Blosum62
-) -> tuple[float, float]:
-    """Return P (expected cost) and M (cost conditional on unlike draws)."""
-    observed = [(i, frequency) for i, frequency in enumerate(frequencies) if frequency > 0]
-    probability_mass = []
-    weighted_costs = []
-    for (i, p), (j, q) in combinations(observed, 2):
-        pair_mass = 2 * p * q  # Count both ordered pairs.
-        probability_mass.append(pair_mass)
-        weighted_costs.append(pair_mass * matrix.severity[i][j])
-
-    unlike_mass = fsum(probability_mass)
-    if unlike_mass == 0:
-        return 0.0, 0.0
-    expected_cost = fsum(weighted_costs) / matrix.normalizer
-    return expected_cost, expected_cost / unlike_mass
+    return Blosum62(background, log_odds)
 
 
 @lru_cache(maxsize=1)

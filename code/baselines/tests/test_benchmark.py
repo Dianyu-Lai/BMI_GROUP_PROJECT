@@ -7,16 +7,16 @@ from benchmarks.metrics import (
     sensitivity_specificity,
     spearman,
 )
-from data_generation.synthetic import RESIDUE_CLASSES, generate_alignment, generate_constraint_alignment
-from msa_conservation.scoring.fusion import score_alignment
+from data_generation.synthetic import RESIDUE_CLASSES, generate_reference_alignment, generate_constraint_alignment
+from msa_conservation.scoring.baseline import score_alignment
 
 
 class BenchmarkTests(unittest.TestCase):
     def test_progressive_divergence_preserves_ancestry_and_truth(self):
         parameters = dict(size=16, length=90, seed=4)
-        ancestor = generate_alignment(**parameters, divergence=0.0)
-        shallow = generate_alignment(**parameters, divergence=0.3)
-        deep = generate_alignment(**parameters, divergence=1.0)
+        ancestor = generate_reference_alignment(**parameters, divergence=0.0)
+        shallow = generate_reference_alignment(**parameters, divergence=0.3)
+        deep = generate_reference_alignment(**parameters, divergence=1.0)
         self.assertEqual(ancestor.site_rates, deep.site_rates)
         self.assertEqual(sum(deep.variable_sites), 30)
         for root, low, high in zip(

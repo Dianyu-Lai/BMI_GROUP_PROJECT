@@ -74,8 +74,8 @@ def ablations(folder: Path) -> None:
     svg(folder / "ablation_scores.svg", 840, 436, body)
 
 
-def motif_example(folder: Path) -> None:
-    sample = simulate(scenario="motifs", seed=30103)
+def motif_example(folder: Path, generate=simulate) -> None:
+    sample = generate(scenario="motifs", seed=30103)
     sites = site_profiles(sample.alignment)
     raw = score_optimized(sites)
     profiles = (
@@ -120,9 +120,17 @@ def motif_example(folder: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--results", type=Path, required=True)
+    parser.add_argument("--legacy-reference", action="store_true", help="use the historical motif alignment")
     args = parser.parse_args()
+    if args.legacy_reference:
+        from data_generation.legacy_reference import simulate as generate
+    else:
+        generate = simulate
+    try:
+        motif_example(args.results, generate)
+    except (OSError, ValueError) as exc:
+        parser.exit(2, f"error: {exc}\n")
     ablations(args.results)
-    motif_example(args.results)
     return 0
 
 

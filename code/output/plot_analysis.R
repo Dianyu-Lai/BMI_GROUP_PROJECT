@@ -3,6 +3,7 @@
 
 script <- sub("^--file=", "", grep("^--file=", commandArgs(), value=TRUE)[1])
 root <- dirname(normalizePath(script, winslash="/"))
+requested_figures <- commandArgs(trailingOnly=TRUE)
 figures <- file.path(root, "figures")
 dir.create(figures, showWarnings=FALSE)
 table <- function(name) read.delim(file.path(root, "tables", paste0(name, ".tsv")),
@@ -25,6 +26,7 @@ labels <- c(E0="E0 Original", E4="E4 Adaptive", E5="E5 Segmentation",
             Shannon="Shannon", "AL2CO variance"="AL2CO variance")
 
 save_figure <- function(name, width, height, draw) {
+    if (length(requested_figures) && !name %in% requested_figures) return(invisible(NULL))
     render <- function() {
         on.exit(dev.off())
         par(family="sans", fg=ink, col.axis=ink, col.lab=ink, col.main=ink, las=1,
@@ -53,76 +55,115 @@ axis_frame <- function(x, y, xlabels=x, ylabels=y, grid="y") {
     box(bty="l", col=ink)
 }
 
-point_summary <- function(scenario, metric, methods, ylimits, yticks, title, ylab, letter) {
-    plot(NA, xlim=c(0.5, length(methods)+0.5), ylim=ylimits, xaxs="i", yaxs="i",
-         xlab="", ylab=ylab, axes=FALSE)
-    axis_frame(seq_along(methods), yticks, methods)
-    for (i in seq_along(methods)) {
-        method <- methods[i]
-        values <- families[families$scenario == scenario & families$method == method, metric]
-        offset <- seq(-0.15, 0.15, length.out=length(values))
-        points(i+offset, values, pch=16, col=adjustcolor(colors[method], alpha.f=0.45), cex=0.67)
-        points(i, mean(values), pch=23, cex=1.23, bg=colors[method], col="white", lwd=0.9)
-    }
-    panel(letter, title)
+values_for <- function(pattern, method, metric) {
+    families[families$scenario == pattern & families$method == method, metric]
 }
 
-save_figure("fig01_patterns_abc", 12.15, 3.65, function() {
-    layout(matrix(1:3, nrow=1), widths=c(1, 1.21, 1.18))
-    par(mar=c(3.2, 4.1, 3.0, 0.9))
-    point_summary("A", "false_boundaries", c("E5", "E6", "E8"), c(-0.23, 4.55),
-                  0:4, "Uniform conservation", "False boundaries / family", "A")
-    for (i in 1:3) {
-        method <- c("E5", "E6", "E8")[i]
-        value <- mean(families$false_boundaries[families$scenario == "A" & families$method == method])
-        text(i, 4.22, sprintf("mean %.2f", value), cex=0.80, col=colors[method])
+draw_distribution <- function(values, at, color, horizontal=FALSE) {
+    boxplot(values, at=at, horizontal=horizontal, add=TRUE, axes=FALSE, outline=FALSE,
+            boxwex=0.46, col=adjustcolor(color, alpha.f=0.16), border=color,
+            pars=list(medlwd=1.6, staplelty=1, whisklty=1))
+    offset <- seq(-0.155, 0.155, length.out=length(values))
+    if (horizontal) {
+        points(values, at+offset, pch=16, col=adjustcolor(color, alpha.f=0.56), cex=0.69)
+    } else {
+        points(at+offset, values, pch=16, col=adjustcolor(color, alpha.f=0.56), cex=0.69)
     }
-    par(mar=c(3.2, 4.1, 3.0, 0.95))
-    point_summary("B", "variable_site_iou", c("E0", "E2", "E3", "E5", "E7", "E8"),
-                  c(0.89, 1.015), c(0.90, 0.95, 1.00), "Central variable block", "Variable-site IoU", "B")
-    par(mar=c(3.2, 4.1, 3.0, 0.85))
-    plot(NA, xlim=c(2.5, 9.5), ylim=c(-0.055, 1.07), xlab="Motif width (residues)",
+}
+
+save_figure("fig01_patterns_abc", 12.4, 3.95, function() {
+    layout(matrix(1:3, nrow=1), widths=c(1, 1.19, 1.27))
+    par(mar=c(3.5, 4.2, 3.1, 1.05))
+    methods <- c("E5", "E6", "E8")
+    plot(NA, xlim=c(0.52, 3.63), ylim=c(-0.19, 4.36), xaxs="i", yaxs="i",
+         xlab="", ylab="False boundaries per family", axes=FALSE)
+    axis_frame(1:3, 0:4, methods)
+    for (i in seq_along(methods)) {
+        method <- methods[i]
+        color <- colors[method]
+        values <- values_for("A", method, "false_boundaries")
+        value <- mean(values)
+        rect(i-0.23, 0, i+0.23, value, col=adjustcolor(color, alpha.f=0.76), border=NA)
+        offset <- seq(-0.155, 0.155, length.out=length(values))
+        points(i+offset, values, pch=21, bg=adjustcolor(color, alpha.f=0.64),
+               col="white", lwd=0.55, cex=0.72)
+        text(i, value+0.07, sprintf("%.2f", value), pos=3, offset=0.12, cex=0.85, col=ink)
+    }
+    panel("A", "Uniform conservation")
+
+    par(mar=c(3.5, 4.2, 3.1, 1.0))
+    methods <- c("E0", "E2", "E3", "E5", "E6", "E7", "E8")
+    plot(NA, xlim=c(0.5, 7.5), ylim=c(0.93, 1.008), xaxs="i", yaxs="i",
+         xlab="", ylab="Variable-site IoU", axes=FALSE)
+    ticks <- seq(0.94, 1.00, 0.02)
+    axis_frame(seq_along(methods), ticks, methods, sprintf("%.2f", ticks))
+    for (i in seq_along(methods)) {
+        method <- methods[i]
+        draw_distribution(values_for("B", method, "variable_site_iou"), i, colors[method])
+    }
+    panel("B", "Central variable block")
+
+    par(mar=c(3.5, 4.2, 3.1, 0.85))
+    plot(NA, xlim=c(0.55, 3.45), ylim=c(-0.06, 1.22), xlab="Motif width (residues)",
          ylab="Conserved motif recall", axes=FALSE, xaxs="i", yaxs="i")
-    axis_frame(c(3,5,9), seq(0,1,0.25), ylabels=paste0(seq(0,100,25), "%"))
-    for (i in seq_along(c("E2", "E3", "E8"))) {
-        method <- c("E2", "E3", "E8")[i]
+    axis_frame(1:3, seq(0,1,0.25), c(3,5,9), paste0(seq(0,100,25), "%"))
+    methods <- c("E2", "E3", "E8")
+    for (i in seq_along(methods)) {
+        method <- methods[i]
         data <- levels[levels$pattern == "C" & levels$method == method & levels$metric == "sensitivity", ]
-        lines(data$level + c(-0.10,0.10,0)[i], data$mean, col=colors[method], lwd=1.9,
-              type="b", pch=c(1,17,19)[i], lty=c(2,3,1)[i], cex=0.96)
+        x <- match(data$level, c(3,5,9)) + c(-0.24,0,0.24)[i]
+        rect(x-0.095, 0, x+0.095, data$mean, col=colors[method], border=NA)
+        nonzero <- data$mean > 0
+        text(x, data$mean+0.038, sprintf("%g%%", round(100*data$mean, 1)),
+             cex=0.70, col=ifelse(nonzero, ink, muted))
     }
-    legend(2.65, 0.80, c("E2 Uniform", "E3 Gaussian", "E8 Retuned SCAW"), bty="n", cex=0.81,
-           col=colors[c("E2", "E3", "E8")], lty=c(2,3,1), lwd=1.65, pch=c(1,17,19), seg.len=2)
+    legend("top", c("E2 Uniform", "E3 Gaussian", "E8 Retuned"), bty="n", cex=0.79,
+           fill=colors[methods], border=NA, horiz=TRUE,
+           x.intersp=0.55, text.col=ink)
     panel("C", "Short conserved motif")
 })
 
-d_dot_panel <- function(methods, metric, limits, ticks, tick_labels, xlab, letter, title) {
+d_panel <- function(methods, metric, limits, ticks, tick_labels, xlab, letter, title, stem=FALSE) {
     y <- rev(seq_along(methods))
-    plot(NA, xlim=limits, ylim=c(0.45, length(y)+0.55), xlab=xlab, ylab="",
+    plot(NA, xlim=limits, ylim=c(0.45, length(y)+1.05), xlab=xlab, ylab="",
          axes=FALSE, xaxs="i", yaxs="i")
-    abline(v=ticks, col=gridline, lwd=0.85)
+    segments(ticks, 0.45, ticks, length(y)+0.39, col=gridline, lwd=0.85)
+    labels_x <- limits[2] - 0.013 * diff(limits)
+    text(labels_x, length(y)+0.67, "Mean", adj=1, cex=0.72, font=2, col=muted)
     for (i in seq_along(methods)) {
         method <- methods[i]
-        values <- families[families$scenario == "D" & families$method == method, metric]
-        offset <- seq(-0.19, 0.19, length.out=length(values))
-        points(values, y[i]+offset, pch=16, col=adjustcolor(colors[method], alpha.f=0.45), cex=0.77)
-        points(mean(values), y[i], pch=23, cex=1.43, bg=colors[method], col="white")
+        color <- colors[method]
+        values <- values_for("D", method, metric)
+        average <- mean(values)
+        hero <- method == if (stem) "E8" else "E5"
+        if (stem) {
+            segments(0, y[i], average, y[i], col=adjustcolor(color, alpha.f=0.70), lwd=1.70)
+            offset <- seq(0.10, 0.27, length.out=length(values))
+            points(values, y[i]+offset, pch=16, col=adjustcolor(color, alpha.f=0.59), cex=0.70)
+        } else {
+            draw_distribution(values, y[i], color, horizontal=TRUE)
+        }
+        points(average, y[i], pch=if (stem) 21 else 23, cex=if (hero) 1.58 else 1.25,
+               bg=color, col="white")
+        text(labels_x, y[i], if (stem) sprintf("%.1f%%", 100*average) else sprintf("%.4f", average),
+             adj=1, cex=0.80, col=if (hero) color else ink, font=if (hero) 2 else 1)
         mtext(labels[method], side=2, at=y[i], line=0.46, las=1, adj=1, cex=0.83, col=ink,
-              font=if (method %in% c("E5", "E8")) 2 else 1)
+              font=if (hero) 2 else 1)
     }
     axis(1, at=ticks, labels=tick_labels, cex.axis=0.9)
     box(bty="l", col=ink)
     panel(letter, title)
 }
 
-save_figure("fig02_pattern_d_ablation", 10.95, 4.25, function() {
-    layout(matrix(1:2, nrow=1))
+save_figure("fig02_pattern_d_ablation", 11.35, 4.55, function() {
+    layout(matrix(1:2, nrow=1), widths=c(1.07, 1))
     methods <- c("E0", "E4", "E5", "E6", "E7", "E8", "Shannon", "AL2CO variance")
     par(mar=c(3.6, 10.1, 2.8, 0.8))
-    d_dot_panel(methods, "medium_as_variable", c(-0.035,1.035), seq(0,1,0.25),
-                paste0(seq(0,100,25), "%"), "Medium-rate sites classified as variable", "A", "Thresholded detection")
+    d_panel(methods, "medium_as_variable", c(-0.035,1.23), seq(0,1,0.25),
+            paste0(seq(0,100,25), "%"), "Medium-rate sites classified as variable", "A", "Thresholded detection", stem=TRUE)
     par(mar=c(3.6, 10.1, 2.8, 1.0))
-    d_dot_panel(methods, "spearman", c(0.795,1.012), seq(0.8,1,0.05),
-                sprintf("%.2f", seq(0.8,1,0.05)), "Spearman correlation", "B", "Three-rate ranking")
+    d_panel(methods, "spearman", c(0.795,1.055), seq(0.8,1,0.05),
+            sprintf("%.2f", seq(0.8,1,0.05)), "Spearman correlation", "B", "Three-rate ranking")
 })
 
 profile_panel <- function(seed, methods, limits, xticks, line_types, letter, title, legend_at) {

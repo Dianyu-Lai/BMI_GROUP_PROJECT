@@ -8,17 +8,14 @@ from pathlib import Path
 from typing import Sequence
 
 from .msa import henikoff_weights, read_fasta
-from .scoring.fusion import score_alignment
-from .scoring.physicochemical import calibrated_blosum62
+from .scoring.baseline import score_alignment
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("alignment", type=Path, help="aligned protein FASTA file")
     parser.add_argument("--weights", choices=("uniform", "henikoff"), default="uniform")
-    parser.add_argument("--gamma", type=float, default=1.0, help="fusion coefficient (default: 1)")
     parser.add_argument("--gap-penalty", type=float, default=0.0, help="coefficient for missing nongap coverage")
-    parser.add_argument("--aaindex-eta", type=float, default=0.0, help="AAindex tilt strength (default: 0)")
     parser.add_argument(
         "--reference-baselines", action="store_true", help="also score KL, JSD, BLOSUM62 SOP and adjusted entropy"
     )
@@ -31,9 +28,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         scores = score_alignment(
             alignment,
             weights=weights,
-            gamma=args.gamma,
             gap_penalty=args.gap_penalty,
-            matrix=calibrated_blosum62(args.aaindex_eta),
             reference_baselines=args.reference_baselines,
         )
         first = next(scores)

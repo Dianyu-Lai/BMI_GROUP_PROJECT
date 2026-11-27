@@ -49,7 +49,7 @@ Use the [data generators](../data_generation/README.md) to create aligned FASTA 
 | [`../benchmarks/`](../benchmarks/README.md) | Parameter selection, evaluation, ablations, timing and SVG plots |
 | `data/examples/` | Example aligned FASTA for scoring |
 | `data/real/` | Unaligned UniProt globin sequences for the real-data workflow |
-| `data/reference/` | BLOSUM62 and AAindex tables |
+| `data/reference/` | BLOSUM62 pair probabilities for the benchmark comparator |
 | [`../data_generation/datasets/`](../data_generation/README.md) | Generated alignments and truth labels |
 | `tests` | Mathematical checks, optimization equivalence and CLI integration |
 | `results/reference_run` | Frozen settings, held-out tables, timing and figures |
@@ -61,4 +61,4 @@ Use the [data generators](../data_generation/README.md) to create aligned FASTA 
 - [Benchmark protocol](docs/benchmark_protocol.md) and [results](docs/benchmark_report.md)
 - [ICA software documentation](docs/software_documentation.tex)
 
-OpenAI Codex assisted the implementation, testing, benchmarking and documentation. The previous exploratory AAindex/BLOSUM pipeline and its commands are preserved in [the earlier project notes](docs/earlier_pipeline.md).
+OpenAI Codex assisted the implementation, testing, benchmarking and documentation.

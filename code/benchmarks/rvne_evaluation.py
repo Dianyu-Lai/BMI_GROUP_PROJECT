@@ -6,7 +6,7 @@ import numpy as np
 
 from msa_conservation.msa import AMINO_ACIDS, Alignment, column_profiles
 from msa_conservation.scoring.rvne import LOG_SIZE, SiteProfiles, background
-from msa_conservation.scoring.substitution import load_blosum62
+from msa_conservation.scoring.substitution import blosum62_severity
 from .metrics import roc_auc
 
 
@@ -142,9 +142,9 @@ def comparator_profiles(sites: SiteProfiles, alignment: Alignment) -> dict[str, 
     kl = (p * (log_p - np.log(q))).sum(axis=1) / np.log(2)
     jsd = ((p * (log_p - np.log(middle))).sum(axis=1)
            + (q * np.log(q / middle)).sum(axis=1)) / (2 * np.log(2))
-    blosum = load_blosum62()
-    severity = np.einsum("li,ij,lj->l", p, np.asarray(blosum.severity), p)
-    similarity = 1 - severity / np.max(blosum.severity)
+    severity_matrix = np.asarray(blosum62_severity())
+    severity = np.einsum("li,ij,lj->l", p, severity_matrix, p)
+    similarity = 1 - severity / np.max(severity_matrix)
     clustal = np.fromiter(map(_clustal_consensus, zip(*alignment.sequences)),
                           dtype=float, count=alignment.length)
     return {method: np.where(sites.valid, values * sites.coverage, np.nan)

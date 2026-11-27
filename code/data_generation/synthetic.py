@@ -1,7 +1,8 @@
-"""Generate aligned protein sequences with controlled mutation or substitution labels."""
+"""Build the baseline benchmark's evolutionary and matched-substitution inputs."""
 
 from dataclasses import dataclass
 from math import expm1, isfinite
+from pathlib import Path
 from random import Random
 
 from msa_conservation.msa import AMINO_ACIDS, Alignment
@@ -21,9 +22,26 @@ class SyntheticAlignment:
 
 
 def generate_alignment(
+    *, size: int, length: int, divergence: float, seed: int, work_dir: Path | None = None
+) -> SyntheticAlignment:
+    """Use INDELible for the original three-block rate comparison."""
+    if size < 2 or length < 3:
+        raise ValueError("synthetic alignments need at least two sequences and three sites")
+    from .rvne_simulation import simulate, write_simulation
+
+    rates = tuple(REGION_RATES[i * len(REGION_RATES) // length] for i in range(length))
+    simulation = simulate(size=size, length=length, divergence=divergence, seed=seed,
+                          ancestral_rates=rates, work_dir=work_dir)
+    if work_dir is not None:
+        write_simulation(simulation, work_dir / "aligned.fasta", work_dir / "truth.tsv", work_dir)
+    return SyntheticAlignment(simulation.alignment, tuple(simulation.rates),
+                              tuple(simulation.rates == REGION_RATES[-1]))
+
+
+def generate_reference_alignment(
     *, size: int, length: int, divergence: float, seed: int
 ) -> SyntheticAlignment:
-    """Simulate independent descendants of one reference with at most one change per site."""
+    """Replay historical baseline inputs with at most one change per site."""
     if size < 2 or length < 3:
         raise ValueError("synthetic alignments need at least two sequences and three sites")
     _check_divergence(divergence)
@@ -58,7 +76,7 @@ def generate_alignment(
 def generate_constraint_alignment(
     *, size: int, length: int, divergence: float, seed: int
 ) -> SyntheticAlignment:
-    """Pair within-class and cross-class substitutions at identical frequencies."""
+    """Construct matched controls with equal mutation counts for both residue classes."""
     if size < 2 or length < 2 or length % 2:
         raise ValueError("the constraint suite needs at least two sequences and an even length")
     _check_divergence(divergence)
