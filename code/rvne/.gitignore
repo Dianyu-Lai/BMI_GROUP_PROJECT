@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+
+/data/synthetic/*
+!/data/synthetic/.gitkeep
+/results/*
+!/results/.gitkeep
+!/results/reference_run/
