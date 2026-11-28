@@ -13,6 +13,7 @@
       <a href="#analyze" class="brand"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>Protein Conservation Scorer</a>
       <nav aria-label="Main navigation">
         <a id="nav-analyze" href="#analyze" aria-current="page">Analyze</a>
+        <a id="nav-generate" href="#generate">Generate MSA</a>
         <a id="nav-benchmarks" href="#benchmarks">Benchmarks</a>
       </nav>
     </div>
@@ -47,6 +48,7 @@
                 </select>
                 <button id="load-example" type="button" class="button" disabled>Load example</button>
               </div>
+              <p class="field-note">You can also generate your own MSA <a href="#generate">here</a>.</p>
             </div>
           </section>
           <section class="panel settings-panel" aria-labelledby="settings-heading">
@@ -71,8 +73,8 @@
                 <div class="field">
                   <label for="preset">Parameter preset</label>
                   <select id="preset">
-                    <option value="frozen">Frozen benchmark settings</option>
-                    <option value="default">Software defaults</option>
+                    <option value="frozen">SCAW v2 study settings</option>
+                    <option value="default">RVNE settings</option>
                     <option value="custom" disabled>Custom</option>
                   </select>
                 </div>
@@ -99,28 +101,9 @@
                 <fieldset id="custom-context" class="custom-parameters" hidden disabled>
                   <legend>SCAW parameters</legend>
                   <div class="field">
-                    <label for="context-beta">Segmentation penalty (β)</label>
-                    <input id="context-beta" name="beta" type="number" min="0" step="any" required>
-                  </div>
-                  <div class="field">
-                    <label for="context-smoothing">Window smoothing (λ)</label>
-                    <input id="context-smoothing" name="smoothing" type="number" min="0" step="any" required>
-                  </div>
-                  <div class="field">
-                    <label for="context-radii">Window radii</label>
-                    <input id="context-radii" name="radii" type="text" pattern=" *[0-9]+( *, *[0-9]+)* *" title="Enter increasing whole numbers separated by commas, starting with 0." required>
-                  </div>
-                  <div class="field">
-                    <label for="context-min-support">Minimum support</label>
-                    <input id="context-min-support" name="min_support" type="number" min="0" step="any" required>
-                  </div>
-                  <div class="field">
-                    <label for="context-min-segment">Minimum segment length</label>
-                    <input id="context-min-segment" name="min_segment" type="number" min="1" step="1" required>
-                  </div>
-                  <div class="field">
-                    <label for="context-max-segment">Maximum segment length</label>
-                    <input id="context-max-segment" name="max_segment" type="number" min="1" step="1" placeholder="Unbounded">
+                    <label for="context-penalty-scale">Segmentation penalty multiplier</label>
+                    <input id="context-penalty-scale" name="penalty_scale" type="number" min="0" step="any" required>
+                    <p class="field-note">Default 1. Higher values give fewer segments. The penalty is estimated from this alignment. Context uses three columns on each side, clipped at segment boundaries.</p>
                   </div>
                 </fieldset>
               </div>
@@ -134,6 +117,45 @@
         </form>
       </div>
       <div id="results" hidden></div>
+    </section>
+    <section id="generate-page" aria-label="Generate MSA" hidden>
+      <div class="page-heading">
+        <a href="#analyze" class="back-link">← Back to Analyze</a>
+        <h1>Generate MSA</h1>
+        <p>INDELible simulates amino acid substitutions and optional insertions and deletions along an evolutionary tree to generate a protein MSA with a designed mutation-rate pattern.</p>
+      </div>
+      <p id="generation-loading" role="status">Loading generator settings…</p>
+      <button id="generation-retry" type="button" class="button" hidden>Retry loading settings</button>
+      <p id="generation-error" class="notice error" role="alert" hidden></p>
+      <form id="generation-form" class="panel generation-panel" hidden>
+        <div class="panel-heading"><h2>Simulation settings</h2></div>
+        <div class="generation-body">
+          <div id="generation-basic" class="generation-fields"></div>
+          <p class="field-note">Ancestor length is the number of sites before evolution. Insertions and deletions can change the final number of aligned columns.</p>
+          <p id="scenario-note" class="field-note"></p>
+          <details id="generation-advanced">
+            <summary>Advanced settings</summary>
+            <div id="generation-advanced-fields" class="advanced-body generation-fields"></div>
+          </details>
+          <div class="run-row">
+            <button id="run-generation" type="submit" class="button primary">Generate MSA</button>
+            <span id="generation-status" role="status"></span>
+          </div>
+        </div>
+      </form>
+      <section id="generation-result" class="panel generation-panel" aria-labelledby="generation-result-heading" hidden>
+        <div class="panel-heading"><h2 id="generation-result-heading" tabindex="-1">Generated alignment</h2></div>
+        <div class="generation-body">
+          <dl id="generation-summary" class="result-summary"></dl>
+          <h3>FASTA preview · first 3 sequences, up to 120 columns</h3>
+          <pre id="generation-preview" class="fasta-preview" tabindex="0" aria-label="Aligned FASTA preview"></pre>
+          <div class="actions generation-actions">
+            <a id="generation-fasta" class="button">Download Aligned FASTA</a>
+            <a id="generation-truth" class="button">Download Site truth TSV</a>
+            <button id="use-generated" type="button" class="button primary">Use this MSA</button>
+          </div>
+        </div>
+      </section>
     </section>
     <section id="benchmarks-page" aria-label="Benchmarks" hidden></section>
   </main>

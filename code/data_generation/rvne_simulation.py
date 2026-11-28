@@ -1,15 +1,14 @@
 """Generate protein MSAs with INDELible and annotate the true alignment."""
 
-import argparse
 import csv
 from dataclasses import asdict, dataclass, replace
+from decimal import Decimal
 import hashlib
 from itertools import groupby
 import json
 from math import isfinite
 from pathlib import Path
 from random import Random
-import sys
 from tempfile import TemporaryDirectory
 
 import numpy as np
@@ -22,6 +21,9 @@ SCENARIOS = ("conserved", "variable", "blocks", "motifs", "gradual",
              "divergent", "indels", "redundant")
 SUPPLEMENTAL_SCENARIOS = ("conserved-variable-blocks", "single-motif", "three-rate-blocks")
 D_RATES = (0.06, 0.32, 1.0)
+DEFAULT_SIZE = 50
+DEFAULT_LENGTH = 240
+DEFAULT_DIVERGENCE = .7
 
 
 @dataclass(frozen=True)
@@ -105,7 +107,11 @@ def _newick(node: tuple, scale: float) -> str:
     name, length, children = node
     if children:
         name = "(" + ",".join(_newick(child, scale) for child in children) + ")"
-    return f"{name}:{length * scale:.15g}" if length else name + ";"
+    if not length:
+        return name + ";"
+    # INDELible 1.03 requires fixed decimal notation for Newick branch lengths.
+    branch_length = Decimal(f"{length * scale:.15g}")
+    return f"{name}:{branch_length:f}"
 
 
 def _gap_statistics(gaps: np.ndarray) -> dict:
@@ -178,7 +184,7 @@ def _calibrate(executable: Path, directory: Path, *, taxa: tuple[str, ...], tree
     return best, trials
 
 
-def simulate(*, size: int = 50, length: int = 240, divergence: float = .7,
+def simulate(*, size: int = DEFAULT_SIZE, length: int = DEFAULT_LENGTH, divergence: float = DEFAULT_DIVERGENCE,
              scenario: str = "blocks", variable_fraction: float = .4, motif_length: int = 5,
              gaps: float | None = None, redundancy: float | None = None,
              gap_by_rate: tuple[float, float, float] | None = None, seed: int = 1,
@@ -195,8 +201,11 @@ def simulate(*, size: int = 50, length: int = 240, divergence: float = .7,
     if gaps is None and scenario == "indels" and not (options.insertion_rate or options.deletion_rate):
         gaps = .2
     if gap_by_rate is not None and (gaps is not None or scenario != "three-rate-blocks"
-                                   or len(gap_by_rate) != len(D_RATES)):
-        raise ValueError("rate-specific gap targets require three-rate-blocks without a global gap target")
+                                   or len(gap_by_rate) != len(D_RATES)
+                                   or not all(0 <= target < 1 for target in gap_by_rate)):
+        raise ValueError("three gap targets in [0, 1) require three-rate-blocks without a global gap target")
+    if gaps is not None and not 0 <= gaps < 1:
+        raise ValueError("target gap occupancy must be in [0, 1)")
     if regions is None:
         rates = (scenario_rates(scenario, length, variable_fraction, motif_length)
                  if ancestral_rates is None else ancestral_rates)
@@ -217,6 +226,7 @@ def _simulate(executable, work_dir, size, divergence, scenario, redundancy, gaps
     work_dir.mkdir(parents=True)
     taxa = tuple(f"seq{i + 1}" for i in range(size))
     topology = _tree(taxa, seed, redundancy)
+    requested_divergence = divergence
     divergence *= 2.5 if scenario == "divergent" else 1.
     targets = dict(zip(D_RATES, gap_by_rate)) if gap_by_rate is not None else {}
     segments, partitions, final_rates = [], [], []
@@ -226,7 +236,8 @@ def _simulate(executable, work_dir, size, divergence, scenario, redundancy, gaps
         root_length, rate = design.length, design.rate
         tree = _newick(topology, divergence * rate)
         target = targets.get(rate, gaps) if design.gap_target is None else design.gap_target
-        settings, trials = design.options or options, []
+        requested_options = design.options or options
+        settings, trials = requested_options, []
         name = f"region_{region:02d}"
         calibration_path = None
         if target is not None:
@@ -249,7 +260,8 @@ def _simulate(executable, work_dir, size, divergence, scenario, redundancy, gaps
         partitions.append({"id": region, "ancestral_start": root_start, "ancestral_length": root_length,
                            "aligned_start": aligned_start, "aligned_length": aligned_length, "rate": rate,
                            "tree": tree, "engine_seed": engine_seed, "options": asdict(settings),
-                           "gap_target": target, "calibration": trials, "statistics": _statistics(rows),
+                           "requested_options": asdict(requested_options), "gap_target": target,
+                           "calibration": trials, "statistics": _statistics(rows),
                            "calibration_path": calibration_path.as_posix() if calibration_path and trials else None,
                            "indel_events": segment.indel_events,
                            "control_file": f"{name}/control.txt", "exit_status": 0, "seconds": segment.seconds})
@@ -264,7 +276,8 @@ def _simulate(executable, work_dir, size, divergence, scenario, redundancy, gaps
                 "executable_sha256": hashlib.sha256(executable.read_bytes()).hexdigest(),
                 "seed": seed, "scenario": scenario,
                 "sequence_count": size, "ancestral_length": root_start - 1, "aligned_length": len(rates),
-                "divergence": divergence, "tree": _newick(topology, divergence), "taxa": taxa,
+                "divergence": divergence, "requested_divergence": requested_divergence,
+                "tree": _newick(topology, divergence), "taxa": taxa,
                 "redundancy": redundancy, "boundary_width": boundary_width, "partitions": partitions,
                 "statistics": _statistics(aligned), "simulation_seconds": sum(p["seconds"] for p in partitions),
                 "binary_metrics_reason": (None if conserved.any() and not conserved.all()
@@ -297,105 +310,6 @@ def write_simulation(simulation: Simulation, fasta: Path, truth: Path, work_dir:
                 writer.writerow((index + 1, simulation.rates[index], simulation.truth[index],
                                  int(simulation.conserved[index]), int(index in boundaries), part["id"],
                                  part["id"], rate_class, int(index in mask), gap_fraction))
-    (work_dir / "metadata.json").write_text(json.dumps(metadata, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-
-
-def add_engine_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--indelible-bin", type=Path)
-    parser.add_argument("--model", choices=("WAG", "LG", "JTT"), default="WAG")
-    parser.add_argument("--method", type=int, choices=(1, 2), default=1)
-    parser.add_argument("--insertion-rate", type=float, default=0.)
-    parser.add_argument("--deletion-rate", type=float, default=0.)
-    parser.add_argument("--insertion-length", nargs="+", default=("POW", "1.7", "15"), metavar="MODEL_OR_PARAMETER")
-    parser.add_argument("--deletion-length", nargs="+", default=("POW", "1.7", "15"), metavar="MODEL_OR_PARAMETER")
-    parser.add_argument("--timeout", type=float, default=60., help="seconds per simulator process")
-    parser.add_argument("--boundary-width", type=int, default=0, help="mask this many columns on each side")
-
-
-def engine_options(args: argparse.Namespace) -> Options:
-    return Options(args.model, args.method, args.insertion_rate, args.deletion_rate,
-                   LengthModel(args.insertion_length[0], tuple(map(float, args.insertion_length[1:]))),
-                   LengthModel(args.deletion_length[0], tuple(map(float, args.deletion_length[1:]))), args.timeout)
-
-
-def read_regions(path: Path, options: Options) -> tuple[Region, ...]:
-    entries = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(entries, list) or not entries:
-        raise ValueError("region config must be a nonempty JSON array")
-    regions = []
-    for entry in entries:
-        if not isinstance(entry, dict):
-            raise ValueError("each region must be a JSON object")
-        settings = entry.copy()
-        try:
-            length = settings.pop("length")
-            rate = settings.pop("rate")
-            target = settings.pop("gap_target", None)
-            for kind in ("insertion_length", "deletion_length"):
-                if kind in settings:
-                    distribution = settings[kind]
-                    settings[kind] = LengthModel(distribution["name"], tuple(distribution["parameters"]))
-            region = Region(length, rate, replace(options, **settings), target)
-        except (KeyError, TypeError) as exc:
-            raise ValueError(f"invalid region configuration: {entry}") from exc
-        regions.append(region)
-    return tuple(regions)
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    add_engine_arguments(parser)
-    parser.add_argument("--check", action="store_true", help="verify dependencies by running a tiny simulation")
-    parser.add_argument("--output", type=Path, help="aligned FASTA output (required for generation)")
-    parser.add_argument("--truth", type=Path, help="per-column truth output (required for generation)")
-    parser.add_argument("--work-dir", type=Path, help="new path for raw runs and metadata")
-    parser.add_argument("--scenario", choices=SCENARIOS + SUPPLEMENTAL_SCENARIOS, default="blocks")
-    parser.add_argument("--regions", type=Path, help="JSON configuration for custom ancestral regions")
-    parser.add_argument("--size", type=int, default=50)
-    parser.add_argument("--length", type=int, help="ancestral sequence length (default: 240)")
-    parser.add_argument("--divergence", type=float, default=.7)
-    parser.add_argument("--variable-fraction", type=float, default=.4)
-    parser.add_argument("--motif-length", type=int, default=5)
-    parser.add_argument("--gaps", type=float, help="target gap occupancy for pilot calibration")
-    parser.add_argument("--redundancy", type=float)
-    parser.add_argument("--seed", type=int, default=1)
-    args = parser.parse_args()
-    if args.check:
-        try:
-            executable = find_executable(args.indelible_bin)
-            with TemporaryDirectory(prefix="indelible-check-") as directory:
-                result = run_partition(executable, Path(directory) / "run", taxa=("seq1", "seq2"),
-                                       tree="(seq1:0.1,seq2:0.1);", length=12, seed=13, options=Options())
-        except (OSError, ValueError) as exc:
-            parser.exit(2, f"error: {exc}\n")
-        print(f"Python {sys.version.split()[0]}, NumPy {np.__version__}")
-        print(f"INDELible {result.version}: {executable}")
-        print(f"Smoke test passed ({len(result.aligned)} sequences, {len(result.aligned[0])} aligned columns).")
-        return 0
-    if args.output is None or args.truth is None:
-        parser.error("generation requires --output and --truth")
-    work_dir = args.work_dir or args.output.with_suffix(".run")
-    try:
-        if args.output.resolve() == args.truth.resolve() or args.output.exists() or args.truth.exists():
-            raise ValueError("FASTA and truth must use distinct new files")
-        options = engine_options(args)
-        regions = read_regions(args.regions, options) if args.regions else None
-        length = args.length if args.length is not None else (sum(region.length for region in regions) if regions else 240)
-        simulator = simulate(scenario="custom" if regions else args.scenario, size=args.size,
-                             length=length, divergence=args.divergence, regions=regions,
-                             variable_fraction=args.variable_fraction, motif_length=args.motif_length, gaps=args.gaps,
-                             redundancy=args.redundancy, seed=args.seed, executable=args.indelible_bin, work_dir=work_dir,
-                             options=options, boundary_width=args.boundary_width)
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.truth.parent.mkdir(parents=True, exist_ok=True)
-        write_simulation(simulator, args.output, args.truth, work_dir)
-    except (OSError, ValueError) as exc:
-        parser.exit(2, f"error: {exc}\n")
-    if reason := simulator.metadata["binary_metrics_reason"]:
-        print(reason)
-    print(f"Wrote {simulator.alignment.size} sequences and {simulator.alignment.length} aligned columns to {args.output}")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    with (work_dir / "metadata.json").open("x", encoding="utf-8", newline="\n") as handle:
+        json.dump(metadata, handle, indent=2, allow_nan=False)
+        handle.write("\n")

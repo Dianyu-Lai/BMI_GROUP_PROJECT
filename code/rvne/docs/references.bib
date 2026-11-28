@@ -1,3 +1,71 @@
+% 1. MSA/data generation and alignment algorithms
+
+@article{fletcher2009indelible,
+  author = {Fletcher, William and Yang, Ziheng},
+  title = {{INDELible}: A Flexible Simulator of Biological Sequence Evolution},
+  journal = {Molecular Biology and Evolution},
+  year = {2009}, volume = {26}, number = {8}, pages = {1879--1888},
+  doi = {10.1093/molbev/msp098}
+}
+
+@article{whelan2001wag,
+  author = {Whelan, Simon and Goldman, Nick},
+  title = {A General Empirical Model of Protein Evolution Derived from Multiple Protein Families Using a Maximum-Likelihood Approach},
+  journal = {Molecular Biology and Evolution},
+  year = {2001}, volume = {18}, number = {5}, pages = {691--699},
+  doi = {10.1093/oxfordjournals.molbev.a003851}
+}
+
+@article{jones1992jtt,
+  author = {Jones, David T. and Taylor, William R. and Thornton, Janet M.},
+  title = {The rapid generation of mutation data matrices from protein sequences},
+  journal = {Computer Applications in the Biosciences},
+  year = {1992}, volume = {8}, number = {3}, pages = {275--282},
+  doi = {10.1093/bioinformatics/8.3.275}
+}
+
+@article{le2008lg,
+  author = {Le, Si Quang and Gascuel, Olivier},
+  title = {An Improved General Amino Acid Replacement Matrix},
+  journal = {Molecular Biology and Evolution},
+  year = {2008}, volume = {25}, number = {7}, pages = {1307--1320},
+  doi = {10.1093/molbev/msn067}
+}
+
+@article{katoh2013mafft,
+  author = {Katoh, Kazutaka and Standley, Daron M.},
+  title = {{MAFFT} Multiple Sequence Alignment Software Version 7: Improvements in Performance and Usability},
+  journal = {Molecular Biology and Evolution},
+  year = {2013}, volume = {30}, number = {4}, pages = {772--780},
+  doi = {10.1093/molbev/mst010}
+}
+
+@article{katoh2005mafft,
+  author = {Katoh, Kazutaka and Kuma, Kei-ichi and Toh, Hiroyuki and Miyata, Takashi},
+  title = {{MAFFT} version 5: improvement in accuracy of multiple sequence alignment},
+  journal = {Nucleic Acids Research},
+  year = {2005}, volume = {33}, number = {2}, pages = {511--518},
+  doi = {10.1093/nar/gki198}
+}
+
+@article{thompson1994clustalw,
+  author = {Thompson, Julie D. and Higgins, Desmond G. and Gibson, Toby J.},
+  title = {{CLUSTAL W}: improving the sensitivity of progressive multiple sequence alignment through sequence weighting, position-specific gap penalties and weight matrix choice},
+  journal = {Nucleic Acids Research},
+  year = {1994}, volume = {22}, number = {22}, pages = {4673--4680},
+  doi = {10.1093/nar/22.22.4673}
+}
+
+@article{larkin2007clustal2,
+  author = {Larkin, M. A. and Blackshields, G. and Brown, N. P. and Chenna, R. and McGettigan, P. A. and McWilliam, H. and Valentin, F. and Wallace, I. M. and Wilm, A. and Lopez, R. and Thompson, J. D. and Gibson, T. J. and Higgins, D. G.},
+  title = {{Clustal W} and {Clustal X} version 2.0},
+  journal = {Bioinformatics},
+  year = {2007}, volume = {23}, number = {21}, pages = {2947--2948},
+  doi = {10.1093/bioinformatics/btm404}
+}
+
+% 2. Implemented conservation scores, baselines and evaluation methods
+
 @article{johansson2010rvne,
   author = {Johansson, Fredrik and Toh, Hiroyuki},
   title = {Relative von Neumann entropy for evaluating amino acid conservation},
@@ -5,30 +73,73 @@
   volume = {8}, number = {5}, pages = {809--823}, year = {2010},
   doi = {10.1142/S021972001000494X}
 }
+
 @article{henikoff1992blosum,
   author = {Henikoff, Steven and Henikoff, Jorja G.},
   title = {Amino acid substitution matrices from protein blocks},
   journal = {PNAS}, volume = {89}, number = {22}, pages = {10915--10919},
   year = {1992}, doi = {10.1073/pnas.89.22.10915}
 }
+
 @article{henikoff1994weights,
   author = {Henikoff, Steven and Henikoff, Jorja G.},
   title = {Position-based sequence weights},
   journal = {Journal of Molecular Biology}, volume = {243}, number = {4},
   pages = {574--578}, year = {1994}, doi = {10.1016/0022-2836(94)90032-9}
 }
-@article{caffrey2004vne,
-  author = {Caffrey, Daniel R. and Somaroo, Shyamal and Hughes, Jason D. and Mintseris, Julian and Huang, Enoch S.},
-  title = {Are protein-protein interfaces more conserved in sequence than the rest of the protein surface?},
-  journal = {Protein Science}, year = {2004}, volume = {13}, pages = {190--202},
-  doi = {10.1110/ps.03323604}
+
+@article{shannon1948entropy,
+  author = {Shannon, Claude E.},
+  title = {A Mathematical Theory of Communication},
+  journal = {Bell System Technical Journal},
+  year = {1948}, volume = {27}, number = {3}, pages = {379--423},
+  doi = {10.1002/j.1538-7305.1948.tb01338.x}
 }
+
+@article{kullback1951information,
+  author = {Kullback, Solomon and Leibler, Richard A.},
+  title = {On Information and Sufficiency},
+  journal = {The Annals of Mathematical Statistics},
+  year = {1951}, volume = {22}, number = {1}, pages = {79--86},
+  doi = {10.1214/aoms/1177729694}
+}
+
+@article{lin1991divergence,
+  author = {Lin, Jianhua},
+  title = {Divergence measures based on the {Shannon} entropy},
+  journal = {IEEE Transactions on Information Theory},
+  year = {1991}, volume = {37}, number = {1}, pages = {145--151},
+  doi = {10.1109/18.61115}
+}
+
 @article{capra2007jsd,
   author = {Capra, John A. and Singh, Mona},
   title = {Predicting functionally important residues from sequence conservation},
   journal = {Bioinformatics}, volume = {23}, number = {15}, pages = {1875--1882},
   year = {2007}, doi = {10.1093/bioinformatics/btm270}
 }
+
+@article{zhang2022adjusted,
+  author = {Zhang, Yixiang and Eskridge, Kent M. and Zhang, Shunpu and Lu, Guoqing},
+  title = {Identifying host-specific amino acid signatures for influenza {A} viruses using an adjusted entropy measure},
+  journal = {BMC Bioinformatics},
+  year = {2022}, volume = {23}, pages = {333},
+  doi = {10.1186/s12859-022-04885-7}
+}
+
+% Validation threshold maximizes balanced accuracy, equivalently Youden J.
+% The validation split and higher-cutoff tie rule are project choices.
+
+@article{youden1950index,
+  author = {Youden, William J.},
+  title = {Index for rating diagnostic tests},
+  journal = {Cancer},
+  year = {1950}, volume = {3}, number = {1}, pages = {32--35},
+  doi = {10.1002/1097-0142(1950)3:1<32::AID-CNCR2820030106>3.0.CO;2-3}
+}
+
+% 3. Direct methodological foundations of SCAW v2
+
 @article{killick2012changepoints,
   author = {Killick, Rebecca and Fearnhead, Paul and Eckley, Idris A.},
   title = {Optimal Detection of Changepoints With a Linear Computational Cost},
@@ -36,15 +147,24 @@
   volume = {107}, number = {500}, pages = {1590--1598},
   doi = {10.1080/01621459.2012.737745}
 }
-@article{polzehl2000adaptive,
-  author = {Polzehl, Jörg and Spokoiny, Vladimir G.},
-  title = {Adaptive weights smoothing with applications to image restoration},
-  journal = {JRSS B}, year = {2000}, volume = {62}, number = {2}, pages = {335--354},
-  doi = {10.1111/1467-9868.00235}
+
+@article{rice1984bandwidth,
+  author = {Rice, John}, title = {Bandwidth Choice for Nonparametric Regression},
+  journal = {The Annals of Statistics}, year = {1984}, volume = {12}, number = {4},
+  pages = {1215--1230}, doi = {10.1214/aos/1176346788}
 }
-@inproceedings{tomasi1998bilateral,
-  author = {Tomasi, Carlo and Manduchi, Roberto},
-  title = {Bilateral filtering for gray and color images},
-  booktitle = {ICCV}, year = {1998}, pages = {839--846},
-  doi = {10.1109/ICCV.1998.710815}
+
+@article{dai2017difference,
+  author = {Dai, Wenlin and Tong, Tiejun and Zhu, Lixing},
+  title = {On the Choice of Difference Sequence in a Unified Framework for Variance Estimation in Nonparametric Regression},
+  journal = {Statistical Science}, year = {2017}, volume = {32}, number = {3},
+  pages = {455--468}, doi = {10.1214/17-STS613}
+}
+
+@article{schwarz1978bic,
+  author = {Schwarz, Gideon},
+  title = {Estimating the Dimension of a Model},
+  journal = {The Annals of Statistics},
+  year = {1978}, volume = {6}, number = {2}, pages = {461--464},
+  doi = {10.1214/aos/1176344136}
 }

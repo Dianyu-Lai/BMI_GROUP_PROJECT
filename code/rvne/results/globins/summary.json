@@ -1,0 +1,47 @@
+{
+  "input": "data\\real\\globins.fasta",
+  "input_sha256": "45483a4606b14423488c7268722726109a137c301711159b23a27acd125c4de1",
+  "sequences": 5,
+  "reference_id": "P02144",
+  "reference_length": 154,
+  "aligners": {
+    "mafft": {
+      "version": "7.526",
+      "command": [
+        "E:\\Temp\\bmi3-aligner-check-20261128\\mafft-win\\mafft.bat",
+        "--amino",
+        "--inputorder",
+        "--thread",
+        "1",
+        "--localpair",
+        "--maxiterate",
+        "1000",
+        "--out",
+        "aligned.fasta",
+        "input.fasta"
+      ],
+      "alignment_seconds": 6.377486699959263,
+      "columns": 155,
+      "mean_gap_fraction": 0.03096774193548387,
+      "scored_reference_positions": 148
+    },
+    "clustalw": {
+      "version": "2.1",
+      "command": [
+        "E:\\Temp\\bmi3-aligner-check-20261128\\clustalw2.exe",
+        "-INFILE=input.fasta",
+        "-TYPE=PROTEIN",
+        "-ALIGN",
+        "-OUTPUT=FASTA",
+        "-OUTFILE=aligned.fasta",
+        "-OUTORDER=INPUT"
+      ],
+      "alignment_seconds": 0.20398250001017004,
+      "columns": 155,
+      "mean_gap_fraction": 0.03096774193548387,
+      "scored_reference_positions": 148
+    }
+  },
+  "jointly_scored_reference_positions": 148,
+  "reference_score_pearson": 0.867586283207713
+}

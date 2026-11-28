@@ -1,38 +1,64 @@
-# Segmentation-Constrained Adaptive-Window RVNE
+# SCAW-RVNE v2: penalized segmentation with fixed local context
 
-SCAW-RVNE estimates conservation at every usable alignment column from the original raw RVNE profile D. Let w_i be the nongap fraction for a usable site and zero for all missing or excluded sites. A prefix of w, w(D−m), and w(D−m)² gives the support C, weighted mean μ, and within-interval weighted SSE in constant time. Here m is the profile's weighted mean. Centering limits cancellation. For roundoff, the prefix-based SSE is bounded below by zero.
+Version `scaw-v2` fits changepoints and applies fixed-radius windows within each segment. See the [current benchmark](../results/scaw_revision/README.md) for evaluation.
 
-## Segmentation
+## Objective and one context parameter
 
-Minimize the sum of the coverage-weighted SSE plus βV per segment, where V is the variance on the full usable profile. Scale normalization makes β comparable across RVNE settings. The recurrence for the best prefix cost is F(t) = min over feasible s of [F(s) + SSE(s,t) + βV], with F(0) = 0. Backtrace the minimizing split points. At exact ties prefer fewer segments, then an earlier start. Segments require positive valid support. Set the minimum length to three by default to limit single-site fragmentation, using the whole alignment when it is shorter. There is no default maximum. A user-supplied maximum can save computation at the cost of introducing splits in long homogeneous regions. Gappy positions have zero segmentation weight, so a boundary inside a gap run may be weakly identifiable. Missing scores remain missing.
+Let y_i be raw base-20 RVNE and w_i the nongap fraction at a scorable column; otherwise w_i=0. Coverage is a reliability proxy, not a sequence count or an effective sample size. Define
 
-## Windows and integration
+\[
+\mu_{a:b}=\frac{\sum_{i=a}^{b-1}w_i y_i}{\sum_{i=a}^{b-1}w_i},\qquad
+C(a,b)=\sum_{i=a}^{b-1}w_i(y_i-\mu_{a:b})^2.
+\]
 
-For each scorable column i enumerate centered radii 0, 1, 2, 4 and 8. Clip each candidate to the alignment and the assigned segment. Select the candidate that minimizes local variance / V + λ / C. Prefer larger support on exact objective ties. A constant profile has zero variance ratio. The minimum candidate support is 1.5 by default. Radius zero remains available when the center has low coverage or belongs to a very short segment. The variance term reduces smoothing over heterogeneous neighborhoods. The reciprocal support term rewards wider windows in homogeneous regimes. Candidate limits and λ are ablated because radius-zero bias and oversmoothing are both possible. A local estimate remains missing if its center was excluded. The final score is the local weighted mean multiplied by the center's coverage, keeping the same center penalty as original RVNE.
+The implemented objective is
 
-    D, c, valid <- score original RVNE
-    prefixes <- weighted moments of valid (D, c)
-    segments <- optimal_partition(prefixes, beta, min_length, max_length)
-    for each usable column i:
-        windows <- candidates clipped to i's segment
-        estimate, width, variance, support <- minimize interval objective
-        final_i <- c_i * estimate
-    export site and segment tables
+\[
+\min_{\tau}\left\{\sum_{j=0}^{K}C(\tau_j,\tau_{j+1})+\beta K\right\},
+\quad\beta=c\,\widehat\sigma^2\,2\log(\max(2,m)).
+\]
 
-The ablations reuse the same raw scores and gap mask. Fixed uniform and Gaussian windows use the same maximum radius (default 8). Gaussian uses σ = radius/2. The segmentation-only ablation uses the segment mean. The adaptive-only ablation permits windows throughout the alignment. Segment outputs use the raw profile, with optional user-provided lower and upper raw-score thresholds for variable, intermediate and conserved classes. The default is unclassified.
+Here K counts changepoints, m counts scorable columns, and **c=`penalty_scale` is the only adjustable context parameter**, default 1. The Gaussian working model is Var(y_i)=sigma²/w_i with constant regime mean. Under this model C/sigma² is the variable part of minus twice the log likelihood. Counting an extra mean and a boundary gives the chosen 2 log(m) BIC-style scale. Treating a discrete searched boundary as an ordinary parameter is an approximation: this is **our BIC-style plug-in adaptation**, not the original BIC theorem, modified BIC, a calibrated significance level, or a formula validated specifically for RVNE.
 
-## Reference computation and tuning
+On the set A of pairs of adjacent original columns that are both scorable,
 
-Keep the equation-11 reference path. The equivalent trace path caches log σ, computes observed eigenvalues in bounded batches, and contracts ρ against log σ. For a parameter grid, cache observed eigenvalue entropies per s1 within each column batch and cached log σ per (r,s2). Score with no calibration data through the command line. In the experiments, select RVNE using the published grid plus a local refinement using training families, select β and λ using separate validation families, and lock test predictions and classification cutoffs before evaluating test truth. The benchmark protocol records the exact selection rules.
+\[
+\widehat\sigma^2=\frac1{|A|}\sum_{i\in A}
+\frac{(y_{i+1}-y_i)^2}{1/w_i+1/w_{i+1}}.
+\]
 
-## Prior methods and limitations
+With all w=1 and no missing sites this is Rice's first-difference estimator. The weighted form is our derivation under the working variance model. Changes add positive bias; positive residual serial correlation can add negative bias. Missing runs are never compressed when estimating noise. If A is empty, use full-profile coverage-weighted variance; a single usable point has variance zero. This fallback is deterministic and is not claimed as a noise estimator with a consistency guarantee. No fitted noise floor is added.
 
-Capra and Singh (2007) incorporated a fixed local context window into protein conservation prediction. Caffrey et al. (2004) used substitution similarity in VNE. Adaptive weights smoothing selects local homogeneous neighborhoods, bilateral filtering downweights cross-edge neighbors, and Killick et al. describe exact penalized changepoint detection. These are established ideas. The contribution investigated here is the use of coverage-weighted changepoints as hard constraints on independently selected RVNE window sizes, with ablations for both components. The reviewed papers did not describe this exact combination. The search is limited and does not establish a priority claim.
+## Exact solver and missing data
 
-Gaussian and uniform averaging can blur sharp edges. SCAW-RVNE can instead lose short motifs when segmentation merges them or oversegment random fluctuations at low depth. Smooth gradients can be represented as steps. Heavy gaps weaken support and can hide true changes. RVNE is sensitive to the identity of a conserved residue through the background, so high accuracy on mutation-rate truth is an empirical question. The segment classes represent estimated conservation regimes.
+Centered weighted prefix sums give C(a,b) in O(1). PELT uses F(0)=-beta and
 
-- [Capra and Singh, 2007](https://doi.org/10.1093/bioinformatics/btm270)
-- [Caffrey et al., 2004](https://doi.org/10.1110/ps.03323604)
-- [Polzehl and Spokoiny, 2000](https://doi.org/10.1111/1467-9868.00235)
-- [Tomasi and Manduchi, 1998](https://doi.org/10.1109/ICCV.1998.710815)
-- [Killick, Fearnhead and Eckley, 2012](https://doi.org/10.1080/01621459.2012.737745)
+\[
+F(t)=\min_{s<t}\{F(s)+C(s,t)+\beta\}.
+\]
+
+Weighted SSE satisfies C(a,t) >= C(a,s)+C(s,t), so the pruning constant is zero. Optimize on scorable columns only, allow at least one scorable column per segment, and impose no maximum. Missing columns provide no split evidence: map a changepoint to the first scorable column of the right segment; interior missing runs belong to the left segment, leading missing columns to the first. Boundary positions inside missing runs are unidentifiable. Segments cover the original coordinates and have positive support. A completely unscorable profile has no segments. Missing center scores remain NaN in every method.
+
+Prefer fewer segments on numerical ties, then the earliest predecessor. The tolerance is 64 machine epsilons times the profile centered sum of squares or penalty, whichever is larger; it only handles prefix-sum roundoff. Exhaustive partition tests check optimal objective values on randomized short weighted profiles, including zero penalty. PELT has worst-case O(m²) time and O(L+m) space. Its expected linear cost requires additional distribution/change-frequency conditions and is not guaranteed for MSA profiles.
+
+## Fixed window
+
+Set radius=3 and center weight=1/2 as fixed design constants informed by Capra & Singh (2007), equation (6). For a scorable center i, let N_i be the scorable neighbors, excluding i, within [i-3,i+3] and its assigned segment:
+
+\[
+\widehat y_i=\tfrac12 y_i+\tfrac12
+\frac{\sum_{j\in N_i}w_jy_j}{\sum_{j\in N_i}w_j},\quad
+S_i=w_i\widehat y_i.
+\]
+
+When there are no usable neighbors, use y_i. Coverage weighting, explicit neighbor exclusion, missing-data handling, and segment clipping are our implementation rules; this is not an exact reproduction of the paper's full conservation pipeline. The paper does not establish radius 3 as optimal for RVNE. Clipping preserves short motifs **only if the segmentation detects them**. There is no lambda objective, candidate-radius search, support cutoff, or adjustable min/max segment length.
+
+`window_size` is the coordinate span of the clipped window, including missing coordinates. `window_support` is its sum of usable coverage, including the center. `local_variance` is the coverage-weighted variance in that window around its weighted mean, not the sampling variance of the blended estimator. The segmentation ablation emits full-segment means and support. Uniform and Gaussian ablations use fixed radius 3; the Gaussian sigma is 1.5. Their window constants are design choices, not new UI parameters.
+
+## Interfaces and reproducibility
+
+CLI: `--penalty-scale 1`; JSON: `"context": {"penalty_scale": 1.0}`. Settings downloads contain `context_version`, the effective noise variance and penalty, fixed radius and center weight, and solver identity. `context_version` records the formula contract. Legacy settings and flags fail explicitly; no numerical conversion from old beta is valid because the scaling changed.
+
+The frontend uses `results/scaw_revision/parameters.json` for its study preset and reads the benchmark summary from the same directory. The evaluation uses fixed RVNE values from the original training and validation split.
+
+Limitations: the MSA score profile is neither demonstrably independent Gaussian data nor guaranteed inverse-coverage-variance data. Phylogeny, residue-specific background effects, alignment errors, gradients and heavy gaps can defeat these assumptions. These are estimated score regimes, not motifs with biological significance or causal annotations. Fixed binary thresholds learned on historical simulations did not transfer uniformly to the fresh INDELible set. The benchmark report gives the results by cohort.

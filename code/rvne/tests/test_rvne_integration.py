@@ -6,7 +6,6 @@ import unittest
 import numpy as np
 
 from benchmarks.rvne_evaluation import average_precision, boundary_metrics, comparator_profiles, correlations
-from data_generation.legacy_reference import SCENARIOS, simulate
 from msa_conservation.cli import main
 from msa_conservation.msa import Alignment
 from msa_conservation.scoring.rvne import RVNEParameters, score_reference, site_profiles
@@ -32,38 +31,6 @@ class IntegrationTests(unittest.TestCase):
                 regions = list(csv.DictReader(handle, delimiter="\t"))
             self.assertEqual(regions[0]["start"], "1")
             self.assertEqual(regions[-1]["end"], "7")
-
-    def test_synthetic_families_are_reproducible(self):
-        for name in SCENARIOS:
-            first = simulate(scenario=name, size=20, length=100, seed=70)
-            second = simulate(scenario=name, size=20, length=100, seed=70)
-            self.assertEqual(first.alignment, second.alignment)
-            self.assertEqual(first.truth.shape, (100,))
-            np.testing.assert_array_equal(first.truth, second.truth)
-        motif = simulate(scenario="motifs", size=20, motif_length=3)
-        self.assertEqual(motif.conserved.sum(), 9)
-        self.assertEqual(len(motif.boundaries), 6)
-
-    def test_supplemental_patterns_have_the_requested_profiles(self):
-        homogeneous = simulate(scenario="conserved", length=24)
-        blocks = simulate(scenario="conserved-variable-blocks", length=24, variable_fraction=0.25)
-        motif = simulate(scenario="single-motif", length=24, motif_length=3)
-
-        np.testing.assert_array_equal(homogeneous.rates, [0.06] * 24)
-        self.assertEqual(homogeneous.boundaries, ())
-        np.testing.assert_array_equal(blocks.rates, [0.06] * 9 + [1.0] * 6 + [0.06] * 9)
-        self.assertEqual(blocks.boundaries, (9, 15))
-        np.testing.assert_array_equal(motif.rates, [1.0] * 10 + [0.06] * 3 + [1.0] * 11)
-        self.assertEqual(motif.boundaries, (10, 13))
-
-    def test_three_rate_pattern_recovers_both_flanks_at_odd_length(self):
-        pattern = simulate(scenario="three-rate-blocks", length=25, divergence=0.7)
-        expected_rates = np.array([0.06] * 4 + [0.32] * 3 + [1.0] * 10 + [0.32] * 3 + [0.06] * 5)
-
-        np.testing.assert_array_equal(pattern.rates, expected_rates)
-        np.testing.assert_allclose(pattern.truth, np.exp(-0.7 * expected_rates))
-        np.testing.assert_array_equal(pattern.conserved, expected_rates == 0.06)
-        self.assertEqual(pattern.boundaries, (4, 7, 17, 20))
 
     def test_evaluation_ties_and_boundary_matching(self):
         scores = np.array([3., 3., 2., 1.])

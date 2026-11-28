@@ -5,5 +5,10 @@ __pycache__/
 
 /results/*
 !/results/.gitkeep
-!/results/reference_run/
-!/results/supplemental_run/
+!/results/scaw_revision/
+/results/scaw_revision/fresh_inputs/
+!/results/globins/
+/results/globins/*
+!/results/globins/reference_scores.tsv
+!/results/globins/scoring_settings.json
+!/results/globins/summary.json

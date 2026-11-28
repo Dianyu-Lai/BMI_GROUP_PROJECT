@@ -1,4 +1,4 @@
-"""Coverage-weighted segmentation and adaptive smoothing for RVNE profiles."""
+"""SCAW v2: penalized weighted SSE and a fixed, boundary-clipped context window."""
 
 from dataclasses import dataclass
 from math import isfinite
@@ -8,22 +8,25 @@ import numpy as np
 
 @dataclass(frozen=True)
 class ContextParameters:
-    """Penalized segmentation and smoothing settings."""
+    """One multiplier of the data-derived BIC-style penalty (not old beta)."""
 
-    beta: float = 6.0
-    smoothing: float = 0.25
-    radii: tuple[int, ...] = (0, 1, 2, 4, 8)
-    min_support: float = 1.5
-    min_segment: int = 3
-    max_segment: int | None = None
+    penalty_scale: float = 1.0
 
     def __post_init__(self) -> None:
-        if not all(isfinite(x) and x >= 0 for x in (self.beta, self.smoothing, self.min_support)):
-            raise ValueError("beta, smoothing and minimum support must be finite and nonnegative")
-        if not self.radii or tuple(sorted(set(self.radii))) != self.radii or self.radii[0] != 0:
-            raise ValueError("radii must be distinct and increasing, beginning at zero")
-        if self.min_segment < 1 or (self.max_segment is not None and self.max_segment < self.min_segment):
-            raise ValueError("invalid segment length constraints")
+        if (type(self.penalty_scale) not in (int, float) or
+                not isfinite(self.penalty_scale) or self.penalty_scale < 0):
+            raise ValueError("penalty_scale must be finite and nonnegative")
+
+
+METHOD_VERSION = "scaw-v2"
+WINDOW_RADIUS = 3
+
+
+def context_from_settings(values: dict) -> ContextParameters:
+    """Reject historical settings rather than silently changing their meaning."""
+    if not isinstance(values, dict) or set(values) - {"penalty_scale"}:
+        raise ValueError("SCAW v2 accepts only penalty_scale; v1 settings are unsupported")
+    return ContextParameters(**values)
 
 
 @dataclass(frozen=True)
@@ -54,6 +57,14 @@ class WeightedIntervals:
     """Weighted interval statistics from centered prefix sums."""
 
     def __init__(self, scores: np.ndarray, coverage: np.ndarray) -> None:
+        scores, coverage = np.asarray(scores, dtype=float), np.asarray(coverage, dtype=float)
+        if scores.ndim != 1 or scores.shape != coverage.shape:
+            raise ValueError("scores and coverage must be equal-length one-dimensional arrays")
+        if not np.all(np.isfinite(coverage) & (coverage >= 0) & (coverage <= 1)):
+            raise ValueError("coverage must be finite and between zero and one")
+        if np.isinf(scores).any():
+            raise ValueError("scores may contain NaN, but not infinity")
+        self.scores = scores
         self.valid = np.isfinite(scores) & (coverage > 0)
         self.weights = np.where(self.valid, coverage, 0)
         values = np.where(self.valid, scores, 0)
@@ -83,44 +94,80 @@ class WeightedIntervals:
                        int(self.count[stop] - self.count[start]))
 
 
+def noise_variance(intervals: WeightedIntervals) -> float:
+    """First-difference variance, using only adjacent scorable original columns.
+
+    Under independent errors Var(y_i)=sigma^2/w_i, E[(y_i-y_j)^2 /
+    (1/w_i+1/w_j)] = sigma^2 within a constant regime. For unit weights this
+    reduces to Rice's first-difference estimator. Changes bias it upward;
+    positive serial correlation biases it downward. See the methods document.
+    """
+    adjacent = intervals.valid[:-1] & intervals.valid[1:]
+    if not adjacent.any():
+        return intervals.variance
+    difference = np.diff(intervals.scores)[adjacent]
+    weights = intervals.weights
+    denominator = 1 / weights[:-1][adjacent] + 1 / weights[1:][adjacent]
+    return float(np.mean(difference ** 2 / denominator))
+
+
+def segmentation_penalty(intervals: WeightedIntervals, params: ContextParameters) -> float:
+    """Return c * sigma_hat^2 * 2 log(m), in weighted SSE units."""
+    return float(params.penalty_scale * noise_variance(intervals) *
+                 (2 * np.log(max(2, int(intervals.count[-1])))))
+
+
 def segment_profile(
     intervals: WeightedIntervals, params: ContextParameters
 ) -> tuple[Segment, ...]:
-    """Solve penalized weighted least squares by optimal partitioning."""
+    """Exact PELT for sum(weighted SSE) + penalty * number of changes.
+
+    Optimize on scorable columns; map changes to the next scorable column.
+    Missing runs carry no evidence for boundaries and stay with the left segment
+    (leading missing columns belong to the first segment). No length constraints.
+    """
     length = len(intervals.valid)
     if not intervals.count[-1]:
         return ()
-    minimum = min(length, params.min_segment)
-    maximum = params.max_segment or length
-    penalty = params.beta * intervals.variance
-    costs = np.full(length + 1, np.inf)
-    previous = np.full(length + 1, -1, dtype=int)
-    counts = np.zeros(length + 1, dtype=int)
-    costs[0] = 0
-    for stop in range(minimum, length + 1):
-        starts = np.arange(max(0, stop - maximum), stop - minimum + 1)
-        support, _, error = intervals.moments(starts, stop)
-        objectives = np.where(support > 0, costs[starts] + error + penalty, np.inf)
+    indices = np.flatnonzero(intervals.valid)
+    compact = WeightedIntervals(intervals.scores[indices], intervals.weights[indices])
+    size = len(indices)
+    penalty = segmentation_penalty(intervals, params)
+    costs = np.full(size + 1, np.inf)
+    previous = np.full(size + 1, -1, dtype=int)
+    counts = np.zeros(size + 1, dtype=int)
+    costs[0] = -penalty
+    candidates = np.array([0], dtype=int)
+    # Prefix-sum roundoff tolerance, not an inferential tuning parameter.
+    tolerance = 64 * np.finfo(float).eps * max(float(compact.second[-1]), penalty,
+                                               np.finfo(float).tiny)
+    for stop in range(1, size + 1):
+        starts = candidates
+        _, _, error = compact.moments(starts, stop)
+        unpenalized = costs[starts] + error
+        objectives = unpenalized + penalty
         best = objectives.min()
         if not np.isfinite(best):
             continue
-        tied = starts[objectives == best]
+        tied = starts[objectives <= best + tolerance]
         start = tied[np.argmin(counts[tied])]
-        costs[stop] = best
+        costs[stop] = objectives[np.flatnonzero(starts == start)[0]]
         previous[stop] = start
         counts[stop] = counts[start] + 1
-    if previous[length] < 0:
-        raise ValueError("no segmentation with positive support satisfies the length constraints")
+        # Weighted SSE is superadditive, so PELT's pruning constant is zero.
+        candidates = np.r_[starts[unpenalized <= costs[stop] + tolerance], stop]
     segments = []
-    stop = length
+    stop = size
     while stop:
         start = int(previous[stop])
-        segments.append(intervals.segment(start, stop))
+        left = int(indices[start]) if start else 0
+        right = int(indices[stop]) if stop < size else length
+        segments.append(intervals.segment(left, right))
         stop = start
     return tuple(reversed(segments))
 
 
-METHODS = ("uniform", "gaussian", "adaptive", "segmentation", "scaw")
+METHODS = ("uniform", "gaussian", "segmentation", "scaw")
 
 
 def contextual_scores(
@@ -141,9 +188,7 @@ def contextual_scores(
     if not intervals.count[-1]:
         return ContextScores(estimates, estimates.copy(), width, variance, support, segment_id, segments)
     regions = segments or (intervals.segment(0, length),)
-    radii = np.asarray(params.radii)
-    radius = radii[-1]
-    scale = intervals.variance
+    radius = WINDOW_RADIUS
     for label, segment in enumerate(regions, 1):
         if segments:
             segment_id[segment.start:segment.stop] = label
@@ -153,29 +198,22 @@ def contextual_scores(
             variance[positions] = segment.variance
             support[positions] = intervals.weight[segment.stop] - intervals.weight[segment.start]
             width[positions] = segment.stop - segment.start
-        elif method in ("adaptive", "scaw"):
-            starts = np.maximum(segment.start, positions[:, None] - radii)
-            stops = np.minimum(segment.stop, positions[:, None] + radii + 1)
-            weights, means, errors = intervals.moments(starts, stops)
-            variances = errors / weights
-            objective = params.smoothing / weights
-            if scale > 0:
-                objective += variances / scale
-            objective[:, 1:] = np.where(weights[:, 1:] >= params.min_support,
-                                        objective[:, 1:], np.inf)
-            # Search widest first, retaining the largest candidate on exact ties.
-            selected = len(radii) - 1 - np.argmin(objective[:, ::-1], axis=1)
-            rows = np.arange(len(positions))
-            pick = rows, selected
-            estimates[positions] = intervals.center + means[pick]
-            variance[positions] = variances[pick]
-            support[positions] = weights[pick]
-            width[positions] = stops[pick] - starts[pick]
-        elif method == "uniform":
-            starts = np.maximum(positions - radius, 0)
-            stops = np.minimum(positions + radius + 1, length)
+        elif method in ("uniform", "scaw"):
+            starts = np.maximum(positions - radius, segment.start)
+            stops = np.minimum(positions + radius + 1, segment.stop)
             weights, means, errors = intervals.moments(starts, stops)
             estimates[positions] = intervals.center + means
+            if method == "scaw":
+                # Fixed 1/2 center + 1/2 coverage-weighted neighbors, following
+                # Capra & Singh's window heuristic with our boundary/mask rules.
+                neighbor_weight = weights - intervals.weights[positions]
+                neighbor_first = (means * weights - intervals.weights[positions] *
+                                  (raw[positions] - intervals.center))
+                neighbor_mean = intervals.center + np.divide(
+                    neighbor_first, neighbor_weight, out=np.zeros_like(neighbor_weight),
+                    where=neighbor_weight > 0)
+                estimates[positions] = np.where(
+                    neighbor_weight > 0, .5 * (raw[positions] + neighbor_mean), raw[positions])
             variance[positions] = errors / weights
             support[positions] = weights
             width[positions] = stops - starts

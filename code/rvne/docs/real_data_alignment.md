@@ -23,7 +23,7 @@ $env:PYTHONPATH = "src"
 python -m msa_conservation.cli real-data --input data/real/globins.fasta --reference-id P02144 --mafft-mode linsi --output-dir results/globins
 ```
 
-Use `--mafft-exe 'C:\path\mafft-win\mafft.bat'` and `--clustalw-exe 'C:\path\clustalw2.exe'` for explicit paths. Use `--aligner mafft` or `--aligner clustalw` for a single aligner. Use `--method rvne` for the original RVNE or `--settings results/reference_run/parameters.json` to reuse the frozen RVNE and SCAW parameters. For a matched alignment sensitivity check, compare the same scoring method and settings across aligners. Use a new output directory for each run.
+Use `--mafft-exe 'C:\path\mafft-win\mafft.bat'` and `--clustalw-exe 'C:\path\clustalw2.exe'` for explicit paths. Use `--aligner mafft` or `--aligner clustalw` for a single aligner. Use `--method rvne` for the original RVNE or `--settings results/scaw_revision/parameters.json` to reuse the frozen RVNE and SCAW parameters. For a matched alignment sensitivity check, compare the same scoring method and settings across aligners. Use a new output directory for each run.
 
 The input is an unaligned FASTA with at least two nonempty sequences. Headers must have unique first tokens. Use the 20 canonical amino acids. Gap characters, ambiguous residues and stop symbols are rejected explicitly so both tools receive the same sequences. For a larger family, select homologous globular domains with comparable boundaries, document exclusions and redundancy filtering, and retain the accession and start coordinate of each domain. The reference defaults to the first sequence. Coordinates start at 1 in the sequence supplied, so a domain sliced from a full-length entry requires the source start offset for annotation lookup.
 

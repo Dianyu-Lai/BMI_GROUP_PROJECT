@@ -1,1 +1,1 @@
-"""Synthetic protein alignment and ground-truth generators."""
+"""INDELible-based synthetic protein alignments and site truth."""

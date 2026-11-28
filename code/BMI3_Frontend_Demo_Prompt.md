@@ -6,7 +6,7 @@
 
 - 首页主操作为 **Upload FASTA**，支持文件选择和拖放。旁边提供 **Load example**，内置一个可运行的 Pattern C 已对齐示例，以及一个用于展示比对流程的 globin 未对齐示例。加载示例后仍可点击运行真实计算。初始状态简短说明两种输入各自适用的场景。
 - 让用户明确选择 **Aligned FASTA → Score alignment** 或 **Unaligned FASTA → Align & score**。前者复用现有解析器校验对齐矩阵和序列 ID，直接评分；后者先运行 MAFFT，环境安装 ClustalW 时也可选择它。以用户选择与输入校验决定流程。显示文件名、序列数、输入模式和已选方法，主按钮随流程切换。
-- 评分默认使用 **SCAW-RVNE**，提供 **Original RVNE**。使用冻结 benchmark 参数时标明 **Frozen benchmark settings**，把参数放进可展开的 **Advanced settings**。运行时区分 Reading FASTA、Aligning 和 Scoring 等实际阶段或显示当前可确认的状态。失败信息区分文件格式、缺少比对工具和评分失败，并允许从当前输入重试。
+- 评分默认使用 **SCAW-RVNE**，提供 **Original RVNE**。使用冻结 benchmark 参数时标明 **SCAW v2 study settings**，把参数放进可展开的 **Advanced settings**。运行时区分 Reading FASTA、Aligning 和 Scoring 等实际阶段或显示当前可确认的状态。失败信息区分文件格式、缺少比对工具和评分失败，并允许从当前输入重试。
 
 ## 2. Results · 比对、保守性曲线与热图
 
@@ -18,7 +18,7 @@
 ## 3. Benchmarks · 测试与消融
 
 - 将 **Benchmarks** 设为独立子页面，支持按数据集、Pattern A–D、方法和指标筛选。用一张横向点图或条形图显示比较，用表格核对精确值、统计口径、来源和实际贡献的家族数 n。优先显示 Spearman、variable-site recall 和 boundary F1，再提供 AUROC、AUPRC、可评分比例，以及已有耗时结果。
-- Pattern C 展示短保守 motif 和固定窗口平滑的关系，同时呈现 E7 或 Shannon 对该 motif 的检出结果。Pattern D 展示 **E7 retuned RVNE、E8 retuned SCAW-RVNE、Shannon** 在中等突变率位点上的检出差异，以及 **E5 segmentation only** 在该组的 Spearman。说明 D 的二元评估将 medium 与 high 合并为 variable。指标无定义时显示 **N/A** 和原因，例如 Pattern A 的每个家族只有一个类别，按本项目评估口径，AUROC、AUPRC 显示 N/A。结论应注明对应的合成测试集和指标。
+- 按场景选择 Pattern C 或 D，比较当前 SCAW、分段均值和七列均匀窗口。每个家族只有一个真值类别时，AUROC、AUPRC 显示 **N/A**。图表注明数据来源与有效家族数。
 - 已有真实 globin 对齐产物时，可在 **Case study** 区比较 MAFFT 和 ClustalW 对同一组序列的影响。两条曲线按 P02144 的 ungapped reference residue 对齐，并标明来源、共同可评分覆盖率和所用的比对工具。归类为对齐敏感性示例。
 
 ## 4. 视觉与布局
@@ -31,5 +31,5 @@
 ## 5. 仓库接入与验收
 
 - 先读 `code/rvne/README.md`。已对齐评分复用 `python -m msa_conservation.cli score`，未对齐流程复用 `python -m msa_conservation.cli real-data` 或 `code/rvne/src/msa_conservation/real_data.py` 的现有调用路径。两套代码使用相同的 `msa_conservation` 包名，运行主线时将模块路径指向 `code/rvne/src`。用轻量本地接口处理上传、调用 Python 与返回结果，前端读取结果并渲染。优先复用仓库已有技术栈，若没有前端栈，可用 React + Vite 配轻量 Python API。
-- 使用逐列输出中的 `position`、`raw_rvne`、`nongap_coverage`、`score`、`window_size` 和分段字段。冻结配置读取 `code/rvne/results/reference_run/parameters.json`。示例可选 Pattern C seed 50124，配对的 aligned FASTA 和 truth TSV 由 `code/data_generation/generate_pattern_data.py` 生成。实时样例与预计算结果都注明来源。测试数据读取 `code/rvne/results/reference_run/` 和 `code/rvne/results/supplemental_run/` 的现有 TSV。缺失产物通过现有脚本生成，或在界面显示明确状态。
+- 使用逐列输出中的 `position`、`raw_rvne`、`nongap_coverage`、`score`、`window_size` 和分段字段。冻结配置读取 `code/rvne/results/scaw_revision/parameters.json`。Pattern C 示例使用 INDELible seed 81103 的 aligned FASTA 和 truth TSV，读取 `code/rvne/results/scaw_revision/fresh_inputs.zip`。实时样例与预计算结果都注明来源。Benchmarks 页面读取 `code/rvne/results/scaw_revision/` 的新版结果。缺失产物通过现有脚本生成，或在界面显示明确状态。
 - 交付可运行的 Demo 与简短启动说明。验收时实际上传已对齐 FASTA 获得真实分数，再用未对齐 globin 示例获得比对和评分；核对选中列在矩阵、折线、热图和详情中一致；检查非法输入和缺少 MAFFT 时能收到明确反馈；最后在 Benchmarks 核对 Pattern D 的指标可追溯到 TSV，并确认 Pattern A 的 AUROC/AUPRC 显示 N/A。默认演示与示例资源应支持无外网运行，未对齐分析依赖本地安装的比对工具。

@@ -3,16 +3,21 @@ import { button, clamp, displayScore, el, linePath, methodName, percent, svg, to
 const X = 1000;
 const PLOT_HEIGHT = 154;
 const ROW_HEIGHT = 27;
-const CHEMISTRY = [
-  ["AVLIMFWY", "hydrophobic", "Hydrophobic"],
-  ["STNQC", "polar", "Polar"],
-  ["KRH", "basic", "Basic"],
-  ["DE", "acidic", "Acidic"],
-  ["GP", "special", "Gly / Pro"],
-  ["-.", "gap", "Gap"],
+// Use the residue groups from the MView P1 palette for the SMART-style alignment.
+const RESIDUE_GROUPS = [
+  ["AGILMPV", "aa-hydrophobic", "Hydrophobic"],
+  ["FHWY", "aa-aromatic", "Aromatic"],
+  ["KR", "aa-basic", "Basic"],
+  ["DE", "aa-acidic", "Acidic"],
+  ["NQ", "aa-amides", "Amides"],
+  ["ST", "aa-ser-thr", "Ser / Thr"],
+  ["C", "aa-cysteine", "Cysteine"],
+  ["-.", "aa-gap", "Gap"],
+  ["BJOUXZ", "aa-other", "Other"],
 ];
 
-const chemistry = new Map(CHEMISTRY.flatMap(([letters, key]) => [...letters].map((letter) => [letter, key])));
+const residueClasses = new Map(RESIDUE_GROUPS.flatMap(([letters, key]) => [...letters].map((letter) => [letter, key])));
+const residueClass = (letter) => residueClasses.get(letter) ?? "aa-other";
 const measure = (name, value) => el("div", {}, [el("dt", { text: name }), el("dd", { text: value })]);
 
 function switcher(label, labels, select) {
@@ -162,8 +167,9 @@ export function renderResults(target, data, id, resetAnalysis) {
     className: "msa-viewport", tabindex: 0, role: "region",
     "aria-label": "Multiple sequence alignment. Arrow keys select positions, Page Up and Page Down scroll sequences.",
   }, [plane]);
-  const msaLegend = el("div", { className: "chemistry-legend", "aria-label": "Residue classes" }, CHEMISTRY.map(
-    ([, key, name]) => el("span", { className: "chemistry-key" }, [el("i", { className: key }), name]),
+  const msaLegend = el("div", { className: "chemistry-legend", role: "group", "aria-label": "Residue classes" }, RESIDUE_GROUPS.map(
+    ([letters, key, name]) => el("span", { className: "chemistry-key", title: `${name} (${[...letters].join(", ")})` },
+      [el("i", { className: key, "aria-hidden": "true" }), name]),
   ));
   const msaPanel = el("section", { className: "panel msa-panel" }, [
     el("div", { className: "panel-heading msa-heading" }, [
@@ -350,7 +356,7 @@ export function renderResults(target, data, id, resetAnalysis) {
     const rows = [];
     for (let row = first; row < last; row++) {
       const residues = [...data.sequences[row].slice(start, start + span)].map((letter, i) => el("span", {
-        className: `residue ${chemistry.get(letter) ?? "ambiguous"}${start + i === selected ? " selected-cell" : ""}`,
+        className: `residue ${residueClass(letter)}${start + i === selected ? " selected-cell" : ""}`,
         "data-column": start + i,
         title: `${data.ids[row]} · column ${start + i + 1} · ${letter}`,
         text: letter,
@@ -386,7 +392,7 @@ export function renderResults(target, data, id, resetAnalysis) {
     }
     const residueCounts = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([residue, count]) => el("li", { className: "count" }, [
-        el("span", { className: chemistry.get(residue) ?? "ambiguous", text: residue }),
+        el("span", { className: residueClass(residue), text: residue }),
         el("span", { text: count, "aria-label": `${count} sequences` }),
       ]));
     const label = `Column ${site.position}`;

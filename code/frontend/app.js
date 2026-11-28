@@ -1,6 +1,7 @@
 import { byId, el, getJSON, option, toolName } from "./ui.js";
 import { renderResults } from "./results.js";
 import { renderBenchmarks } from "./benchmarks.js";
+import { initGeneration } from "./generate.js";
 
 const form = byId("analysis-form");
 const run = byId("run-analysis");
@@ -61,9 +62,8 @@ function updateForm() {
   const values = effective?.rvne ? [["RVNE · r / s1 / s2", `${effective.rvne.r} / ${effective.rvne.s1} / ${effective.rvne.s2}`]] : [];
   if (isScaw && effective?.context) {
     const context = effective.context;
-    values.push(["Segmentation penalty", context.beta], ["Window smoothing", context.smoothing],
-      ["Window radii", context.radii.join(", ")], ["Minimum support", context.min_support],
-      ["Segment length", `${context.min_segment}–${context.max_segment ?? "unbounded"}`]);
+    values.push(["Segmentation penalty multiplier", context.penalty_scale],
+      ["Context window", "3 columns each side, clipped at segment boundaries"]);
   }
   parameterValues.replaceChildren(...values.map(([label, value]) =>
     el("div", {}, [el("dt", { text: label }), el("dd", { text: value })])));
@@ -78,7 +78,7 @@ function fillParameters(fields, defaults) {
 
 function readParameters(fields) {
   return Object.fromEntries(Array.from(fields.elements, (field) => [field.name,
-    field.name === "radii" ? field.value.split(",").map(Number) : (field.value === "" ? null : field.valueAsNumber),
+    field.value === "" ? null : field.valueAsNumber,
   ]));
 }
 
@@ -233,13 +233,15 @@ function resetAnalysis() {
 }
 
 function navigate() {
-  const isBenchmarks = location.hash === "#benchmarks";
-  byId("analyze-page").hidden = isBenchmarks;
+  const page = ["#benchmarks", "#generate"].includes(location.hash) ? location.hash.slice(1) : "analyze";
+  const isBenchmarks = page === "benchmarks";
+  for (const name of ["analyze", "generate", "benchmarks"]) {
+    byId(`${name}-page`).hidden = name !== page;
+    const link = byId(`nav-${name}`);
+    if (name === page) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  }
   const bench = byId("benchmarks-page");
-  bench.hidden = !isBenchmarks;
-  byId("nav-analyze").toggleAttribute("aria-current", !isBenchmarks);
-  byId("nav-benchmarks").toggleAttribute("aria-current", isBenchmarks);
-  byId(isBenchmarks ? "nav-benchmarks" : "nav-analyze").setAttribute("aria-current", "page");
   if (isBenchmarks && !benchmarksPromise) {
     bench.replaceChildren(el("p", { role: "status", text: "Loading benchmark results…" }));
     benchmarksPromise = getJSON("/api/benchmarks").then((data) => renderBenchmarks(bench, data)).catch((problem) => {
@@ -266,5 +268,24 @@ getJSON("/api/config").then((data) => {
   updateForm();
 }).catch((problem) => error(problem.message));
 window.addEventListener("hashchange", navigate);
+initGeneration((generated) => {
+  if (busy) throw new Error("An analysis is running. Wait for it to finish before loading this MSA.");
+  inputVersion++;
+  releaseResults?.();
+  releaseResults = null;
+  results.replaceChildren();
+  results.hidden = true;
+  byId("setup").hidden = false;
+  input = { filename: generated.filename, fasta: generated.fasta,
+    source: `INDELible · ${generated.scenario} · seed ${generated.seed}` };
+  form.elements.mode.value = "aligned";
+  error();
+  showInput();
+  status.textContent = "Generated MSA loaded. Click Score alignment when ready.";
+  location.hash = "#analyze";
+  navigate();
+  run.focus();
+  window.scrollTo(0, 0);
+});
 updateForm();
 navigate();

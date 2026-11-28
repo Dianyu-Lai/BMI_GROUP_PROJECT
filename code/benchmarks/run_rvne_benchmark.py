@@ -22,7 +22,7 @@ from msa_conservation.scoring.rvne import (
     score_reference, site_profiles,
 )
 from msa_conservation.scoring.rvne_optimized import score_grid, score_optimized
-from msa_conservation.scoring.scaw import ContextParameters, contextual_scores
+from msa_conservation.scoring.scaw import (ContextParameters, METHOD_VERSION, context_from_settings, contextual_scores)
 from .metrics import select_threshold
 from .rvne_evaluation import boundary_metrics, comparator_profiles, correlations, region_iou, site_metrics
 
@@ -32,7 +32,7 @@ BASE_SPECS = tuple({"scenario": name} for name in SCENARIOS)
 TRAINING = (101, 102, 103)
 VALIDATION = (201, 202, 203)
 HELD_OUT = (301, 302, 303, 304)
-CONTEXT_METHODS = {"E2": "uniform", "E3": "gaussian", "E4": "adaptive",
+CONTEXT_METHODS = {"E2": "uniform", "E3": "gaussian",
                    "E5": "segmentation", "E6": "scaw"}
 SWEEPS = (
     *({"size": n} for n in (20, 100, 500)),
@@ -120,37 +120,28 @@ def select_parameters(training: list[Family], validation: list[Family]) -> tuple
         for i, params in enumerate(candidates)
     )
     chosen_segmentation = (float("-inf"), CONTEXT)
-    for beta, minimum, maximum in product((2., 6., 10., 18.), (2, 3, 5), (None, 64)):
-        context = replace(CONTEXT, beta=beta, min_segment=minimum, max_segment=maximum)
-        f1 = []
+    # One context parameter; no window/support/length search in v2.
+    for multiplier in (1., .5, 2.):
+        context = replace(CONTEXT, penalty_scale=multiplier)
+        f1, rho = [], []
         for family, raw in zip(validation, scores):
+            fitted = contextual_scores(raw, family.sites.coverage, "scaw", context)
             if family.truth.boundaries:
-                segments = contextual_scores(raw, family.sites.coverage, "segmentation", context).segments
-                boundaries = tuple(segment.stop for segment in segments[:-1])
+                boundaries = tuple(segment.stop for segment in fitted.segments[:-1])
                 f1.append(boundary_metrics(boundaries, family.truth.boundaries)[-1])
+            valid = family.sites.valid
+            correlation = float(correlations(fitted.scores[valid], family.truth.truth[valid], rank=True))
+            if np.isfinite(correlation):
+                rho.append(correlation)
         objective = mean(f1)
-        tuning_rows.append({"stage": "segmentation_validation", "beta": beta,
-                            "min_segment": minimum, "max_segment": maximum, "boundary_f1": objective})
+        tuning_rows.append({"stage": "context_validation", "penalty_scale": multiplier,
+                            "boundary_f1": objective, "mean_spearman": mean(rho)})
         if objective > chosen_segmentation[0] + 1e-12:
             chosen_segmentation = objective, context
-
-    chosen_window = (float("-inf"), chosen_segmentation[1])
-    for strength, radius in product((.05, .25, 1., 4.), (4, 8, 16)):
-        context = replace(chosen_segmentation[1], smoothing=strength,
-                          radii=tuple(r for r in (0, 1, 2, 4, 8, 16) if r <= radius))
-        rho = []
-        for family, raw in zip(validation, scores):
-            if np.unique(family.truth.truth[family.sites.valid]).size > 1:
-                smooth = contextual_scores(raw, family.sites.coverage, "scaw", context).scores
-                valid = family.sites.valid
-                correlation = float(correlations(smooth[valid], family.truth.truth[valid], rank=True))
-                if np.isfinite(correlation):
-                    rho.append(correlation)
-        objective = mean(rho)
-        tuning_rows.append({"stage": "window_validation", "smoothing": strength,
-                            "radius": radius, "mean_spearman": objective})
-        if objective > chosen_window[0] + 1e-12:
-            chosen_window = objective, context
+    chosen_window = (next(row["mean_spearman"] for row in tuning_rows
+                          if row["stage"] == "context_validation" and
+                          row["penalty_scale"] == chosen_segmentation[1].penalty_scale),
+                     chosen_segmentation[1])
 
     regimes = [f.scenario for f in validation if
                np.unique(f.truth.truth[f.sites.valid]).size > 1]
@@ -163,7 +154,7 @@ def select_parameters(training: list[Family], validation: list[Family]) -> tuple
                                 "global_selection_spearman": float(means[candidates.index(chosen)])}
     return {
         "reference": asdict(DEFAULT_PARAMETERS), "training_coarse_best": asdict(best_training),
-        "rvne": asdict(chosen), "context": asdict(chosen_window[1]), "coarse_count": len(coarse),
+        "context_version": METHOD_VERSION, "rvne": asdict(chosen), "context": asdict(chosen_window[1]), "coarse_count": len(coarse),
         "training_grid_seconds": grid_seconds, "refined_count": len(candidates),
         "validation_spearman": float(validation_means[order[0]]),
         "reference_validation_spearman": float(validation_means[candidates.index(DEFAULT_PARAMETERS)]),
@@ -333,32 +324,27 @@ def main() -> int:
     parser.add_argument("--parameters", type=Path, help="previously frozen tuning JSON")
     parser.add_argument("--repeats", type=int, default=3)
     parser.add_argument("--sweep", action="store_true", help="include held-out one-factor sweeps")
-    parser.add_argument("--legacy-reference", action="store_true", help="replay the historical data inputs")
     args = parser.parse_args()
     if args.repeats < 2:
         parser.error("at least two timing repeats are required")
     if args.mode == "benchmark" and args.parameters is None:
         parser.error("benchmark mode requires --parameters")
-    if args.legacy_reference:
-        from data_generation.legacy_reference import simulate as generate
-        model_sweeps = tuple({"mutation": mode} for mode in ("conservative", "radical"))
-    else:
-        try:
-            executable = find_executable()
-        except OSError as exc:
-            parser.exit(2, f"error: {exc}\n")
-        raw_root = args.output / "simulated_inputs"
-        if raw_root.exists():
-            parser.error(f"use a new output directory; generated inputs already exist at {raw_root}")
+    try:
+        executable = find_executable()
+    except OSError as exc:
+        parser.exit(2, f"error: {exc}\n")
+    raw_root = args.output / "simulated_inputs"
+    if raw_root.exists():
+        parser.error(f"use a new output directory; generated inputs already exist at {raw_root}")
 
-        def generate(*, seed, size=50, length=240, model="WAG", **settings):
-            directory = raw_root / f"{seed}_{size}x{length}"
-            simulation = simulate(seed=seed, size=size, length=length, executable=executable,
-                                  options=Options(model=model), work_dir=directory, **settings)
-            write_simulation(simulation, directory / "aligned.fasta", directory / "truth.tsv", directory)
-            return simulation
+    def generate(*, seed, size=50, length=240, model="WAG", **settings):
+        directory = raw_root / f"{seed}_{size}x{length}"
+        simulation = simulate(seed=seed, size=size, length=length, executable=executable,
+                              options=Options(model=model), work_dir=directory, **settings)
+        write_simulation(simulation, directory / "aligned.fasta", directory / "truth.tsv", directory)
+        return simulation
 
-        model_sweeps = tuple({"model": model} for model in ("JTT", "LG"))
+    model_sweeps = tuple({"model": model} for model in ("JTT", "LG"))
     args.output.mkdir(parents=True, exist_ok=True)
     validation = families(BASE_SPECS, VALIDATION, generate)
     if args.mode in ("tune", "all"):
@@ -367,18 +353,16 @@ def main() -> int:
     else:
         selected = json.loads(args.parameters.read_text(encoding="utf-8"))
     rvne = RVNEParameters(**selected["rvne"])
-    context_args = selected["context"].copy()
-    context_args["radii"] = tuple(context_args["radii"])
-    context = ContextParameters(**context_args)
+    context = context_from_settings(selected["context"])
     thresholds = calibration_thresholds(validation, rvne, context)
-    thresholds.update(selected.get("thresholds") or {})
+    # Recalibrate after an algorithm revision; never reuse v1 decision thresholds.
     selected["thresholds"] = thresholds
     selected["training_seed_groups"] = TRAINING
     selected["validation_seed_groups"] = VALIDATION
     selected["test_seed_groups"] = HELD_OUT
     selected["python"] = platform.python_version()
     selected["numpy"] = np.__version__
-    selected["simulator"] = "legacy_reference" if args.legacy_reference else "INDELible 1.03"
+    selected["simulator"] = "INDELible 1.03"
     (args.output / "parameters.json").write_text(
         json.dumps(selected, allow_nan=False, indent=2) + "\n", encoding="utf-8")
     if args.mode != "tune":

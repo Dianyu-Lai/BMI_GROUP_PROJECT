@@ -2,12 +2,12 @@
 
 | Directory | Contents |
 | --- | --- |
-| [`data_generation/`](data_generation/README.md) | INDELible 1.03 protein MSA simulation, A–D datasets, site truth, gap calibration and raw run metadata. |
+| [`data_generation/`](data_generation/README.md) | One INDELible 1.03 command for individual protein MSAs and A–D suites with site truth, gap calibration and raw run metadata. |
 | [`benchmarks/`](benchmarks/README.md) | Scoring comparisons, parameter tuning, held-out evaluation, ablations, metrics and plots. |
 | [`rvne/`](rvne/README.md) | Original RVNE, batched RVNE, SCAW, and [real-protein alignment with MAFFT and ClustalW](rvne/docs/real_data_alignment.md). |
 | [`baselines/`](baselines/README.md) | Shannon, KL, Jensen–Shannon, BLOSUM62 sum-of-pairs and adjusted-entropy scoring implementations. |
-| [`output/`](output/benchmark_analysis.md) | Analysis of the recorded benchmark results, including tables and figures. |
-| [`frontend/`](frontend/README.md) | Local FASTA upload, alignment and scoring Demo with linked result tracks and benchmark plots. |
+| [SCAW benchmark results](rvne/results/scaw_revision/README.md) | Current method and ablation results, parameters, and input fingerprints. |
+| [`frontend/`](frontend/README.md) | Local FASTA upload, alignment, scoring, INDELible generation and benchmark plots. |
 
 Both scoring packages use the `msa_conservation` name. Follow the workflow README to select one scoring package on `PYTHONPATH`.
 

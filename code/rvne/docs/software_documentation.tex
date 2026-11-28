@@ -24,9 +24,9 @@ The reference reproduces Johansson and Toh's relative von Neumann entropy (RVNE)
 \]
 Here \(A(0)=I\) and \(A(1)=\mathbf 1\mathbf 1^\top\). The background interpolation weight is \(r\). Defaults are \((r,s_1,s_2)=(0.8,0.8,0.8)\). The reference computes the eigenspace-overlap expression. The cached trace path reuses \(\log_{20}\sigma\) and requires only observed eigenvalues. The paper's per-site score is \(c_iD_i\), with \(c_i\) the unweighted nongap fraction.
 
-SCAW-RVNE fits segments of constant mean to \(D_i\). Dynamic programming minimizes total weighted squared error plus \(\beta V\) per segment, where \(V\) is the full profile's weighted variance. Weighted prefix sums give interval statistics. Centered windows are clipped at fitted boundaries. We select a radius that minimizes \(V_{\rm local}/V+\lambda/C_{\rm local}\), with \(C_{\rm local}\) the local coverage sum. The final score is the selected local mean times \(c_i\). Candidate radii and length constraints are configurable.
+SCAW-RVNE v2 fits segments by PELT, minimizing coverage-weighted SSE plus \(\beta K\), where \(K\) counts changepoints. The multiplier \(c\) defaults to 1 in \(\beta=2c\widehat\sigma^2\log(\max(2,m))\), with \(m\) usable columns. Noise estimation uses squared first differences of adjacent usable columns divided by \(1/w_i+1/w_{i+1}\). The penalty uses a BIC-style working model. A radius-three window is clipped at segment boundaries. The estimate averages the center score and the coverage-weighted neighbor mean, then multiplies the result by center coverage. See \texttt{docs/algorithm\_design.md} for the derivation, assumptions and citations.
 
-For \(N\) sequences, \(L\) sites and \(K=20\) residues, profiles cost \(O(NL+LK)\) and single-configuration scoring costs \(O(LK^3)\). Background caching and batching reduce constant factors. Partitioning costs \(O(LW)\), with \(W=L\) by default or a user-selected maximum segment length. Adaptive scoring costs \(O(LH)\) for \(H\) candidate radii.
+For \(N\) sequences, \(L\) sites and \(A=20\) residues, profiles cost \(O(NL+LA)\) and single-configuration RVNE scoring costs \(O(LA^3)\). PELT costs \(O(m^2)\) in the worst case, with expected linear cost only under additional conditions; fixed-window scoring costs \(O(L)\). Memory for context scoring is \(O(L+m)\).
 
 \section{Installation and scoring}
 The recorded run used Python 3.13.5 and NumPy 2.5.2. Run from \texttt{code/rvne} in the BMI3 repository. These commands use PowerShell. In a POSIX shell use \texttt{export PYTHONPATH=..:src} in place of the second line.
@@ -43,20 +43,7 @@ python -m msa_conservation.cli score --method scaw-rvne `
   --input data/examples/small_alignment.fasta `
   --output results/sites.tsv --segments-output results/segments.tsv
 \end{verbatim}
-Use \texttt{rvne} for the paper path, \texttt{rvne-optimized} for the cached path, or \texttt{uniform}, \texttt{gaussian}, \texttt{adaptive} and \texttt{segmentation} for individual contextual comparisons. Pass \texttt{--settings} with the frozen benchmark JSON to use retuned settings, or specify \texttt{--r}, \texttt{--s1} and \texttt{--s2}. The README lists the simulator and other context flags.
-
-For the supplied example, the first three rows have the following values with default SCAW-RVNE settings.
-\begin{center}
-\begin{tabular}{rrrrr}
-\toprule
-Position & Raw RVNE & Coverage & Final score & Window size\\
-\midrule
-1 & 1.5084 & 1.000 & 1.5084 & 1\\
-2 & 1.2288 & 1.000 & 1.2288 & 1\\
-3 & 1.3219 & 1.000 & 1.2998 & 3\\
-\bottomrule
-\end{tabular}
-\end{center}
+Use \texttt{rvne} for the paper path, \texttt{rvne-optimized} for the cached path, or \texttt{uniform}, \texttt{gaussian} and \texttt{segmentation} for individual contextual comparisons. Pass \texttt{--settings} with the frozen benchmark JSON to use retuned settings, or specify \texttt{--r}, \texttt{--s1} and \texttt{--s2}. The only context flag is \texttt{--penalty-scale}. Use \texttt{results/scaw\_revision/parameters.json} for v2 settings; old settings are rejected explicitly.
 
 \section{Benchmarks}
 The simulator sets mutation rates independently of BLOSUM62. Training ranks the 1,331 original RVNE settings. Validation selects global RVNE and context settings and classification thresholds. The held-out evaluation covers eight core scenarios and a 63-family sensitivity sweep. Column comparators include Shannon, KL, Jensen--Shannon, BLOSUM62 severity, ClustalW consensus and the unweighted AL2CO variance index.
@@ -65,10 +52,10 @@ $env:OPENBLAS_NUM_THREADS = "1"
 python -m benchmarks.run_rvne_benchmark --mode all --sweep `
   --repeats 4 --output results/rvne
 \end{verbatim}
-Across the core families, mean Spearman was 0.812 for original RVNE, 0.859 for segmentation alone and 0.846 for retuned SCAW-RVNE. Retuned SCAW-RVNE had mean AUPRC 0.999, compared with 0.953 for original RVNE. These results evaluate the simulated mutation-rate target. The repository documents full results, timing and failure cases. Published catalytic-site AUC and real-family generalisation are outside the measured results.
+The current SCAW benchmark covers 32 reused core, 60 reused supplemental and 12 fresh INDELible families. See \texttt{results/scaw\_revision/README.md} for per-cohort metrics and reproduction commands.
 
 \section{Sources and contributions}
 Johansson and Toh (2010), \href{https://doi.org/10.1142/S021972001000494X}{doi:10.1142/S021972001000494X}. Henikoff and Henikoff (1994), \href{https://doi.org/10.1016/0022-2836(94)90032-9}{doi:10.1016/0022-2836(94)90032-9}. BLOSUM62 joint data provenance and other references appear in the repository.
 
-The supplied project requirements and proposal feedback guided the work. OpenAI Codex assisted implementation, validation, benchmarking and drafting. Named group-member contributions are pending confirmation by the group.
+Named group-member contributions are pending confirmation by the group.
 \end{document}

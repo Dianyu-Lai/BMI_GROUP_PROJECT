@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-28",
+  "unit_and_integration": [
+    {
+      "suite": "RVNE and SCAW",
+      "command": "python -m unittest discover -s code/rvne/tests -v",
+      "passed": 35,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "published baselines",
+      "command": "python -m unittest discover -s code/baselines/tests -v",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "suite": "frontend generation and scoring integration",
+      "command": "python -m unittest discover -s code/frontend/tests -v",
+      "passed": 10,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "pelt_randomized_exhaustive_cases": 192,
+  "javascript_syntax": {
+    "app.js": "passed",
+    "benchmarks.js": "passed"
+  },
+  "frontend_context_input_names": [
+    "penalty_scale"
+  ],
+  "general_tuning_smoke": {
+    "result": "passed",
+    "context_search": [
+      1,
+      0.5,
+      2
+    ],
+    "selected_penalty_scale": 2.0
+  },
+  "generic_supplemental_smoke": {
+    "families": 36,
+    "methods": 14,
+    "result": "passed"
+  },
+  "git_diff_check": "passed",
+  "not_run": [
+    "full v2 sensitivity sweep",
+    "real protein functional-label validation",
+    "manual browser visual QA",
+    "LaTeX compilation"
+  ],
+  "git_push": false,
+  "fresh_inputs_zip_sha256": "c948b12743f6d253567fac9d232b76bba09abe1089669a17483323c7d4edd8d2",
+  "benchmark_recheck": {
+    "core_test_reuse": 32,
+    "supplemental_reuse": 60,
+    "fresh_indelible": 12,
+    "validation": 24,
+    "current_metrics_and_input_hashes_match_excluding_runtime": true
+  },
+  "general_heldout_and_svg_plots": "passed",
+  "benchmark_and_config_http": "passed"
+}

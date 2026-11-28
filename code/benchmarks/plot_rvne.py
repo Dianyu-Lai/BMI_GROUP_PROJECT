@@ -42,15 +42,15 @@ def svg(path: Path, width: int, height: int, body: list[str]) -> None:
 
 
 def ablations(folder: Path) -> None:
-    names = ("Original RVNE", "Cached RVNE", "Uniform window", "Gaussian window",
-             "Adaptive window", "Segmentation only", "SCAW-RVNE", "Retuned RVNE",
-             "Retuned SCAW-RVNE")
+    methods = ((0, "Original RVNE"), (1, "Cached RVNE"), (2, "Uniform window"),
+               (3, "Gaussian window"), (5, "Segmentation only"), (6, "SCAW-RVNE"),
+               (7, "Retuned RVNE"), (8, "Retuned SCAW-RVNE"))
     with (folder / "test_summary.tsv").open(newline="", encoding="utf-8") as handle:
         stats = {(row["method"], row["metric"]): float(row["mean"])
                  for row in csv.DictReader(handle, delimiter="\t") if row["scenario"] == "all"}
     body = [
         label(26, 35, "Conservation scoring on held-out families", size=24, bold=True),
-        label(26, 58, "Mean across 24 families with both conserved and variable sites", color=MUTED),
+        label(26, 58, "Mean across eligible held-out families", color=MUTED),
     ]
     for j, (metric, title, lower) in enumerate((
         ("spearman", "Spearman correlation", .8), ("auprc", "Area under precision–recall", .9)
@@ -61,8 +61,8 @@ def ablations(folder: Path) -> None:
         for tick in np.linspace(lower, 1, 5):
             x = left + width * (tick - lower) / (1 - lower)
             body.extend((line(x, 101, x, 393), label(x, 413, f"{tick:.2f}", anchor="middle")))
-        for i, name in enumerate(names):
-            y = 116 + 32 * i
+        for row, (i, name) in enumerate(methods):
+            y = 116 + 32 * row
             if j == 0:
                 body.append(label(26, y + 5, f"E{i}  {name}", bold=i in (5, 8)))
             value = stats[f"E{i}", metric]
@@ -120,14 +120,9 @@ def motif_example(folder: Path, generate=simulate) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--results", type=Path, required=True)
-    parser.add_argument("--legacy-reference", action="store_true", help="use the historical motif alignment")
     args = parser.parse_args()
-    if args.legacy_reference:
-        from data_generation.legacy_reference import simulate as generate
-    else:
-        generate = simulate
     try:
-        motif_example(args.results, generate)
+        motif_example(args.results, simulate)
     except (OSError, ValueError) as exc:
         parser.exit(2, f"error: {exc}\n")
     ablations(args.results)

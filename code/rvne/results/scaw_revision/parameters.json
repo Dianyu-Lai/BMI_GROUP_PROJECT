@@ -1,0 +1,23 @@
+{
+  "context_version": "scaw-v2",
+  "rvne": {
+    "r": 0.0,
+    "s1": 0.1,
+    "s2": 0.0
+  },
+  "context": {
+    "penalty_scale": 1.0
+  },
+  "thresholds": {
+    "v2": 0.732103334901,
+    "v2_segment_mean": 0.742376715012,
+    "fixed_uniform_7": 0.730989620239
+  },
+  "default_selection": "c=1, radius=3, center=0.5 fixed before test evaluation",
+  "rvne_source": "Fixed RVNE values from the original training/validation split",
+  "threshold_source": "24 historical validation families; recalibrated per method",
+  "implementation_sha256": "249bd1259c21cb78d47d8dd4e63d772eea0524dc6123d70e9859f273723e57f6",
+  "runner_sha256": "cd9f00eca3dac10210f7b76e9437a19947f4c5b831954af84e3e76f22b9ba8a1",
+  "python": "3.13.5",
+  "numpy": "2.5.2"
+}

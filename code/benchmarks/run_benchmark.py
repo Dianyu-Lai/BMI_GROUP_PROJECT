@@ -6,8 +6,8 @@ import sys
 from time import perf_counter
 from pathlib import Path
 
-from data_generation.synthetic import (
-    SyntheticAlignment, generate_alignment, generate_constraint_alignment, generate_reference_alignment,
+from .baseline_inputs import (
+    SyntheticAlignment, generate_alignment, generate_constraint_alignment,
 )
 from msa_conservation.scoring.baseline import score_alignment
 from msa_conservation.scoring.substitution import load_blosum62
@@ -42,7 +42,6 @@ def main() -> int:
     parser.add_argument("--divergence", type=float, default=0.8)
     parser.add_argument("--seed", type=int, default=1, help="calibration seed (test uses seed + 1)")
     parser.add_argument("--suite", choices=("rate", "constraint"), default="rate")
-    parser.add_argument("--legacy-reference", action="store_true", help="replay the historical rate suite")
     parser.add_argument("--data-output", type=Path, help="new directory for evolutionary inputs and metadata")
     parser.add_argument(
         "--reference-baselines", action="store_true", help="compare KL, JSD, BLOSUM62 SOP and adjusted entropy"
@@ -51,10 +50,9 @@ def main() -> int:
 
     parameters = dict(size=args.size, length=args.length, divergence=args.divergence)
     constraint = args.suite == "constraint"
-    if args.data_output and (constraint or args.legacy_reference or args.data_output.exists()):
+    if args.data_output and (constraint or args.data_output.exists()):
         parser.error("--data-output must be a new directory for the INDELible rate suite")
-    generator = (generate_constraint_alignment if constraint else
-                 generate_reference_alignment if args.legacy_reference else generate_alignment)
+    generator = generate_constraint_alignment if constraint else generate_alignment
     methods = METHODS + REFERENCE_METHODS if args.reference_baselines else METHODS
     try:
         calibration_output = {"work_dir": args.data_output / "calibration"} if args.data_output else {}

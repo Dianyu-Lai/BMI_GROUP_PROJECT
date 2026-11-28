@@ -1,6 +1,6 @@
 # BMI_GROUP_PROJECT
 
-BMI3 Algorithms ICA Group 1 implements position-specific conservation scoring for aligned globular proteins. The project reproduces Johansson and Toh's relative von Neumann entropy (RVNE), tests an exact batched implementation, and evaluates a method that fits conservation regimes before selecting a local smoothing window.
+BMI3 Algorithms ICA Group 1 implements position-specific conservation scoring for aligned globular proteins. The project reproduces Johansson and Toh's relative von Neumann entropy (RVNE), tests an exact batched implementation, and evaluates a method that fits conservation regimes with penalized weighted SSE, then applies a fixed local window clipped to those regimes (SCAW v2).
 
 ## Installation
 
@@ -21,9 +21,13 @@ python -m msa_conservation.cli score --input data/examples/small_alignment.fasta
 python -m msa_conservation.cli score --input data/examples/small_alignment.fasta --method scaw-rvne --output results/scaw.tsv --segments-output results/segments.tsv --settings-output results/scaw_settings.json
 ```
 
-Use `rvne` for the original formula, `rvne-optimized` for the batched trace formula, and `uniform`, `gaussian`, `adaptive`, `segmentation` or `scaw-rvne` for contextual methods. Omit `--output` to write the site table to stdout. The TSV gives raw base-20 divergence, nongap coverage, local estimate, final score, window size, support, variance and optional segment coordinates. Positions and segment endpoints are one-based and inclusive. Higher scores indicate stronger conservation. Sites with over 30% gaps or no canonical observations have blank scores. Example site 3 has raw score 1.3219 and default SCAW score 1.2998 from a three-column window.
+Use `rvne` for the original formula, `rvne-optimized` for the batched trace formula, and `uniform`, `gaussian`, `segmentation` or `scaw-rvne` for contextual methods. Omit `--output` to write the site table to stdout. The TSV gives raw base-20 divergence, nongap coverage, local estimate, final score, window size, support, variance and optional segment coordinates. Positions and segment endpoints are one-based and inclusive. Higher scores indicate stronger conservation. Sites with over 30% gaps or no canonical observations have blank scores.
 
-The scoring defaults are `--r 0.8 --s1 0.8 --s2 0.8 --max-gap 0.3`. The context defaults are `--beta 6 --smoothing 0.25 --radii 0 1 2 4 8 --min-support 1.5 --min-segment 3` and an unbounded maximum length. Each flag is optional. `--r` controls background interpolation, `--s1` and `--s2` control observed and background similarity. `--beta` sets the segmentation penalty in global-variance units. `--smoothing` sets the weight on reciprocal support in the window objective. `--max-segment` can constrain segment length and takes zero for an unbounded partition. Export raw-mean segment classes using two increasing, independently calibrated `--segment-thresholds`. The default segment class is unclassified. Use `--settings results/reference_run/parameters.json` to select the benchmark's retuned configuration.
+The RVNE defaults are `--r 0.8 --s1 0.8 --s2 0.8 --max-gap 0.3`. SCAW v2 exposes `--penalty-scale` (default 1), which scales the penalty for each changepoint. It uses a fixed radius of 3 and center weight of 1/2, with windows clipped at segment boundaries. See the [penalty formula, assumptions and citations](docs/algorithm_design.md).
+
+Use `--settings results/scaw_revision/parameters.json` for the v2 study configuration. Downloads record the method version, one context parameter, effective penalty and fixed design constants. SCAW settings files use the v2 schema with `penalty_scale`. Optional `--segment-thresholds LOWER UPPER` labels exported segment means, and needs independent calibration; otherwise classes are unclassified. These reporting cutoffs are separate from the one context parameter.
+
+The [current benchmark](results/scaw_revision/README.md) evaluates SCAW and two ablations over 104 families, including 12 fresh INDELible simulations.
 
 ## Align and score real proteins
 
@@ -52,7 +56,7 @@ Use the [data generators](../data_generation/README.md) to create aligned FASTA 
 | `data/reference/` | BLOSUM62 pair probabilities for the benchmark comparator |
 | [`../data_generation/datasets/`](../data_generation/README.md) | Generated alignments and truth labels |
 | `tests` | Mathematical checks, optimization equivalence and CLI integration |
-| `results/reference_run` | Frozen settings, held-out tables, timing and figures |
+| `results/scaw_revision` | Current SCAW benchmark, simulation inputs and v2 settings |
 | `docs` | Methods, complexity, benchmark protocol, results and LaTeX documentation |
 
 - [Original RVNE specification](docs/rvne_original_specification.md)
@@ -60,5 +64,3 @@ Use the [data generators](../data_generation/README.md) to create aligned FASTA 
 - [Computational complexity](docs/complexity_analysis.md)
 - [Benchmark protocol](docs/benchmark_protocol.md) and [results](docs/benchmark_report.md)
 - [ICA software documentation](docs/software_documentation.tex)
-
-OpenAI Codex assisted the implementation, testing, benchmarking and documentation.

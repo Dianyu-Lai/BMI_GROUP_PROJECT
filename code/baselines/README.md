@@ -41,7 +41,7 @@ Sequences are equally weighted by default. Select `--weights henikoff` to downwe
 
 From the same directory, run the shared baseline benchmark with the desired synthetic suite.
 
-The rate suite uses NumPy and [INDELible 1.03](../data_generation/README.md). Set `--data-output` to save its alignments, truth and raw run files. Use `--legacy-reference` to replay the historical rate inputs. The matched-constraint suite uses the standard library to construct its within-class and cross-class controls.
+The rate suite uses NumPy and [INDELible 1.03](../data_generation/README.md). Set `--data-output` to save its alignments, truth and raw run files. The matched-constraint suite uses the standard library to construct its within-class and cross-class controls.
 
 ```powershell
 python -m benchmarks.run_benchmark --suite rate --reference-baselines

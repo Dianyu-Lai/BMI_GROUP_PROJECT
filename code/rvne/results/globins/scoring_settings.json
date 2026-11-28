@@ -1,0 +1,25 @@
+{
+  "method": "scaw-rvne",
+  "rvne": {
+    "r": 0.0,
+    "s1": 0.1,
+    "s2": 0.0
+  },
+  "context": {
+    "penalty_scale": 1.0
+  },
+  "context_version": "scaw-v2",
+  "max_gap": 0.3,
+  "batch_size": 256,
+  "segment_thresholds": null,
+  "context_derived": {
+    "window_radius": 3,
+    "center_weight": 0.5,
+    "noise_variance": 0.01916666943428742,
+    "penalty": 0.1915598314884012,
+    "scorable_columns": 148,
+    "solver": "PELT",
+    "minimum_scorable_segment": 1,
+    "maximum_segment": null
+  }
+}

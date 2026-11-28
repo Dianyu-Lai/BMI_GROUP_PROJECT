@@ -12,7 +12,7 @@ import numpy as np
 from data_generation.rvne_simulation import Simulation
 from msa_conservation.msa import read_fasta
 from msa_conservation.scoring.rvne import RVNEParameters, site_profiles
-from msa_conservation.scoring.scaw import ContextParameters
+from msa_conservation.scoring.scaw import context_from_settings
 from .metrics import roc_auc
 from .run_rvne_benchmark import METRICS, Family, evaluation_rows, summarize, write_tsv
 from .rvne_evaluation import region_iou
@@ -113,7 +113,7 @@ def main() -> int:
     try:
         selected = json.loads(args.parameters.read_text(encoding="utf-8"))
         rvne = RVNEParameters(**selected["rvne"])
-        context = ContextParameters(**{**selected["context"], "radii": tuple(selected["context"]["radii"])})
+        context = context_from_settings(selected["context"])
         thresholds = selected["thresholds"]
         families = [family for manifest in args.manifest for family in load_families(manifest)]
         if len({family.seed for family in families}) != len(families):

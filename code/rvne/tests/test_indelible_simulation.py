@@ -1,4 +1,7 @@
+from contextlib import redirect_stdout
 import csv
+from io import StringIO
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -7,6 +10,7 @@ from unittest.mock import patch
 import numpy as np
 
 from benchmarks.run_supplemental_benchmark import load_families
+from data_generation.cli import main
 from data_generation.indelible import Options, find_executable
 from data_generation.rvne_simulation import Region, scenario_rates, simulate, write_simulation
 
@@ -32,6 +36,37 @@ class IndelibleIntegrationTests(unittest.TestCase):
             self.executable = find_executable()
         except FileNotFoundError:
             self.skipTest("INDELible 1.03 is required for executable integration tests")
+
+    def test_redundant_family_with_short_tree_branches(self):
+        result = simulate(size=50, length=240, scenario="redundant", seed=20107,
+                          executable=self.executable)
+        self.assertEqual((result.alignment.size, result.alignment.length), (50, 240))
+
+    def test_cli_config_resolves_regions_and_applies_overrides(self):
+        with TemporaryDirectory() as directory:
+            folder = Path(directory)
+            config = folder / "settings.json"
+            config.write_text(json.dumps({"regions": "regions.json", "output_dir": "dataset",
+                                          "size": 4, "seed": 42, "divergence": .9}), encoding="utf-8")
+            (folder / "regions.json").write_text(json.dumps([
+                {"length": 20, "rate": .06}, {"length": 20, "rate": .32},
+                {"length": 20, "rate": 1., "insertion_rate": .08, "deletion_rate": .05},
+            ]), encoding="utf-8")
+            with redirect_stdout(StringIO()):
+                self.assertEqual(main(["--config", str(config), "--seed", "43",
+                                       "--indelible-bin", str(self.executable)]), 0)
+            dataset = folder / "dataset"
+            metadata = json.loads((dataset / "metadata.json").read_text(encoding="utf-8"))
+            self.assertEqual((metadata["simulator"], metadata["seed"], metadata["ancestral_length"]),
+                             ("INDELible", 43, 60))
+            self.assertEqual(metadata["requested_divergence"], .9)
+            self.assertEqual([part["rate"] for part in metadata["partitions"]], [.06, .32, 1.])
+            self.assertEqual(metadata["partitions"][-1]["requested_options"]["insertion_rate"], .08)
+            self.assertTrue((dataset / "alignment.fasta").is_file())
+            with (dataset / "ground_truth.tsv").open() as handle:
+                truth = list(csv.DictReader(handle, delimiter="\t"))
+            self.assertEqual(len(truth), metadata["aligned_length"])
+            self.assertEqual([int(row["position"]) for row in truth], list(range(1, len(truth) + 1)))
 
     def test_three_region_output_and_seed_reproducibility(self):
         regions = tuple(Region(20, rate) for rate in (.06, .32, 1.))

@@ -2,8 +2,8 @@
 
 import argparse
 import csv
-from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from io import StringIO
 import json
 import math
 import os
@@ -14,15 +14,18 @@ from tempfile import TemporaryDirectory
 from threading import Lock, Thread
 from time import monotonic
 from uuid import uuid4
+from zipfile import BadZipFile, ZipFile
 
 
 FRONTEND = Path(__file__).resolve().parent
 CODE = FRONTEND.parent
 RVNE = CODE / "rvne"
 RVNE_SRC = RVNE / "src"
-REFERENCE = RVNE / "results" / "reference_run"
-SUPPLEMENTAL = RVNE / "results" / "supplemental_run"
-FROZEN = REFERENCE / "parameters.json"
+SCAW_RESULTS = RVNE / "results" / "scaw_revision"
+FROZEN = SCAW_RESULTS / "parameters.json"
+# The report also archives legacy cohorts and metrics calibrated on legacy families.
+BENCHMARK_COHORT = "fresh_indelible"
+BENCHMARK_METRICS = {"auprc", "spearman", "boundary_f1", "boundary_f1_exact", "auroc", "scored_fraction"}
 MAX_FASTA_BYTES = 1024 * 1024
 MAX_REQUEST_BYTES = 2 * MAX_FASTA_BYTES
 MAX_SEQUENCES = 500
@@ -37,33 +40,27 @@ STATIC = {
     "/results.js": ("results.js", "text/javascript"),
     "/benchmarks.js": ("benchmarks.js", "text/javascript"),
     "/ui.js": ("ui.js", "text/javascript"),
+    "/generate.js": ("generate.js", "text/javascript"),
 }
 SYNTHETIC_EXAMPLES = {
-    "pattern-c": ("Pattern C · Short conserved motif", "c_50124.fasta",
-                  {"scenario": "single-motif", "seed": 50124, "motif_length": 3}),
-    "pattern-a": ("Pattern A · Uniform conservation", "a_50104.fasta",
-                  {"scenario": "conserved", "seed": 50104}),
-    "pattern-b": ("Pattern B · Central variable block", "b_50116.fasta",
-                  {"scenario": "conserved-variable-blocks", "seed": 50116}),
-    "pattern-d": ("Pattern D · Three mutation rates", "d_50140.fasta",
-                  {"scenario": "three-rate-blocks", "seed": 50140}),
-    "pattern-d-gaps": ("Pattern D · Three rates with gaps", "d_50152.fasta",
-                       {"scenario": "three-rate-blocks", "seed": 50140,
-                        "gap_by_rate": (0.03, 0.12, 0.25), "gap_seed": 50152}),
+    "pattern-c": ("Pattern C – Short conserved motif", 81103),
+    "pattern-a": ("Pattern A – Uniform conservation", 81101),
+    "pattern-b": ("Pattern B – Central variable block", 81102),
+    "pattern-d": ("Pattern D – Three mutation rates", 81105),
+    "pattern-d-gaps": ("Pattern D – Three rates with indels", 81106),
 }
 FASTA_EXAMPLES = {
     "small-alignment": ("Small practice alignment", "aligned", RVNE / "data" / "examples" / "small_alignment.fasta"),
     "globins": ("UniProt globins · Unaligned", "unaligned", RVNE / "data" / "real" / "globins.fasta"),
 }
-EXAMPLES = {key: entry[0] for key, entry in (SYNTHETIC_EXAMPLES | FASTA_EXAMPLES).items()}
 
 sys.path[:0] = [str(RVNE_SRC), str(CODE)]
 
 from msa_conservation import real_data
 from msa_conservation.msa import read_fasta
 from msa_conservation.scoring.rvne import DEFAULT_PARAMETERS, RVNEParameters
-from msa_conservation.scoring.scaw import ContextParameters
-from data_generation.legacy_reference import simulate
+from msa_conservation.scoring.scaw import ContextParameters, context_from_settings
+from generation import GenerationError, generate, generation_config, load_generation_options
 
 
 def tsv(path):
@@ -86,39 +83,30 @@ def source(path):
     return path.relative_to(CODE.parent).as_posix()
 
 
-@lru_cache(maxsize=len(EXAMPLES))
+def example_labels():
+    try:
+        with ZipFile(SCAW_RESULTS / "fresh_inputs.zip") as archive:
+            members = set(archive.namelist())
+    except (OSError, BadZipFile):
+        members = set()
+    available = {key: label for key, (label, seed) in SYNTHETIC_EXAMPLES.items()
+                 if {f"{seed}/alignment.fasta", f"{seed}/truth.tsv"} <= members}
+    return {**available, **{key: entry[0] for key, entry in FASTA_EXAMPLES.items()}}
+
+
 def example(key):
     if key in SYNTHETIC_EXAMPLES:
-        label, filename, settings = SYNTHETIC_EXAMPLES[key]
-        sampled = simulate(**settings)
-        fasta = "".join(f">{name}\n{sequence}\n" for name, sequence in
-                        zip(sampled.alignment.ids, sampled.alignment.sequences))
-        truth = [{"position": i, "rate": float(rate), "conserved": bool(conserved)}
-                 for i, (rate, conserved) in enumerate(zip(sampled.rates, sampled.conserved), 1)]
-        return {"filename": filename, "mode": "aligned", "fasta": fasta, "truth": truth,
-                "source": f"{label} · seed {settings.get('gap_seed', settings['seed'])}"}
+        label, seed = SYNTHETIC_EXAMPLES[key]
+        with ZipFile(SCAW_RESULTS / "fresh_inputs.zip") as archive:
+            fasta = archive.read(f"{seed}/alignment.fasta").decode("ascii")
+            rows = csv.DictReader(StringIO(archive.read(f"{seed}/truth.tsv").decode("ascii")), delimiter="\t")
+            truth = [{"position": int(row["position"]), "rate": float(row["rate"]),
+                      "conserved": row["conserved"] == "1"} for row in rows]
+        return {"filename": f"{key}-{seed}.fasta", "mode": "aligned", "fasta": fasta, "truth": truth,
+                "source": f"{label} – INDELible 1.03, seed {seed}"}
     label, mode, path = FASTA_EXAMPLES[key]
     return {"filename": path.name, "mode": mode, "fasta": path.read_text(encoding="utf-8"),
             "truth": [], "source": f"{label} · {source(path)}"}
-
-
-def benchmark_dataset(summary, families, metric_aliases=None):
-    if not summary.is_file():
-        return {"rows": [], "available": False, "source": source(summary)}
-    aliases = metric_aliases or {}
-    observations = [
-        {"method": row["method"], "pattern": row["scenario"], "metric": aliases.get(row["metric"], row["metric"]),
-         "mean": number(row["mean"]), "sd": number(row["sd"]), "n": int(row["n"])}
-        for row in tsv(summary)
-    ]
-    groups = {}
-    for row in optional_tsv(families):
-        groups.setdefault(row["scenario"], set()).add(row["method"])
-    for row in observations:
-        if row["pattern"] != "all":
-            groups.setdefault(row["pattern"], set()).add(row["method"])
-    return {"rows": observations, "available": True, "source": source(summary),
-            "families_source": source(families), "groups": {key: sorted(methods) for key, methods in groups.items()}}
 
 
 def globin_case():
@@ -132,31 +120,49 @@ def globin_case():
         return None
     sites = [{"position": int(row["reference_position"]), "mafft": number(row["mafft_score"]),
               "clustalw": number(row["clustalw_score"])} for row in tsv(path)]
-    return {"sites": sites, "source": source(path),
+    if [site["position"] for site in sites] != list(range(1, summary["reference_length"] + 1)):
+        raise ValueError("Globin scores do not cover each P02144 reference position in order.")
+    return {"sites": sites, "source": source(path), "pearson": summary.get("reference_score_pearson"),
             "joint": sum(site["mafft"] is not None and site["clustalw"] is not None for site in sites)}
 
 
 def benchmarks():
-    settings = SUPPLEMENTAL / "settings_summary.tsv"
-    runtime = REFERENCE / "runtime.tsv"
+    summary = SCAW_RESULTS / "summary.tsv"
+    baselines = SCAW_RESULTS / "baseline_summary.tsv"
+    runtime = SCAW_RESULTS / "runtime.tsv"
+    datasets = {}
+    for row in optional_tsv(summary):
+        if row["cohort"] != BENCHMARK_COHORT or row["metric"] not in BENCHMARK_METRICS:
+            continue
+        dataset = datasets.setdefault(row["cohort"], {"rows": [], "groups": {}})
+        dataset["rows"].append({
+            "method": row["method"], "pattern": row["scenario"], "metric": row["metric"],
+            "mean": number(row["mean"]), "sd": number(row["sd"]), "n": int(row["n"]),
+        })
+        dataset["groups"].setdefault(row["scenario"], set()).add(row["method"])
+    for dataset in datasets.values():
+        dataset["groups"] = {key: sorted(methods) for key, methods in dataset["groups"].items()}
+    comparison_rows = [
+        {"method": row["method"], "metric": row["metric"], "n": int(row["n"]),
+         "mean": number(row["mean"]), "sd": number(row["sd"])}
+        for row in optional_tsv(baselines)
+        if row["cohort"] == BENCHMARK_COHORT and row["scenario"] == "all" and row["metric"] in BENCHMARK_METRICS
+    ]
+    try:
+        case = globin_case()
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"Globin results could not be loaded: {exc}", file=sys.stderr)
+        case = {"error": "The recorded globin outputs could not be read. Regenerate the MAFFT and ClustalW comparison."}
     return {
-        "datasets": {
-            "supplemental": benchmark_dataset(SUPPLEMENTAL / "summary.tsv", SUPPLEMENTAL / "families.tsv"),
-            "reference": benchmark_dataset(
-                REFERENCE / "test_summary.tsv", REFERENCE / "test_families.tsv", {"specificity": "variable_recall"},
-            ),
-        },
-        "motifs": [{"method": row["method"], "width": int(row["scenario"].split("=")[1]),
-                    "mean": number(row["mean"]), "n": int(row["n"])}
-                   for row in optional_tsv(settings)
-                   if row["scenario"].startswith("C motif_length=") and row["metric"] == "sensitivity"
-                   and row["method"] in {"E2", "E3", "E7", "E8", "Shannon"}],
-        "motif_source": source(settings),
-        "runtime": [{"stage": row["stage"], "sequences": int(row["N"]), "columns": int(row["L"]),
+        "datasets": datasets,
+        "source": source(summary),
+        "baselines": comparison_rows,
+        "baseline_source": source(baselines),
+        "runtime": [{"method": row["method"], "columns": int(row["columns"]),
                      "seconds": number(row["median_seconds"]), "repeats": int(row["repeats"])}
                     for row in optional_tsv(runtime) if row["median_seconds"]],
         "runtime_source": source(runtime),
-        "case": globin_case(),
+        "case": case,
     }
 
 
@@ -187,19 +193,9 @@ def custom_settings(body, method):
     context = body.get("context")
     if not isinstance(context, dict):
         raise AnalysisError("Provide custom SCAW parameters.")
-    weights = {key: context.get(key) for key in ("beta", "smoothing", "min_support")}
-    if any(type(value) not in (int, float) or not 0 <= value <= sys.float_info.max
-           for value in weights.values()):
-        raise AnalysisError("Segmentation penalty, window smoothing and minimum support must be finite and nonnegative.")
-    radii = context.get("radii")
-    if not isinstance(radii, list) or any(type(radius) is not int or not 0 <= radius <= MAX_COLUMNS for radius in radii):
-        raise AnalysisError(f"Window radii must be whole numbers from 0 to {MAX_COLUMNS}.")
-    minimum = context.get("min_segment")
-    maximum = context.get("max_segment")
-    if type(minimum) is not int or (maximum is not None and type(maximum) is not int):
-        raise AnalysisError("Enter a whole number for each segment length or leave the maximum blank.")
-    settings["context"] = vars(ContextParameters(**weights, radii=tuple(radii), min_segment=minimum,
-                                                  max_segment=maximum))
+    if set(context) != {"penalty_scale"}:
+        raise AnalysisError("SCAW v2 requires only penalty_scale. Reload the page to update the settings form.")
+    settings["context"] = vars(context_from_settings(context))
     return settings
 
 
@@ -219,7 +215,7 @@ def load_options(body):
         raise AnalysisError("Maximum gap fraction must be between 0 and 1.")
     key = body.get("example")
     if key is not None:
-        if not isinstance(key, str) or key not in EXAMPLES:
+        if not isinstance(key, str) or key not in example_labels():
             raise AnalysisError("Unknown example.")
         chosen = example(key)
         if mode != chosen["mode"]:
@@ -353,7 +349,7 @@ class Workbench(ThreadingHTTPServer):
         for key in expired:
             del self.jobs[key]
 
-    def submit(self, options):
+    def submit(self, options, kind="analysis"):
         with self.lock:
             self.cleanup()
             if any("finished" not in job for job in self.jobs.values()):
@@ -361,23 +357,25 @@ class Workbench(ThreadingHTTPServer):
             if len(self.jobs) >= MAX_RESULTS:
                 del self.jobs[next(iter(self.jobs))]
             key = uuid4().hex
-            self.jobs[key] = {"state": "running", "stage": "Reading FASTA"}
-        Thread(target=self.run_job, args=(key, options), daemon=True).start()
+            self.jobs[key] = {"state": "running", "stage": "Preparing generation" if kind == "generation" else "Reading FASTA"}
+        Thread(target=self.run_job, args=(key, options, kind), daemon=True).start()
         return key
 
-    def run_job(self, key, options):
+    def run_job(self, key, options, kind="analysis"):
         def update(stage):
             with self.lock:
                 self.jobs[key]["stage"] = stage
 
         try:
-            result, downloads = analyze(options, update)
+            result, downloads = (generate(options, update, MAX_COLUMNS, MAX_FASTA_BYTES)
+                                 if kind == "generation" else analyze(options, update))
             job = {"state": "done", "result": result, "downloads": downloads}
-        except AnalysisError as exc:
+        except (AnalysisError, GenerationError) as exc:
             job = {"state": "error", "error": str(exc)}
         except Exception as exc:
-            print(f"Analysis error: {exc}", file=sys.stderr)
-            job = {"state": "error", "error": "Scoring failed. Check the server terminal for details."}
+            print(f"{kind.capitalize()} error: {exc}", file=sys.stderr)
+            message = f"Generation failed: {exc}" if kind == "generation" else "Scoring failed. Check the server terminal for details."
+            job = {"state": "error", "error": message}
         with self.lock:
             self.jobs[key] = {**job, "finished": monotonic()}
 
@@ -429,15 +427,17 @@ class Handler(BaseHTTPRequestHandler):
             self.send_json({"aligners": {name: path is not None for name, path in aligners().items()},
                             "frozen": {key: frozen[key] for key in ("rvne", "context")} if frozen else None,
                             "defaults": {"rvne": vars(DEFAULT_PARAMETERS), "context": vars(ContextParameters())},
-                            "examples": EXAMPLES})
+                            "examples": example_labels()})
         elif self.path.startswith("/api/examples/"):
             key = self.path.removeprefix("/api/examples/")
-            if key in EXAMPLES:
+            if key in example_labels():
                 self.send_json({name: value for name, value in example(key).items() if name != "truth"})
             else:
                 self.send_json({"error": "Unknown example."}, 404)
         elif self.path == "/api/benchmarks":
             self.send_json(benchmarks())
+        elif self.path == "/api/generation/config":
+            self.send_json(generation_config(MAX_SEQUENCES, MAX_COLUMNS))
         elif self.path.startswith("/api/jobs/"):
             self.get_job(self.path.removeprefix("/api/jobs/").split("/"))
         else:
@@ -448,7 +448,7 @@ class Handler(BaseHTTPRequestHandler):
             self.server.cleanup()
             job = self.server.jobs.get(parts[0])
         if job is None:
-            self.send_json({"error": "This analysis expired. Run it again."}, 404)
+            self.send_json({"error": "This result expired. Run it again."}, 404)
         elif len(parts) == 1:
             self.send_json({key: value for key, value in job.items() if key not in {"downloads", "finished"}})
         elif len(parts) == 3 and parts[1] == "download" and parts[2] in job.get("downloads", {}):
@@ -461,26 +461,28 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.local_request():
             return
-        if self.path != "/api/jobs":
+        if self.path not in ("/api/jobs", "/api/generate"):
             self.send_json({"error": "Page not found."}, 404)
             return
         if self.headers.get_content_type() != "application/json":
-            self.send_json({"error": "Upload a JSON analysis request."}, 415)
+            self.send_json({"error": "Send a JSON request."}, 415)
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
             if not 0 < length <= MAX_REQUEST_BYTES:
                 raise AnalysisError("Upload a protein FASTA of up to 1 MiB.")
-            options = load_options(json.loads(self.rfile.read(length)))
-        except AnalysisError as exc:
+            body = json.loads(self.rfile.read(length))
+            options = (load_generation_options(body, MAX_SEQUENCES, MAX_COLUMNS)
+                       if self.path == "/api/generate" else load_options(body))
+        except (AnalysisError, GenerationError) as exc:
             self.send_json({"error": str(exc)}, 400)
             return
         except (ValueError, UnicodeError, TypeError):
-            self.send_json({"error": "Invalid analysis request."}, 400)
+            self.send_json({"error": "Invalid JSON request."}, 400)
             return
-        key = self.server.submit(options)
+        key = self.server.submit(options, "generation" if self.path == "/api/generate" else "analysis")
         if key is None:
-            self.send_json({"error": "An analysis is already running. Try again once it finishes."}, 409)
+            self.send_json({"error": "An analysis or generation is already running. Try again once it finishes."}, 409)
         else:
             self.send_json({"id": key}, 202)
 

@@ -1,6 +1,7 @@
 """Score an aligned protein FASTA and export site and conservation-segment TSVs."""
 
 import argparse
+from contextlib import nullcontext
 import csv
 from dataclasses import asdict, replace
 import json
@@ -13,7 +14,9 @@ import numpy as np
 from .msa import read_fasta
 from .scoring.rvne import DEFAULT_PARAMETERS, RVNEParameters, score_reference, site_profiles
 from .scoring.rvne_optimized import score_optimized
-from .scoring.scaw import ContextParameters, METHODS, contextual_scores
+from .scoring.scaw import (METHODS, METHOD_VERSION, WINDOW_RADIUS,
+                           WeightedIntervals, context_from_settings, contextual_scores,
+                           noise_variance, segmentation_penalty)
 
 
 def _number(value: float) -> str:
@@ -21,12 +24,8 @@ def _number(value: float) -> str:
 
 
 def _write_table(path: Path | None, header: tuple[str, ...], rows) -> None:
-    if path is None:
-        writer = csv.writer(sys.stdout, delimiter="\t", lineterminator="\n")
-        writer.writerow(header)
-        writer.writerows(rows)
-        return
-    with path.open("w", encoding="utf-8", newline="") as handle:
+    destination = nullcontext(sys.stdout) if path is None else path.open("w", encoding="utf-8", newline="")
+    with destination as handle:
         writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
         writer.writerow(header)
         writer.writerows(rows)
@@ -71,12 +70,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     for name in ("r", "s1", "s2"):
         parser.add_argument(f"--{name}", type=float)
     parser.add_argument("--max-gap", type=float, default=.3)
-    parser.add_argument("--beta", type=float)
-    parser.add_argument("--smoothing", type=float, help="lambda in the window objective")
-    parser.add_argument("--radii", type=int, nargs="+")
-    parser.add_argument("--min-support", type=float)
-    parser.add_argument("--min-segment", type=int)
-    parser.add_argument("--max-segment", type=int, help="use zero for an unbounded partition")
+    parser.add_argument("--penalty-scale", type=float, help="multiplier of data-derived segmentation penalty")
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--segment-thresholds", type=float, nargs=2, metavar=("LOWER", "UPPER"))
     args = parser.parse_args(argv)
@@ -93,17 +87,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         settings = json.loads(args.settings.read_text(encoding="utf-8")) if args.settings else {}
         if not isinstance(settings, dict) or not isinstance(settings.get("context", {}), dict):
             raise ValueError("settings and context must be JSON objects")
+        if settings.get("context_version", METHOD_VERSION) != METHOD_VERSION:
+            raise ValueError("unsupported context_version; use SCAW v2 settings")
         params = replace(RVNEParameters(**settings.get("rvne", asdict(DEFAULT_PARAMETERS))),
                          **{key: getattr(args, key) for key in ("r", "s1", "s2")
                             if getattr(args, key) is not None})
         context_values = settings.get("context", {}).copy()
-        for key in ("beta", "smoothing", "radii", "min_support", "min_segment", "max_segment"):
-            value = getattr(args, key)
-            if value is not None:
-                context_values[key] = None if key == "max_segment" and value == 0 else value
-        if "radii" in context_values:
-            context_values["radii"] = tuple(context_values["radii"])
-        context = ContextParameters(**context_values)
+        if args.penalty_scale is not None:
+            context_values["penalty_scale"] = args.penalty_scale
+        context = context_from_settings(context_values)
         with args.input.open(encoding="utf-8-sig") as handle:
             sites = site_profiles(read_fasta(handle), args.max_gap)
         raw = (score_reference(sites, params) if args.method == "rvne" else
@@ -121,8 +113,21 @@ def main(argv: Sequence[str] | None = None) -> int:
                          _segment_rows(fitted, lower, upper))
         if args.settings_output:
             effective = {"method": args.method, "rvne": asdict(params), "context": asdict(context),
+                         "context_version": METHOD_VERSION,
                          "max_gap": args.max_gap, "batch_size": args.batch_size,
                          "segment_thresholds": args.segment_thresholds}
+            if fitted is not None:
+                intervals = WeightedIntervals(raw, sites.coverage)
+                effective["context_derived"] = {
+                    "window_radius": WINDOW_RADIUS if method != "segmentation" else None,
+                    "center_weight": .5 if method == "scaw" else None,
+                    "noise_variance": noise_variance(intervals),
+                    "penalty": segmentation_penalty(intervals, context),
+                    "scorable_columns": int(intervals.count[-1]),
+                    "solver": "PELT" if method in ("scaw", "segmentation") else None,
+                    "minimum_scorable_segment": 1,
+                    "maximum_segment": None,
+                }
             args.settings_output.write_text(json.dumps(effective, indent=2) + "\n", encoding="utf-8")
     except (OSError, ValueError, TypeError, np.linalg.LinAlgError) as exc:
         parser.exit(2, f"error: {exc}\n")

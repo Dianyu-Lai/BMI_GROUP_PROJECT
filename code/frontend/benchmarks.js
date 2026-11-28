@@ -1,38 +1,39 @@
-import { el, linePath, option, percent, svg, valueRange } from "./ui.js";
+import { el, linePath, option, svg, valueRange } from "./ui.js";
 
 const METHODS = {
-  E0: "Original RVNE",
-  E1: "Optimized RVNE",
-  E2: "Uniform smoothing",
-  E3: "Gaussian smoothing",
-  E4: "Adaptive windows",
-  E5: "Segmentation only",
-  E6: "Default SCAW-RVNE",
-  E7: "Retuned RVNE",
-  E8: "Retuned SCAW-RVNE",
+  v2: "SCAW-RVNE",
+  v2_segment_mean: "Segmentation only",
+  fixed_uniform_7: "Uniform window (7 columns)",
+  rvne: "Original RVNE",
+  shannon: "Shannon",
+  kl: "KL divergence",
+  jsd: "Jensen–Shannon divergence",
+  blosum62_sop: "BLOSUM62 sum of pairs",
+  blosum62_cost: "BLOSUM62 substitution cost",
+  adjusted_entropy: "Adjusted entropy",
+  clustalw_consensus: "ClustalW consensus",
+  al2co_variance: "AL2CO variance",
 };
 const METRICS = [
-  ["spearman", "Spearman"],
-  ["variable_recall", "Variable-site recall"],
-  ["boundary_f1", "Boundary F1"],
-  ["auroc", "AUROC"],
   ["auprc", "AUPRC"],
+  ["spearman", "Spearman"],
+  ["boundary_f1", "Boundary F1 (±2 columns)"],
+  ["boundary_f1_exact", "Exact boundary F1"],
+  ["auroc", "AUROC"],
   ["scored_fraction", "Scored-column fraction"],
-  ["medium_as_variable", "Medium called variable"],
-  ["sensitivity", "Conserved-site recall"],
-  ["seconds", "Runtime"],
 ];
 const PATTERNS = {
-  A: "Uniform conservation",
-  B: "Central variable block",
-  C: "Short conserved motif",
-  D: "Three mutation rates",
+  all: "All scenarios",
+  conserved: "Uniform conservation",
+  "conserved-variable-blocks": "Central variable block",
+  "single-motif": "Short conserved motif",
+  "three-rate-blocks": "Three mutation rates",
 };
 const LABEL = Object.fromEntries(METRICS);
-const methodLabel = (method) => METHODS[method] ? `${method} ${METHODS[method]}` : method;
+const methodLabel = (method) => METHODS[method] ?? method;
 const stat = (value) => value == null ? "N/A" : value.toFixed(4);
 const fullStat = (value) => value == null ? { text: "N/A" } : { text: stat(value), title: String(value) };
-const order = ["E8", "E7", "Shannon", "E5", "E6", "E4", "E3", "E2", "E1", "E0"];
+const order = Object.keys(METHODS);
 
 function table(headers, rows) {
   const head = el("thead", {}, [el("tr", {}, headers.map((text) => el("th", { scope: "col", text })))]);
@@ -49,10 +50,6 @@ function labeledSelect(label, options) {
   return [el("label", { className: "field" }, [el("span", { text: label }), select]), select];
 }
 
-function formatSource(path) {
-  return el("p", { className: "source-note" }, ["Source ", el("code", { text: path })]);
-}
-
 function panel(title, ...children) {
   return el("section", { className: "panel bench-panel" }, [
     el("div", { className: "panel-heading" }, [el("h2", { text: title })]),
@@ -60,22 +57,25 @@ function panel(title, ...children) {
   ]);
 }
 
+function datasetPanel(dataset) {
+  const total = dataset.rows.find((row) =>
+    row.pattern === "all" && row.method === "v2" && row.metric === "scored_fraction");
+  const summary = panel("Dataset",
+    table(["Cohort", "Families", "Sequences per family", "Aligned columns", "Composition"], [
+      ["INDELible", total?.n ?? "N/A", 20, "120–145",
+        "120 ancestral sites. Two uniformly conserved, two with a central variable block, four with short motifs (3 or 5 sites), and four with three rate tiers (two with indels)."],
+    ]),
+    el("p", { className: "bench-copy", text: "AUPRC is undefined for the two uniformly conserved families." }));
+  summary.classList.add("bench-datasets");
+  return summary;
+}
+
 function orderedMethods(methods) {
   const rank = (method) => order.includes(method) ? order.indexOf(method) : order.length;
   return [...methods].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 }
 
-function missingReason(pattern, metric) {
-  if (["A", "conserved", "variable"].includes(pattern) && ["auroc", "auprc"].includes(metric)) {
-    return "Each family has one truth class. The benchmark reports AUROC and AUPRC as undefined.";
-  }
-  if (["A", "conserved", "variable"].includes(pattern) && metric === "spearman") return "Truth is constant within each family.";
-  if (metric === "variable_recall" && pattern === "A") return "Pattern A has no true variable sites.";
-  if (metric === "boundary_f1") return "Boundary F1 requires predicted and true boundaries for evaluation.";
-  return "The source contains no defined value for this method and metric.";
-}
-
-function barChart(rows, metric) {
+function barChart(rows, metric, { titled = false, showCounts = false } = {}) {
   const signed = metric === "spearman";
   const domainLow = signed ? -1 : 0;
   const x = (value) => (value - domainLow) * 100 / (1 - domainLow);
@@ -84,161 +84,139 @@ function barChart(rows, metric) {
     const start = row.mean == null ? 0 : Math.min(x(0), x(row.mean));
     const bar = el("div", { className: "bar-track" }, [
       ...(signed ? [el("i", { className: "bar-zero" })] : []),
-      ...(row.mean == null ? [] : [el("i", { className: "bar", style: `left:${start}%;width:${width}%` })]),
+      ...(row.mean == null ? [] : [el("i", {
+        className: row.method === "v2" ? "bar" : "bar bar-comparator",
+        style: `left:${start}%;width:${width}%`,
+      })]),
     ]);
+    const label = showCounts ? `${methodLabel(row.method)} (n=${row.n})` : methodLabel(row.method);
     return el("div", { className: "bar-row" }, [
-      el("span", { text: methodLabel(row.method) }), bar, el("span", { className: "bar-value", text: stat(row.mean) }),
+      el("span", { text: label }), bar, el("span", { className: "bar-value", text: stat(row.mean) }),
     ]);
   });
   const tickValues = signed ? ["−1", "−0.5", "0", "0.5", "1"] : ["0", "0.25", "0.5", "0.75", "1"];
   const axis = el("div", { className: "bar-row bar-axis" }, [
-    el("span", { text: LABEL[metric] }),
+    el("span", { text: titled ? "" : LABEL[metric] }),
     el("div", { className: "bar-ticks" }, tickValues.map((text) => el("span", { text }))),
     el("span"),
   ]);
   return el("div", { className: "bar-chart", role: "group", "aria-label": `${LABEL[metric]} by method` }, [...bars, axis]);
 }
 
-function motifPanel(data) {
-  if (!data.motifs.length) return panel("Pattern C · Short motif recovery",
-    el("p", { className: "bench-copy", text: "Motif-width summary unavailable." }));
-  const methods = ["E2", "E3", "E7", "E8", "Shannon"];
-  const widths = [3, 5, 9];
-  const rows = methods.map((method) => [methodLabel(method), ...widths.map((width) => {
-    const row = data.motifs.find((item) => item.method === method && item.width === width);
-    return row ? `${percent(row.mean)} · n=${row.n}` : "N/A";
-  })]);
-  return panel("Pattern C · Short motif recovery",
-    el("p", { className: "bench-copy", text: "Conserved-site recall at the frozen thresholds, by synthetic motif width. Uniform and Gaussian smoothing missed the 3- and 5-column motifs in this set." }),
-    table(["Method", "3 columns", "5 columns", "9 columns"], rows), formatSource(data.motif_source));
-}
-
-function threeRatesPanel(dataset) {
-  const methods = ["E7", "E8", "Shannon", "E5"];
-  const metrics = ["medium_as_variable", "variable_recall", "spearman"];
-  const rows = methods.map((method) => [methodLabel(method), ...metrics.map((metric) => {
-    const row = dataset.rows.find((item) => item.pattern === "D" && item.method === method && item.metric === metric);
-    if (!row || row.mean == null) return "N/A";
-    return `${metric === "spearman" ? stat(row.mean) : percent(row.mean)} · n=${row.n}`;
-  })]);
-  return panel("Pattern D · Three mutation rates",
-    el("p", { className: "bench-copy", text: "Binary recall treats medium- and high-rate sites as variable. The medium-only column isolates detection at the intermediate rate." }),
-    table(["Method", "Medium called variable", "Variable-site recall", "Spearman"], rows), formatSource(dataset.source));
+function methodComparison(data) {
+  const baselineMethods = orderedMethods(new Set(data.baselines.map((row) => row.method)));
+  if (!baselineMethods.length) return null;
+  const current = data.datasets.fresh_indelible?.rows ?? [];
+  const plots = ["auprc", "spearman"].map((metric) => {
+    const scaw = current.find((row) => row.pattern === "all" && row.metric === metric && row.method === "v2");
+    const rows = baselineMethods.map((method) =>
+      data.baselines.find((row) => row.metric === metric && row.method === method) ?? { method, mean: null, n: 0 });
+    return [metric, [scaw, ...rows]];
+  });
+  if (plots.some(([, rows]) => !rows[0])) return null;
+  return panel("Method comparison",
+    el("p", { className: "bench-copy", text: "Family means. n counts families with a defined score." }),
+    el("div", { className: "bench-chart-grid" }, plots.map(([metric, rows]) => {
+      const commonCount = rows.every((row) => row.n === rows[0].n);
+      const title = commonCount ? `${LABEL[metric]} (n=${rows[0].n})` : LABEL[metric];
+      return el("div", {}, [
+        el("h3", { text: title }), barChart(rows, metric, { titled: true, showCounts: !commonCount }),
+      ]);
+    })));
 }
 
 function runtimePanel(data) {
   if (!data.runtime.length) return panel("Runtime", el("p", { className: "bench-copy", text: "Recorded timings unavailable." }));
-  return panel("Reference runtime",
-    table(["Stage", "Sequences", "Columns", "Median seconds", "Repeats"],
-      data.runtime.map((row) => [row.stage, row.sequences, row.columns, row.seconds.toFixed(6), row.repeats])),
-    formatSource(data.runtime_source));
+  return panel("Context scoring runtime",
+    table(["Method", "Columns", "Median seconds", "Repeats"],
+      data.runtime.map((row) => [methodLabel(row.method), row.columns, row.seconds.toFixed(6), row.repeats])));
 }
 
 function casePanel(data) {
   if (!data?.sites?.length) return panel("Case study · UniProt globins",
-    el("p", { className: "bench-copy", text: "The MAFFT and ClustalW comparison appears here when P02144 reference-coordinate outputs are available." }));
+    el("p", { className: "bench-copy", text: data?.error ?? "Run MAFFT and ClustalW to generate the P02144 profiles." }));
   const tracks = [["mafft", "MAFFT", "final-line"], ["clustalw", "ClustalW", "raw-line"]];
   const [low, high] = valueRange(data.sites.flatMap((row) => [row.mafft, row.clustalw]));
-  const x = (index) => 24 + 740 * index / Math.max(1, data.sites.length - 1);
+  const plotLeft = 52;
+  const plotRight = 764;
+  const x = (index) => plotLeft + (plotRight - plotLeft) * index / Math.max(1, data.sites.length - 1);
   const y = (value) => 141 - 118 * (value - low) / (high - low);
   const ticks = Array.from({ length: 4 }, (_, i) => low + i * (high - low) / 3);
   const chart = svg("svg", { class: "case-chart", viewBox: "0 0 800 166", role: "img",
     "aria-label": "MAFFT and ClustalW profiles by ungapped P02144 reference residue" }, [
     ...ticks.flatMap((value) => {
-      const label = svg("text", { x: 29, y: y(value) - 5 });
+      const tickY = y(value);
+      const label = svg("text", {
+        x: plotLeft - 10, y: tickY, "text-anchor": "end", "dominant-baseline": "middle",
+      });
       label.textContent = value.toFixed(2);
-      return [svg("line", { x1: 24, x2: 764, y1: y(value), y2: y(value), class: "plot-grid" }), label];
+      return [svg("line", { x1: plotLeft, x2: plotRight, y1: tickY, y2: tickY, class: "plot-grid" }), label];
     }),
     ...tracks.map(([key, , style]) => svg("path", { d: linePath(data.sites.map((row) => row[key]), x, y), class: style })),
   ]);
   return panel("Case study · UniProt globins",
-    el("p", { className: "bench-copy", text: `Alignment sensitivity in P02144 coordinates · jointly scored ${data.joint}/${data.sites.length} residues (${percent(data.joint / data.sites.length)}).` }),
+    el("p", { className: "bench-copy", text: `Jointly scored residues: ${data.joint}/${data.sites.length}${data.pearson == null ? "" : ` · Pearson r = ${data.pearson.toFixed(3)}`}` }),
     chart,
     el("div", { className: "case-legend" }, [
       ...tracks.map(([, label, style]) => el("span", {}, [el("i", { className: `line-key ${style}` }), label])),
       el("span", { text: `P02144 reference residues 1–${data.sites.length}` }),
-    ]),
-    formatSource(data.source));
+    ]));
 }
 
 export function renderBenchmarks(target, data) {
-  const [datasetField, dataset] = labeledSelect("Dataset", [
-    ["supplemental", "Supplemental A–D"], ["reference", "Reference held-out"],
+  if (typeof data.source !== "string" || !Array.isArray(data.baselines)) {
+    throw new Error("The local Python service is running an older version. Restart code/frontend/server.py, then retry.");
+  }
+  const dataset = data.datasets?.fresh_indelible;
+  const heading = el("div", { className: "page-heading" }, [
+    el("h1", { text: "SCAW-RVNE benchmarks" }),
   ]);
-  const [patternField, pattern] = labeledSelect("Pattern", []);
+  if (!dataset) {
+    target.replaceChildren(heading, panel("Benchmark results",
+      el("p", { className: "bench-copy", text: "INDELible results are missing. Restore or regenerate the benchmark summary." })),
+    casePanel(data.case));
+    return;
+  }
+
+  const patterns = Object.keys(dataset.groups).sort();
+  const [patternField, pattern] = labeledSelect("Scenario",
+    patterns.map((key) => [key, PATTERNS[key] ?? key.replaceAll("-", " ")]));
+  if (patterns.includes("all")) pattern.value = "all";
   const [metricField, metric] = labeledSelect("Metric", METRICS);
   const [methodField, method] = labeledSelect("Method", []);
   const comparison = el("div", { className: "bench-comparison" });
-  const evidence = el("div", { className: "benchmark-evidence" });
-  target.replaceChildren(
-    el("div", { className: "page-heading" }, [
-      el("h1", { text: "Benchmarks" }), el("p", { text: "Conservation scoring on synthetic protein alignments." }),
-    ]),
-    el("div", { className: "panel benchmark-filters" }, [datasetField, patternField, methodField, metricField]),
-    comparison, evidence, casePanel(data.case),
-  );
-
-  function choosePatterns() {
-    const groups = data.datasets[dataset.value].groups ?? {};
-    const keys = dataset.value === "supplemental" ? Object.keys(PATTERNS) : Object.keys(groups).sort();
-    pattern.replaceChildren(...keys.map((key) => option(key,
-      PATTERNS[key] ? `Pattern ${key} · ${PATTERNS[key]}` : key[0].toUpperCase() + key.slice(1))));
-    if (dataset.value === "supplemental") pattern.value = "D";
-    chooseMethods();
-  }
+  const overview = methodComparison(data);
+  target.replaceChildren(heading, datasetPanel(dataset), ...(overview ? [overview] : []),
+    panel("Ablation experiments",
+      el("div", { className: "benchmark-filters" }, [patternField, methodField, metricField]),
+      comparison),
+    casePanel(data.case), runtimePanel(data));
 
   function chooseMethods() {
     const current = method.value;
-    const available = data.datasets[dataset.value].groups?.[pattern.value] ?? [];
+    const available = dataset.groups[pattern.value] ?? [];
     method.replaceChildren(option("", "All methods"), ...orderedMethods(available).map((key) => option(key, methodLabel(key))));
     if (available.includes(current)) method.value = current;
     refresh();
   }
 
   function refresh() {
-    const current = data.datasets[dataset.value];
     const kind = metric.value;
-    pattern.disabled = kind === "seconds";
-    method.disabled = kind === "seconds";
-    dataset.disabled = kind === "seconds";
-    const isSupplemental = dataset.value === "supplemental";
-    evidence.replaceChildren();
-    if (kind === "seconds") {
-      comparison.replaceChildren(runtimePanel(data));
-      return;
-    }
-    if (!current.available) {
-      comparison.replaceChildren(panel("Benchmark results", el("p", {
-        className: "bench-copy", text: "The benchmark summary TSV is unavailable.",
-      }), formatSource(current.source)));
-      return;
-    }
-    const methods = orderedMethods(current.groups[pattern.value] ?? []).filter((key) => !method.value || method.value === key);
-    const rows = methods.map((key) => current.rows.find((row) =>
+    const methods = orderedMethods(dataset.groups[pattern.value] ?? []).filter((key) => !method.value || method.value === key);
+    const rows = methods.map((key) => dataset.rows.find((row) =>
       row.pattern === pattern.value && row.method === key && row.metric === kind
     ) ?? { method: key, mean: null, sd: null, n: 0 });
-    const title = isSupplemental ? `Pattern ${pattern.value} · ${LABEL[kind]}` : `${LABEL[kind]} · ${pattern.value}`;
-    const display = rows.length ? [
-      barChart(rows, kind),
-      ...(rows.some((row) => row.mean == null) ? [
-        el("p", { className: "bench-copy", text: `N/A · ${missingReason(pattern.value, kind)}` }),
-      ] : []),
+    const boundaryMetric = kind === "boundary_f1" || kind === "boundary_f1_exact";
+    const missingBoundaries = boundaryMetric && methods.includes("fixed_uniform_7");
+    comparison.replaceChildren(barChart(rows, kind),
       table(["Method", "Mean", "SD", "Families (n)"], rows.map((row) => [
         methodLabel(row.method), fullStat(row.mean), fullStat(row.sd), row.n,
       ])),
-    ] : [el("p", { className: "bench-copy", text: "No methods are recorded for this pattern." })];
-    comparison.replaceChildren(panel(title, ...display,
-      el("p", { className: "bench-copy", text: !isSupplemental && kind === "variable_recall"
-        ? "Variable-site recall is recorded as specificity. n counts families with a defined value, weighted equally."
-        : "Equal weight per family. n counts families with a defined metric." }),
-      formatSource(current.source)));
-    if (isSupplemental && pattern.value === "C") evidence.append(motifPanel(data));
-    if (isSupplemental && pattern.value === "D") evidence.append(threeRatesPanel(current));
+      ...(missingBoundaries ? [el("p", { className: "bench-copy", text: "The uniform window does not predict boundaries." })] : []));
   }
 
-  dataset.addEventListener("change", choosePatterns);
   pattern.addEventListener("change", chooseMethods);
   method.addEventListener("change", refresh);
   metric.addEventListener("change", refresh);
-  choosePatterns();
+  chooseMethods();
 }
