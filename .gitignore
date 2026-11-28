@@ -4,3 +4,5 @@
 /progress
 __pycache__/
 /LoopFinder
+/.venv/
+/.tools/indelible/

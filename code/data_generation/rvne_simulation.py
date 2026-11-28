@@ -9,6 +9,7 @@ import json
 from math import isfinite
 from pathlib import Path
 from random import Random
+import sys
 from tempfile import TemporaryDirectory
 
 import numpy as np
@@ -344,8 +345,9 @@ def read_regions(path: Path, options: Options) -> tuple[Region, ...]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     add_engine_arguments(parser)
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--truth", type=Path, required=True)
+    parser.add_argument("--check", action="store_true", help="verify dependencies by running a tiny simulation")
+    parser.add_argument("--output", type=Path, help="aligned FASTA output (required for generation)")
+    parser.add_argument("--truth", type=Path, help="per-column truth output (required for generation)")
     parser.add_argument("--work-dir", type=Path, help="new path for raw runs and metadata")
     parser.add_argument("--scenario", choices=SCENARIOS + SUPPLEMENTAL_SCENARIOS, default="blocks")
     parser.add_argument("--regions", type=Path, help="JSON configuration for custom ancestral regions")
@@ -358,6 +360,20 @@ def main() -> int:
     parser.add_argument("--redundancy", type=float)
     parser.add_argument("--seed", type=int, default=1)
     args = parser.parse_args()
+    if args.check:
+        try:
+            executable = find_executable(args.indelible_bin)
+            with TemporaryDirectory(prefix="indelible-check-") as directory:
+                result = run_partition(executable, Path(directory) / "run", taxa=("seq1", "seq2"),
+                                       tree="(seq1:0.1,seq2:0.1);", length=12, seed=13, options=Options())
+        except (OSError, ValueError) as exc:
+            parser.exit(2, f"error: {exc}\n")
+        print(f"Python {sys.version.split()[0]}, NumPy {np.__version__}")
+        print(f"INDELible {result.version}: {executable}")
+        print(f"Smoke test passed ({len(result.aligned)} sequences, {len(result.aligned[0])} aligned columns).")
+        return 0
+    if args.output is None or args.truth is None:
+        parser.error("generation requires --output and --truth")
     work_dir = args.work_dir or args.output.with_suffix(".run")
     try:
         if args.output.resolve() == args.truth.resolve() or args.output.exists() or args.truth.exists():

@@ -4,9 +4,11 @@ INDELible 1.03 evolves globular-protein sequences along a rooted tree under an e
 
 ## Install and configure
 
-Install Python 3.10 or newer, NumPy from [`rvne/requirements.txt`](../rvne/requirements.txt), and **INDELible 1.03** as an external program. Windows users can extract the Windows executable from the [INDELible distribution](http://abacus.gene.ucl.ac.uk/software/indelible/) or build its C++ source with MinGW and `-DWINDOWS`. On Debian or Ubuntu, `sudo apt install indelible` installs the packaged program where available. Other Linux platforms can compile the release source using its build instructions. Set `INDELIBLE_BIN` to the executable's full path, add it to `PATH`, or pass `--indelible-bin` to either generator CLI.
+Install Python 3.10 or newer, NumPy from [`rvne/requirements.txt`](../rvne/requirements.txt), and **INDELible 1.03** as an external program. Windows users can extract the Windows executable from the [INDELible distribution](http://abacus.gene.ucl.ac.uk/software/indelible/) or build its C++ source with MinGW and `-DWINDOWS`. On Debian or Ubuntu, `sudo apt install indelible` installs the packaged program where available. Other Linux platforms can compile the release source using its build instructions.
 
-Run the following commands from `code/` in PowerShell. For a POSIX shell use `export PYTHONPATH=rvne/src` and `export INDELIBLE_BIN=/path/to/indelible` when needed.
+The generator checks `--indelible-bin` first and `INDELIBLE_BIN` second. With neither set, it looks in `.tools/indelible/` under the repository root for `indelible.exe` on Windows or `indelible` on Linux, then checks `PATH`. The project-local binary directory is Git-ignored, so a fresh checkout needs its own executable. From the repository root, `python code/data_generation --check` verifies the Python imports and runs a tiny simulation. See the [assessor walkthrough](../frontend/README.md#generate-and-score-your-own-test-alignment) for the full generation and scoring example.
+
+The `python -m` commands below use the project's `code/` directory. Run the following commands from that directory in PowerShell. For a POSIX shell use `export PYTHONPATH=rvne/src` and `export INDELIBLE_BIN=/path/to/indelible` when needed.
 
 ```powershell
 python -m pip install -r rvne/requirements.txt

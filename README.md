@@ -74,11 +74,13 @@ All Python workflows require **Python 3.10 or newer**. Install the project's Pyt
 | --- | --- |
 | Standalone published baselines and matched-constraint control | Python standard library. |
 | RVNE and SCAW-RVNE scoring, supplemental evaluation, and analysis table generation | `numpy>=1.26,<3`. |
-| Synthetic evolutionary generation, baseline rate benchmark, RVNE reference benchmark, and synthetic motif plotting | NumPy and external **INDELible 1.03**. Configure `INDELIBLE_BIN` or place the executable on `PATH`. [Installation and dataset commands](code/data_generation/README.md). |
+| Synthetic evolutionary generation, baseline rate benchmark, RVNE reference benchmark, and synthetic motif plotting | NumPy and external **INDELible 1.03**. Use the project-local `.tools/indelible/` directory, `INDELIBLE_BIN`, or `PATH`. [Installation and dataset commands](code/data_generation/README.md). |
 | Real-data alignment from unaligned FASTA | NumPy and external command-line tools **MAFFT 7** and **ClustalW 2.1** for the two-aligner comparison. A single-aligner run requires the selected executable. [Installation and executable paths](code/rvne/docs/real_data_alignment.md). |
 | PNG and PDF analysis figures | **R** with Cairo graphics support. The script uses base R. [Figure reproduction commands](code/output/benchmark_analysis.md). |
 
 ## Quick start
+
+To generate an alignment and test it in the browser, use the [assessor walkthrough](code/frontend/README.md#generate-and-score-your-own-test-alignment).
 
 Run from the repository root in PowerShell. Both scoring packages use the module name `msa_conservation`. Set `PYTHONPATH` for one scoring package at a time. Include `code` so Python can also find `benchmarks` and `data_generation`.
 

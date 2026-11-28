@@ -14,6 +14,7 @@ const examplePicker = byId("example");
 const aligner = byId("aligner");
 const method = byId("method");
 const preset = byId("preset");
+const customPreset = preset.querySelector('[value="custom"]');
 const customRvne = byId("custom-rvne");
 const customContext = byId("custom-context");
 const results = byId("results");
@@ -206,7 +207,11 @@ form.addEventListener("submit", async (event) => {
     if (!byId("analyze-page").hidden) results.querySelector("h1").focus();
   } catch (problem) {
     results.hidden = true;
-    error(problem.message);
+    const unsupportedPreset = options.preset === "custom"
+      && problem.message === "Choose valid scoring settings and alignment tool.";
+    error(unsupportedPreset
+      ? "The running server does not support Custom settings. Restart it with python code/frontend/server.py, then reload this page."
+      : problem.message);
   } finally {
     busy = false;
     status.textContent = "";
@@ -248,14 +253,16 @@ function navigate() {
 
 getJSON("/api/config").then((data) => {
   config = data;
-  examplePicker.replaceChildren(...Object.entries(config.examples).map(([key, label]) => option(key, label)));
-  preset.querySelector('[value="custom"]').disabled = false;
+  customPreset.disabled = false;
   if (!config.frozen) {
     preset.value = "default";
     preset.options[0].disabled = true;
   }
   previousPreset = preset.value;
   if (!config.aligners.mafft && config.aligners.clustalw) aligner.value = "clustalw";
+  if (config.examples) {
+    examplePicker.replaceChildren(...Object.entries(config.examples).map(([key, label]) => option(key, label)));
+  }
   updateForm();
 }).catch((problem) => error(problem.message));
 window.addEventListener("hashchange", navigate);

@@ -75,12 +75,16 @@ class PartitionOutput:
 
 def find_executable(path: str | Path | None = None) -> Path:
     configured = str(path) if path is not None else os.environ.get("INDELIBLE_BIN")
-    candidate = Path(configured).expanduser() if configured else None
-    executable = str(candidate) if candidate and candidate.is_file() else shutil.which(configured or "indelible")
-    if not executable:
-        detail = f" at {configured!r}" if configured else " on PATH"
-        raise FileNotFoundError(f"INDELible 1.03 executable not found{detail}. Set INDELIBLE_BIN or pass --indelible-bin.")
-    return Path(executable).resolve()
+    name = "indelible.exe" if os.name == "nt" else "indelible"
+    local = Path(__file__).resolve().parents[2] / ".tools" / "indelible" / name
+    candidate = Path(configured).expanduser() if configured else local
+    if candidate.is_file():
+        return candidate.resolve()
+    if executable := shutil.which(configured or name):
+        return Path(executable).resolve()
+    detail = f"at {configured!r}" if configured else f"at {local} or on PATH"
+    raise FileNotFoundError(f"INDELible 1.03 executable not found {detail}. "
+                            "Set INDELIBLE_BIN or pass --indelible-bin.")
 
 
 def partition_seed(seed: int, partition: int, pilot: int = 0) -> int:
